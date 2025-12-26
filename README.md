@@ -19,25 +19,25 @@ A smart platform where citizens can report local issues, and authorities can tra
 
 ## 🏙️ Overview
 
-**Nagar-Sahayata-Portal** helps citizens raise complaints about social and civic issues in their locality.  
-Authorities handle them using **role-based dashboards**:
+**Nagar-Sahayata-Portal** helps citizens raise complaints about social and civic issues.  
+Authorities manage them using **role-based dashboards**:
 
-- 👤 **User** — submit complaints  
-- 🛠️ **Staff / Junior Staff** — manage assigned area complaints  
-- 🧑‍💼 **Admin** — complete monitoring, assignment & control  
+- 👤 User — submit complaints  
+- 🛠️ Staff / Junior Staff — manage assigned complaints  
+- 🧑‍💼 Admin — monitor, assign & control  
 
-Built using the **MERN Stack**.
+Built with the **MERN Stack**.
 
 ---
 
 ## ✨ Features
 
-- 📢 File complaints with images & description  
-- 🧭 Role-based dashboards (User / Staff / Junior Staff / Admin)  
+- 📢 Complaint submission with images  
+- 🧭 Role-based dashboards  
 - 📍 Area-wise complaint tracking  
-- 🔐 Secure login with JWT  
-- 📧 Email alerts for updates  
-- 📊 Complaint lifecycle (Pending → In-Progress → Resolved)
+- 🔐 Secure JWT authentication  
+- 📧 Email notifications  
+- 📊 Status: Pending → In-Progress → Resolved  
 
 ---
 
@@ -53,12 +53,12 @@ Built using the **MERN Stack**.
 
 ---
 
-## 📸 Screens (replace with your screenshots)
+## 📸 Screens
 
 <p align="center">
-  <img src="https://placehold.co/1000x450?text=User+Dashboard" />
+  <img src="./client/src/assets/dashboard.png" width="1000" />
   <br/><br/>
-  <img src="https://placehold.co/1000x450?text=Admin+Panel" />
+  <img src="./client/src/assets/signup.png" width="900" />
 </p>
 
 ---
@@ -67,7 +67,7 @@ Built using the **MERN Stack**.
 
 ### 1️⃣ Clone the repository
 
-bash
+```bash
 git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
 cd Nagar-Sahayata-Portal
 2️⃣ Install dependencies
@@ -77,29 +77,23 @@ Copy code
 cd client
 npm install
 
-Backend
+# Backend
 cd ../server
 npm install
 🔐 Environment Variables
-Create a .env file inside the server folder:
+Create .env inside server:
 
 env
 Copy code
-# Mongo Databases
 MONGO_URI_AUTH=your_auth_db_connection_string
 MONGO_URI_REPORTS=your_reports_db_connection_string
 
-# JWT
 JWT_SECRET=your_super_secret_key
-
-# Server
 PORT=5000
 
-# Email 
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password_here
-
-
+💡 Keep .env private — add it to .gitignore.
 
 ▶️ Run the project
 Backend
@@ -112,15 +106,27 @@ bash
 Copy code
 cd client
 npm start
+👥 Roles & Permissions
+Role	Permissions
+👤 User	Submit & track complaints
+🛠️ Staff	Manage assigned complaints
+🧑‍🏫 Junior Staff	Update progress
+🧑‍💼 Admin	Full Control
 
+🌍 Deployment (optional)
+Frontend → Netlify / Vercel
 
+Backend → Render / Railway
+
+DB → MongoDB Atlas
+
+👥 Contributors
+<p align="center"> <a href="https://github.com/abhay963"> <img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" /> </a> </p> <p align="center"> <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal!</em> </p>
 🤝 Contributing
 Pull requests and suggestions are welcome!
 
 ⭐ Support
-If you like this project, please ⭐ the repo — it motivates future development!
-
-
+If you like this project, please ⭐ the repo — it helps a lot.
 
 Happy coding! 💡
 
@@ -129,35 +135,11 @@ Copy code
 
 ---
 
+# 🎞️ Animated Contributors (how it works)
 
-👥 Contributors
+The section uses **contrib.rocks**, which automatically generates a **dynamic, animated contributors grid**.
 
-<p>
-  <a href="https://github.com/YOUR_GITHUB">
-    <img src="https://avatars.githubusercontent.com/YOUR_GITHUB" width="80" style="border-radius:50%" />
-    <br/>
-    <sub><b>Abhay</b></sub>
-  </a>
-</p>
+This line is the magic:
 
-
-<p align="center">
-  <img src="./client/src/assets/dashboard.png" width="1000" />
-</p>
-<p align="center">
-  <img src="./client/src/assets/signup.png" width="900" />
-</p>
-
-If you want, I can also:
-
-📌 add screenshots & animations for you  
-📌 customize sections (modules, API docs, install script)  
-📌 check your repo for exposed secrets
-
-Just share the repo link when you push!
-
-
-
-
-
-
+```md
+<img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" />
