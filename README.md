@@ -120,7 +120,8 @@ Backend → Render / Railway
 DB → MongoDB Atlas
 
 👥 Contributors
-<p align="center"> <a href="https://github.com/abhay963"> <img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" /> </a> </p> <p align="center"> <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal!</em> </p>
+<p align="center"> <a href="https://github.com/abhay963"> <img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" /> </a> </p>
+<p align="center"> <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal!</em> </p>
 🤝 Contributing
 Pull requests and suggestions are welcome!
 
@@ -128,39 +129,4 @@ Pull requests and suggestions are welcome!
 If you like this project, please ⭐ the repo — it helps a lot.
 
 Happy coding! 💡
-
-yaml
-Copy code
-
----
-
-# 🎞️ Animated Contributors (how it works)
-
-## 👥 Contributors
-
-<p align="center">
-
-  <a href="https://github.com/abhay963">
-    <img src="https://avatars.githubusercontent.com/abhay963" width="95" style="border-radius:50%; border:3px solid #4CAF50" />
-    <br/>
-    <sub><b>Abhay Kumar Yadav</b></sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/Aditi-Raj07">
-    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" style="border-radius:50%; border:3px solid #4CAF50" />
-    <br/>
-    <sub><b>Aditi Raj</b></sub>
-  </a>
-
-</p>
-
-<p align="center">
-  <img src="https://i.imgur.com/YC9XxS9.gif" width="220">
-  <br/>
-  <em>Made with teamwork & collaboration 👏</em>
-</p>
-
-
-
 
