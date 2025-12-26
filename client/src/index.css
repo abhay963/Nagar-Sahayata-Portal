@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+/* Hide scrollbar for Chrome, Safari and Opera */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
