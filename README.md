@@ -119,11 +119,52 @@ Backend → Render / Railway
 
 DB → MongoDB Atlas
 
-👥 Contributors
-<p align="center"> <a href="https://github.com/abhay963"> <img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" /> </a> </p>
-<p align="center"> <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal!</em> </p>
-🤝 Contributing
-Pull requests and suggestions are welcome!
+## 👥 Contributors
+
+<p align="center">
+
+  <a href="https://github.com/Aditi-Raj07">
+    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="90" style="border-radius:50%" />
+    <br/>
+    <sub><b>Aditi-Raj07</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/adityakumar5492">
+    <img src="https://avatars.githubusercontent.com/adityakumar5492" width="90" style="border-radius:50%" />
+    <br/>
+    <sub><b>adityakumar5492</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/Akshat-shukla18">
+    <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="90" style="border-radius:50%" />
+    <br/>
+    <sub><b>Akshat-shukla18</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/Aashi008">
+    <img src="https://avatars.githubusercontent.com/Aashi008" width="90" style="border-radius:50%" />
+    <br/>
+    <sub><b>Aashi008</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/amandubey923">
+    <img src="https://avatars.githubusercontent.com/amandubey923" width="90" style="border-radius:50%" />
+    <br/>
+    <sub><b>amandubey923</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/abhay963">
+    <img src="https://avatars.githubusercontent.com/abhay963" width="90" style="border-radius:50%" />
+    <br/>
+    <sub><b>abhay963</b></sub>
+  </a>
+
+</p>
+
+<p align="center">
+  <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal! 💚</em>
+</p>
+
 
 ⭐ Support
 If you like this project, please ⭐ the repo — it helps a lot.
