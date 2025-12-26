@@ -138,42 +138,30 @@ Copy code
 
 ## 👥 Contributors
 
-<p>
+<p align="center">
+
   <a href="https://github.com/abhay963">
-    <img src="https://avatars.githubusercontent.com/abhay963" width="80" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/abhay963" width="95" style="border-radius:50%; border:3px solid #4CAF50" />
     <br/>
     <sub><b>Abhay Kumar Yadav</b></sub>
   </a>
-</p>
-
-<p>
-  <a href="https://github.com/Aditi-Raj07">
-    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="80" style="border-radius:50%" />
-    <br/>
-    <sub><b>Teammate Name</b></sub>
-  </a>
-</p>
-
-## 👥 Contributors
-
-<p align="center">
-  <a href="https://github.com/abhay963">
-    <img src="https://avatars.githubusercontent.com/abhay963" width="90" />
-    <br/>
-    <sub><b>Abhay</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/USERNAME_2">
-    <img src="https://avatars.githubusercontent.com/USERNAME_2" width="90" />
-    <br/>
-    <sub><b>Teammate 2</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="https://github.com/Aditi-Raj07">
-    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="90" />
+    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" style="border-radius:50%; border:3px solid #4CAF50" />
     <br/>
     <sub><b>Aditi Raj</b></sub>
   </a>
+
 </p>
+
+<p align="center">
+  <img src="https://i.imgur.com/YC9XxS9.gif" width="220">
+  <br/>
+  <em>Made with teamwork & collaboration 👏</em>
+</p>
+
+
+
 
 
