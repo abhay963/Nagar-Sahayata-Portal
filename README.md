@@ -65,48 +65,41 @@ Built with the **MERN Stack**.
 
 ## 🚀 Getting Started
 
-### 1️⃣ Clone the repository
-
-
+### 1️⃣ Clone the repo
+```bash
 git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
 cd Nagar-Sahayata-Portal
 2️⃣ Install dependencies
 bash
 Copy code
 # Frontend
-cd client
-npm install
+cd client && npm install
 
 # Backend
-cd ../server
-npm install
-🔐 Environment Variables
-Create .env inside server:
+cd ../server && npm install
+3️⃣ Create environment file
+Create a .env inside server:
 
 env
 Copy code
 MONGO_URI_AUTH=your_auth_db_connection_string
 MONGO_URI_REPORTS=your_reports_db_connection_string
-
 JWT_SECRET=your_super_secret_key
 PORT=5000
-
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password_here
-💡 Keep .env private — add it to .gitignore.
+💡 Tip: Keep .env private (add it to .gitignore).
 
-▶️ Run the project
-Backend
+4️⃣ Run the project
 bash
 Copy code
+# Backend
 cd server
 npm run dev
-Frontend
-bash
-Copy code
-cd client
-npm start
 
+# Frontend
+cd ../client
+npm start
 
 
 ## 👥 Contributors
