@@ -154,3 +154,26 @@ Copy code
   </a>
 </p>
 
+## 👥 Contributors
+
+<p align="center">
+  <a href="https://github.com/abhay963">
+    <img src="https://avatars.githubusercontent.com/abhay963" width="90" />
+    <br/>
+    <sub><b>Abhay</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/USERNAME_2">
+    <img src="https://avatars.githubusercontent.com/USERNAME_2" width="90" />
+    <br/>
+    <sub><b>Teammate 2</b></sub>
+  </a>&nbsp;&nbsp;&nbsp;
+
+  <a href="https://github.com/Aditi-Raj07">
+    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="90" />
+    <br/>
+    <sub><b>Aditi Raj</b></sub>
+  </a>
+</p>
+
+
