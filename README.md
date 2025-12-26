@@ -22,9 +22,9 @@ A smart platform where citizens can report local issues, and authorities can tra
 **Nagar-Sahayata-Portal** helps citizens raise complaints about social and civic issues.  
 Authorities manage them using **role-based dashboards**:
 
-- 👤 User — submit complaints  
-- 🛠️ Staff / Junior Staff — manage assigned complaints  
-- 🧑‍💼 Admin — monitor, assign & control  
+- 👤 **User** — submit complaints  
+- 🛠️ **Staff / Junior Staff** — manage assigned complaints  
+- 🧑‍💼 **Admin** — monitor, assign & control  
 
 Built with the **MERN Stack**.
 
@@ -37,7 +37,7 @@ Built with the **MERN Stack**.
 - 📍 Area-wise complaint tracking  
 - 🔐 Secure JWT authentication  
 - 📧 Email notifications  
-- 📊 Status: Pending → In-Progress → Resolved  
+- 📊 Status flow: **Pending → In-Progress → Resolved**
 
 ---
 
@@ -56,10 +56,9 @@ Built with the **MERN Stack**.
 ## 📸 Screens
 
 <p align="center">
-    <img src="./client/src/assets/signup.png" width="900" />
-  
+  <img src="./client/src/assets/signup.png" width="900" />
   <br/><br/>
-<img src="./client/src/assets/dashboard.png" width="1000" />
+  <img src="./client/src/assets/dashboard.png" width="1000" />
 </p>
 
 ---
@@ -67,7 +66,8 @@ Built with the **MERN Stack**.
 ## 🚀 Getting Started
 
 ### 1️⃣ Clone the repository
-`bash
+
+```bash
 git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
 cd Nagar-Sahayata-Portal
 2️⃣ Install dependencies
@@ -111,68 +111,11 @@ Role	Permissions
 👤 User	Submit & track complaints
 🛠️ Staff	Manage assigned complaints
 🧑‍🏫 Junior Staff	Update progress
-🧑‍💼 Admin	Full Control
+🧑‍💼 Admin	Full control
 
 🌍 Deployment (optional)
-Frontend → Netlify / Vercel
+Frontend: Netlify / Vercel
 
-Backend → Render / Railway
+Backend: Render / Railway
 
-DB → MongoDB Atlas
-
-## 👥 Contributors
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Aditi-Raj07">
-        <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" /><br/>
-        <sub><b>Aditi Raj</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/adityakumar5492">
-        <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95" /><br/>
-        <sub><b>Aditya Kumar</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/Akshat-shukla18">
-        <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95" /><br/>
-        <sub><b>Akshat Shukla</b></sub>
-      </a>
-    </td>
-  </tr>
-
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Aashi008">
-        <img src="https://avatars.githubusercontent.com/Aashi008" width="95" /><br/>
-        <sub><b>Aashi</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/amandubey923">
-        <img src="https://avatars.githubusercontent.com/amandubey923" width="95" /><br/>
-        <sub><b>Aman Dubey</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/abhay963">
-        <img src="https://avatars.githubusercontent.com/abhay963" width="95" /><br/>
-        <sub><b>Abhay Kumar</b></sub>
-      </a>
-    </td>
-  </tr>
-</table>
-
-<p align="center">
-  <em>Built with collaboration, dedication & teamwork 🚀</em>
-</p>
-
-
-⭐ Support
-If you like this project, please ⭐ the repo — it helps a lot.
-
-Happy coding! 💡
-
+Database: MongoDB Atlas
