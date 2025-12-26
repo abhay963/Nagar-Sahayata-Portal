@@ -67,7 +67,7 @@ Built with the **MERN Stack**.
 
 ### 1️⃣ Clone the repository
 
-``bash
+
 git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
 cd Nagar-Sahayata-Portal
 2️⃣ Install dependencies
