@@ -106,20 +106,6 @@ bash
 Copy code
 cd client
 npm start
-👥 Roles & Permissions
-Role	Permissions
-👤 User	Submit & track complaints
-🛠️ Staff	Manage assigned complaints
-🧑‍🏫 Junior Staff	Update progress
-🧑‍💼 Admin	Full control
-
-🌍 Deployment (optional)
-Frontend: Netlify / Vercel
-
-Backend: Render / Railway
-
-Database: MongoDB Atlas
-
 
 
 
