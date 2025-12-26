@@ -178,18 +178,6 @@ Database: MongoDB Atlas
 If you like this project, please ⭐ the repo — it helps a lot.
 
 Happy coding! 💡
-
 <p align="center">
-  <span style="font-size:18px; font-weight:bold; display:inline-block; animation: slide 2s infinite;">
-    Happy coding! 💡
-  </span>
+  <marquee><b>Happy coding! 💡</b></marquee>
 </p>
-
-<style>
-@keyframes slide {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(6px); }
-  100% { transform: translateX(0); }
-}
-</style>
-
