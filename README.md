@@ -136,9 +136,21 @@ Copy code
 
 # 🎞️ Animated Contributors (how it works)
 
-The section uses **contrib.rocks**, which automatically generates a **dynamic, animated contributors grid**.
+## 👥 Contributors
 
-This line is the magic:
+<p>
+  <a href="https://github.com/abhay963">
+    <img src="https://avatars.githubusercontent.com/abhay963" width="80" style="border-radius:50%" />
+    <br/>
+    <sub><b>Abhay Kumar Yadav</b></sub>
+  </a>
+</p>
 
-md
-<img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" />
+<p>
+  <a href="https://github.com/Aditi-Raj07">
+    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="80" style="border-radius:50%" />
+    <br/>
+    <sub><b>Teammate Name</b></sub>
+  </a>
+</p>
+
