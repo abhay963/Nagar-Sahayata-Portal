@@ -153,10 +153,8 @@ npm start
 </p>
 
 
-⭐ Support
-If you like this project, please ⭐ the repo — it helps a lot.
 
-Happy coding! 💡
+
 <p align="center">
   <marquee><b>Happy coding! 💡</b></marquee>
 </p>
