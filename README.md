@@ -119,3 +119,77 @@ Frontend: Netlify / Vercel
 Backend: Render / Railway
 
 Database: MongoDB Atlas
+
+
+
+
+## 👥 Contributors
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Aditi-Raj07">
+        <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" /><br/>
+        <sub><b>Aditi Raj</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/adityakumar5492">
+        <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95" /><br/>
+        <sub><b>Aditya Kumar</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Akshat-shukla18">
+        <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95" /><br/>
+        <sub><b>Akshat Shukla</b></sub>
+      </a>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Aashi008">
+        <img src="https://avatars.githubusercontent.com/Aashi008" width="95" /><br/>
+        <sub><b>Aashi</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/amandubey923">
+        <img src="https://avatars.githubusercontent.com/amandubey923" width="95" /><br/>
+        <sub><b>Aman Dubey</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/abhay963">
+        <img src="https://avatars.githubusercontent.com/abhay963" width="95" /><br/>
+        <sub><b>Abhay Kumar</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<p align="center">
+  <em>Built with collaboration, dedication & teamwork 🚀</em>
+</p>
+
+
+⭐ Support
+If you like this project, please ⭐ the repo — it helps a lot.
+
+Happy coding! 💡
+
+<p align="center">
+  <span style="font-size:18px; font-weight:bold; display:inline-block; animation: slide 2s infinite;">
+    Happy coding! 💡
+  </span>
+</p>
+
+<style>
+@keyframes slide {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+</style>
+
