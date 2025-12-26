@@ -152,7 +152,7 @@ npm start
   <em>Built with collaboration, dedication & teamwork 🚀</em>
 </p>
 
-
+```
 ⭐ Support
 If you like this project, please ⭐ the repo — it helps a lot.
 
