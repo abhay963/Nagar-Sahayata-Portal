@@ -56,9 +56,10 @@ Built with the **MERN Stack**.
 ## 📸 Screens
 
 <p align="center">
-  <img src="./client/src/assets/dashboard.png" width="1000" />
+    <img src="./client/src/assets/signup.png" width="900" />
+  
   <br/><br/>
-  <img src="./client/src/assets/signup.png" width="900" />
+<img src="./client/src/assets/dashboard.png" width="1000" />
 </p>
 
 ---
@@ -124,46 +125,53 @@ DB → MongoDB Atlas
 <p align="center">
 
   <a href="https://github.com/Aditi-Raj07">
-    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="90" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" style="border-radius:50%; box-shadow: 0px 4px 14px rgba(0,0,0,0.2);" />
     <br/>
-    <sub><b>Aditi-Raj07</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
+    <sub><b>Aditi Raj</b></sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="https://github.com/adityakumar5492">
-    <img src="https://avatars.githubusercontent.com/adityakumar5492" width="90" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95" style="border-radius:50%; box-shadow: 0px 4px 14px rgba(0,0,0,0.2);" />
     <br/>
-    <sub><b>adityakumar5492</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
+    <sub><b>Aditya Kumar</b></sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="https://github.com/Akshat-shukla18">
-    <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="90" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95" style="border-radius:50%; box-shadow: 0px 4px 14px rgba(0,0,0,0.2);" />
     <br/>
-    <sub><b>Akshat-shukla18</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
+    <sub><b>Akshat Shukla</b></sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="https://github.com/Aashi008">
-    <img src="https://avatars.githubusercontent.com/Aashi008" width="90" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/Aashi008" width="95" style="border-radius:50%; box-shadow: 0px 4px 14px rgba(0,0,0,0.2);" />
     <br/>
-    <sub><b>Aashi008</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
+    <sub><b>Aashi</b></sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="https://github.com/amandubey923">
-    <img src="https://avatars.githubusercontent.com/amandubey923" width="90" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/amandubey923" width="95" style="border-radius:50%; box-shadow: 0px 4px 14px rgba(0,0,0,0.2);" />
     <br/>
-    <sub><b>amandubey923</b></sub>
-  </a>&nbsp;&nbsp;&nbsp;
+    <sub><b>Aman Dubey</b></sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
   <a href="https://github.com/abhay963">
-    <img src="https://avatars.githubusercontent.com/abhay963" width="90" style="border-radius:50%" />
+    <img src="https://avatars.githubusercontent.com/abhay963" width="95" style="border-radius:50%; box-shadow: 0px 4px 14px rgba(0,0,0,0.2);" />
     <br/>
-    <sub><b>abhay963</b></sub>
+    <sub><b>Abhay Kumar</b></sub>
   </a>
 
 </p>
 
 <p align="center">
-  <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal! 💚</em>
+  <em>Built with collaboration, dedication & teamwork 🚀</em>
 </p>
+
+  
 
 
 ⭐ Support
