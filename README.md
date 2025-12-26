@@ -172,7 +172,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 🌟 Made with ❤️ by the Community
 
-[![Contributors](https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal)](https://github.com/abhay963/Nagar-Sahayata-Portal/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal)]
+(https://github.com/abhay963/Nagar-Sahayata-Portal/graphs/contributors)
+(https://github.com/aditi96
+/Nagar-Sahayata-Portal/graphs/contributors)
 
 ### 📧 Contact
 
