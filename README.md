@@ -1,190 +1,166 @@
+<h1 align="center">🚀 Nagar-Sahayata-Portal (MERN)</h1>
 
-<div align="center">
+<p align="center">
+A smart platform where citizens can report local issues, and authorities can track, manage, and resolve complaints efficiently.
+</p>
 
-# 🏙️ Nagar-Sahayata-Portal
-### 🚀 A Modern MERN Stack Civic Complaint Management System
+<p align="center">
+  <img src="https://raw.githubusercontent.com/akshay-mern/assets/main/mern-animated.gif" width="650" />
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-18.2.0-61dafb?logo=react)](https://reactjs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47a248?logo=mongodb)](https://www.mongodb.com/atlas)
-[![JWT](https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens)](https://jwt.io/)
-
-![MERN Stack](https://raw.githubusercontent.com/akshay-mern/assets/main/mern-animated.gif)
-
-**Empowering citizens to report local issues and enabling authorities to resolve them efficiently through a smart, role-based platform.**
-
-[▶️ Live Demo](https://your-demo-link.com) · [📖 Documentation](https://your-docs-link.com) · [🐛 Report Bug](https://github.com/abhay963/Nagar-Sahayata-Portal/issues) · [💡 Request Feature](https://github.com/abhay963/Nagar-Sahayata-Portal/issues)
-
-</div>
+<p align="center">
+  <img src="https://img.shields.io/badge/MERN-Stack-green" />
+  <img src="https://img.shields.io/badge/Role--Based%20Access-Enabled-blue" />
+  <img src="https://img.shields.io/badge/Project-Nagar--Sahayata--Portal-orange" />
+  <img src="https://img.shields.io/badge/Status-Active-success" />
+</p>
 
 ---
 
-## 📋 Table of Contents
+## 🏙️ Overview
 
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [📸 Screenshots](#-screenshots)
-- [🚀 Quick Start](#-quick-start)
-- [⚙️ Configuration](#️-configuration)
-- [👥 Roles & Permissions](#-roles--permissions)
-- [🌍 Deployment](#-deployment)
-- [🤝 Contributing](#-contributing)
-- [📝 License](#-license)
-- [💙 Acknowledgments](#-acknowledgments)
+**Nagar-Sahayata-Portal** helps citizens raise complaints about social and civic issues.  
+Authorities manage them using **role-based dashboards**:
+
+- 👤 User — submit complaints  
+- 🛠️ Staff / Junior Staff — manage assigned complaints  
+- 🧑‍💼 Admin — monitor, assign & control  
+
+Built with the **MERN Stack**.
 
 ---
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| 📝 **Complaint Submission** | Citizens can easily submit complaints with images and detailed descriptions |
-| 🎭 **Role-Based Access** | Multi-tier system: User, Staff, Junior Staff, and Admin roles |
-| 📍 **Geolocation Tracking** | Area-wise complaint management and tracking |
-| 🔐 **Secure Authentication** | JWT-based authentication with protected routes |
-| 📧 **Email Notifications** | Automated email updates for complaint status changes |
-| 📊 **Real-time Status** | Track complaints: Pending → In-Progress → Resolved |
-| 📱 **Responsive Design** | Fully responsive interface for all devices |
-- 🌟 **Modern UI/UX** | Clean, intuitive interface with smooth animations |
+- 📢 Complaint submission with images  
+- 🧭 Role-based dashboards  
+- 📍 Area-wise complaint tracking  
+- 🔐 Secure JWT authentication  
+- 📧 Email notifications  
+- 📊 Status: Pending → In-Progress → Resolved  
 
 ---
 
 ## 🛠️ Tech Stack
 
-### 🎨 Frontend
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-
-### 🚀 Backend
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
-![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
-
-### 📧 Other Technologies
-![Nodemailer](https://img.shields.io/badge/Nodemailer-00A8E1?style=for-the-badge&logo=nodemailer&logoColor=white)
-![Multer](https://img.shields.io/badge/Multer-007BFF?style=for-the-badge&logo=multer&logoColor=white)
-![bcrypt](https://img.shields.io/badge/bcrypt-3C5998?style=for-the-badge&logo=bcrypt&logoColor=white)
+| Layer | Tech |
+|------|------|
+| Frontend | React |
+| Backend | Node.js + Express |
+| Database | MongoDB Atlas |
+| Auth | JWT |
+| Email | Nodemailer |
 
 ---
 
-## 📸 Screenshots
+## 📸 Screens
 
-### 📊 Dashboard View
-<div align="center">
-  <img src="./client/src/assets/dashboard.png" alt="Dashboard" width="900" />
-</div>
-
-### 🔐 Authentication
-<div align="center">
-  <img src="./client/src/assets/signup.png" alt="Sign Up" width="400" />
-</div>
+<p align="center">
+  <img src="./client/src/assets/dashboard.png" width="1000" />
+  <br/><br/>
+  <img src="./client/src/assets/signup.png" width="900" />
+</p>
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
-### 📥 Prerequisites
-- Node.js >= 16.0.0
-- npm >= 8.0.0
-- MongoDB Atlas account
+### 1️⃣ Clone the repository
+`bash
+git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
+cd Nagar-Sahayata-Portal
+2️⃣ Install dependencies
+bash
+Copy code
+# Frontend
+cd client
+npm install
 
-### 🔧 Installation
+# Backend
+cd ../server
+npm install
+🔐 Environment Variables
+Create .env inside server:
 
-1. **Clone the repository**
+env
+Copy code
+MONGO_URI_AUTH=your_auth_db_connection_string
+MONGO_URI_REPORTS=your_reports_db_connection_string
 
-bash git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git cd Nagar-Sahayata-Portal
+JWT_SECRET=your_super_secret_key
+PORT=5000
 
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password_here
+💡 Keep .env private — add it to .gitignore.
 
+▶️ Run the project
+Backend
+bash
+Copy code
+cd server
+npm run dev
+Frontend
+bash
+Copy code
+cd client
+npm start
+👥 Roles & Permissions
+Role	Permissions
+👤 User	Submit & track complaints
+🛠️ Staff	Manage assigned complaints
+🧑‍🏫 Junior Staff	Update progress
+🧑‍💼 Admin	Full Control
 
+🌍 Deployment (optional)
+Frontend → Netlify / Vercel
 
-> ⚠️ **Important**: Never commit your `.env` file to version control. Add it to `.gitignore`.
+Backend → Render / Railway
 
----
+DB → MongoDB Atlas
 
-## 👥 Roles & Permissions
+👥 Contributors
+<p align="center"> <a href="https://github.com/abhay963"> <img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" /> </a> </p> <p align="center"> <em>Thanks to everyone who contributed to Nagar-Sahayata-Portal!</em> </p>
+🤝 Contributing
+Pull requests and suggestions are welcome!
 
-| Role | Permissions | Access Level |
-|------|-------------|--------------|
-| 👤 **User** | Submit complaints, Track own complaints | Public |
-| 🛠️ **Staff** | Manage assigned complaints, Update status | Restricted |
-| 👨‍🔧 **Junior Staff** | View assigned tasks, Update progress | Restricted |
-| 🧑‍💼 **Admin** | Full system control, User management, Assign tasks | Full Access |
+⭐ Support
+If you like this project, please ⭐ the repo — it helps a lot.
 
----
+Happy coding! 💡
 
-## 🌍 Deployment
-
-### 🎯 Frontend Deployment
-- **Netlify**: `npm run build` and deploy the `/build` folder
-- **Vercel**: Connect GitHub repository for automatic deployment
-- **AWS S3**: Upload build files to S3 bucket with CloudFront
-
-### 🚀 Backend Deployment
-- **Render**: Connect GitHub repository with Node.js environment
-- **Railway**: Deploy with Docker or direct GitHub integration
-- **Heroku**: Use Procfile and deploy via Git
-
-### 📦 Database
-- **MongoDB Atlas**: Cloud-hosted MongoDB with global clusters
-- **AWS DocumentDB**: MongoDB-compatible database on AWS
-
----
-
-## 🤝 Contributing
-
-We welcome all contributions! Please follow these steps:
-
-1. 🍴 **Fork** the repository
-2. 🌿 **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. 💾 **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
-4. 📤 **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. 🔄 **Open** a Pull Request
-
-### 📋 Development Guidelines
-- Follow ESLint configurations
-- Write clean, commented code
-- Test your changes thoroughly
-- Update documentation as needed
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+yaml
+Copy code
 
 ---
 
-## 💙 Acknowledgments
+# 🎞️ Animated Contributors (how it works)
 
-- 🙏 **MongoDB** for providing excellent database solutions
-- 🎨 **React** team for the amazing frontend library
-- 🚀 **Express.js** for the robust backend framework
-- 📧 **Nodemailer** for seamless email integration
-- 👥 **All Contributors** who make this project better
+## 👥 Contributors
 
----
+<p align="center">
 
-<div align="center">
+  <a href="https://github.com/abhay963">
+    <img src="https://avatars.githubusercontent.com/abhay963" width="95" style="border-radius:50%; border:3px solid #4CAF50" />
+    <br/>
+    <sub><b>Abhay Kumar Yadav</b></sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
 
-### 🌟 Made with ❤️ by the Community
+  <a href="https://github.com/Aditi-Raj07">
+    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" style="border-radius:50%; border:3px solid #4CAF50" />
+    <br/>
+    <sub><b>Aditi Raj</b></sub>
+  </a>
 
-[![Contributors](https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal)]
-(https://github.com/abhay963/Nagar-Sahayata-Portal/graphs/contributors)
-(https://github.com/aditi96
-/Nagar-Sahayata-Portal/graphs/contributors)
+</p>
 
-### 📧 Contact
+<p align="center">
+  <img src="https://i.imgur.com/YC9XxS9.gif" width="220">
+  <br/>
+  <em>Made with teamwork & collaboration 👏</em>
+</p>
 
-[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your-email@gmail.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/your-profile)
-[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/your-handle)
 
----
 
-*If this project helped you, please give it a ⭐ - it helps a lot!*
 
-</div>
