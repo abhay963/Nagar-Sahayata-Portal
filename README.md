@@ -140,5 +140,5 @@ The section uses **contrib.rocks**, which automatically generates a **dynamic, a
 
 This line is the magic:
 
-```md
+md
 <img src="https://contrib.rocks/image?repo=abhay963/Nagar-Sahayata-Portal" />
