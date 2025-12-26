@@ -120,56 +120,55 @@ Backend → Render / Railway
 
 DB → MongoDB Atlas
 
-
 ## 👥 Contributors
 
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Aditi-Raj07">
+        <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" /><br/>
+        <sub><b>Aditi Raj</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/adityakumar5492">
+        <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95" /><br/>
+        <sub><b>Aditya Kumar</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Akshat-shukla18">
+        <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95" /><br/>
+        <sub><b>Akshat Shukla</b></sub>
+      </a>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Aashi008">
+        <img src="https://avatars.githubusercontent.com/Aashi008" width="95" /><br/>
+        <sub><b>Aashi</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/amandubey923">
+        <img src="https://avatars.githubusercontent.com/amandubey923" width="95" /><br/>
+        <sub><b>Aman Dubey</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/abhay963">
+        <img src="https://avatars.githubusercontent.com/abhay963" width="95" /><br/>
+        <sub><b>Abhay Kumar</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
+
 <p align="center">
-  <a href="https://github.com/Aditi-Raj07">
-    <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" style="border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.15);" />
-    <br/>
-    <sub><b>Aditi&nbsp;Raj</b></sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/adityakumar5492">
-    <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95" style="border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.15);" />
-    <br/>
-    <sub><b>Aditya&nbsp;Kumar</b></sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/Akshat-shukla18">
-    <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95" style="border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.15);" />
-    <br/>
-    <sub><b>Akshat&nbsp;Shukla</b></sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/Aashi008">
-    <img src="https://avatars.githubusercontent.com/Aashi008" width="95" style="border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.15);" />
-    <br/>
-    <sub><b>Aashi</b></sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/amandubey923">
-    <img src="https://avatars.githubusercontent.com/amandubey923" width="95" style="border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.15);" />
-    <br/>
-    <sub><b>Aman&nbsp;Dubey</b></sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-
-  <a href="https://github.com/abhay963">
-    <img src="https://avatars.githubusercontent.com/abhay963" width="95" style="border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.15);" />
-    <br/>
-    <sub><b>Abhay&nbsp;Kumar</b></sub>
-  </a>
+  <em>Built with collaboration, dedication & teamwork 🚀</em>
 </p>
-
-<p align="center">
-  <em>Built with collaboration, dedication, and teamwork — thank you for contributing! 🚀</em>
-</p>
-
 
 
 ⭐ Support
