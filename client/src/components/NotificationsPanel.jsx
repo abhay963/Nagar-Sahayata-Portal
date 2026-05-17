@@ -12,7 +12,7 @@ from "../context/AuthContext";
 
 
 // ======================================================
-// ========== FULLSCREEN IMAGE MODAL ====================
+// ================= FULLSCREEN IMAGE ===================
 // ======================================================
 
 const FullscreenImageModal = ({
@@ -20,237 +20,45 @@ const FullscreenImageModal = ({
   onClose,
 }) => {
 
-  const [scale, setScale] =
-    useState(1);
-
-  const [position, setPosition] =
-    useState({
-      x: 0,
-      y: 0,
-    });
-
-  const [isDragging, setIsDragging] =
-    useState(false);
-
-  const [startDrag, setStartDrag] =
-    useState({
-      x: 0,
-      y: 0,
-    });
-
-
-
-  // ======================================================
-  // ================= RESET IMAGE ========================
-  // ======================================================
-
-  useEffect(() => {
-
-    setScale(1);
-
-    setPosition({
-      x: 0,
-      y: 0,
-    });
-
-  }, [image]);
-
-
-
-  // ======================================================
-  // ================= HANDLE ZOOM ========================
-  // ======================================================
-
-  const handleWheel = (e) => {
-
-    e.preventDefault();
-
-    const zoomSpeed = 0.1;
-
-    setScale((prevScale) => {
-
-      let newScale =
-        prevScale +
-        (e.deltaY < 0
-          ? zoomSpeed
-          : -zoomSpeed);
-
-      return Math.min(
-        Math.max(newScale, 1),
-        5
-      );
-    });
-  };
-
-
-
-  // ======================================================
-  // ================= START DRAG =========================
-  // ======================================================
-
-  const handleMouseDown = (e) => {
-
-    if (scale > 1) {
-
-      setIsDragging(true);
-
-      setStartDrag({
-
-        x:
-          e.clientX -
-          position.x,
-
-        y:
-          e.clientY -
-          position.y,
-      });
-    }
-  };
-
-
-
-  // ======================================================
-  // ================= HANDLE DRAG ========================
-  // ======================================================
-
-  const handleMouseMove = (e) => {
-
-    if (isDragging) {
-
-      setPosition({
-
-        x:
-          e.clientX -
-          startDrag.x,
-
-        y:
-          e.clientY -
-          startDrag.y,
-      });
-    }
-  };
-
-
-
-  // ======================================================
-  // ================= STOP DRAG ==========================
-  // ======================================================
-
-  const handleMouseUp = () => {
-
-    setIsDragging(false);
-  };
-
-
-
-  // ======================================================
-  // ================= RESET POSITION =====================
-  // ======================================================
-
-  const handleDoubleClick = () => {
-
-    setScale(1);
-
-    setPosition({
-      x: 0,
-      y: 0,
-    });
-  };
-
-
-
-  // ======================================================
-  // ======================= UI ===========================
-  // ======================================================
-
   return (
 
     <div
-
       className="
         fixed
         inset-0
-        bg-black
-        bg-opacity-80
+        bg-black/80
         flex
         items-center
         justify-center
         z-50
       "
-
-      onWheel={handleWheel}
-
-      onMouseMove={handleMouseMove}
-
-      onMouseUp={handleMouseUp}
-
-      onMouseLeave={handleMouseUp}
-
-      onDoubleClick={handleDoubleClick}
     >
 
       <img
-
         src={image}
-
         alt="Fullscreen"
-
         className="
-          max-w-full
-          max-h-full
-          object-contain
-          select-none
+          max-w-[90%]
+          max-h-[90%]
+          rounded-xl
         "
-
-        style={{
-
-          transform:
-            `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-
-          transition:
-            isDragging
-              ? "none"
-              : "transform 0.2s ease",
-
-          cursor:
-            scale > 1
-
-              ? (
-                  isDragging
-                    ? "grabbing"
-                    : "grab"
-                )
-
-              : "zoom-in",
-        }}
-
-        onMouseDown={handleMouseDown}
-
-        draggable={false}
       />
-
-
 
       <button
 
+        onClick={onClose}
+
         className="
           absolute
-          top-4
-          right-4
+          top-5
+          right-5
           text-white
-          text-3xl
+          text-4xl
           font-bold
         "
-
-        onClick={(e) => {
-
-          e.stopPropagation();
-
-          onClose();
-        }}
       >
 
-        ✖
+        ✕
 
       </button>
 
@@ -272,16 +80,12 @@ const NotificationsPanel = () => {
   const [loading, setLoading] =
     useState(true);
 
-  const [showAll, setShowAll] =
-    useState(false);
-
   const [fullscreenImage, setFullscreenImage] =
     useState(null);
 
 
-
   // ======================================================
-  // ================= AUTH USER ==========================
+  // ================= CURRENT USER ======================
   // ======================================================
 
   const {
@@ -289,204 +93,94 @@ const NotificationsPanel = () => {
   } = useContext(AuthContext);
 
 
-
   // ======================================================
-  // ================= FETCH DATA =========================
+  // ================= FETCH DATA ========================
   // ======================================================
 
   useEffect(() => {
 
-    const fetchNotificationsOrTasks =
-      async () => {
+    const fetchData = async () => {
 
-        if (!currentUser) {
+      try {
 
-          setLoading(false);
+        // ======================================================
+        // ============== JUNIOR STAFF TASKS ====================
+        // ======================================================
 
-          return;
-        }
+        if (
+          currentUser?.role ===
+          "Junior Staff"
+        ) {
 
-        try {
-
-          // ======================================================
-          // =============== JUNIOR STAFF TASKS ===================
-          // ======================================================
-
-          if (
-            currentUser.role ===
-            "Junior Staff"
-          ) {
-
-            const assignedRes =
-              await axios.get(
-
-                "/api/reports/my-assigned-tasks"
-              );
-
-
-            const assignedNotifications =
-
-              (
-                assignedRes.data.reports || []
-              )
-
-              .map((report) => ({
-
-                _id:
-                  report._id,
-
-                message:
-                  `Assigned Report: ${report.problemType}
-                   at ${
-                     report.location
-                       ?.locationName ||
-
-                     "Unknown location"
-                   }`,
-
-                isRead: false,
-
-                createdAt:
-                  report.createdAt,
-
-                taskInfo: {
-
-                  ...report,
-
-                  image:
-                    report.imageBase64
-
-                      ? `data:image/jpeg;base64,${report.imageBase64}`
-
-                      : null,
-                },
-              }));
-
-
-            setNotifications(
-              assignedNotifications
+          const res =
+            await axios.get(
+              "/api/reports/my-assigned-tasks"
             );
 
-          }
+          const formatted =
 
-          // ======================================================
-          // ================= NORMAL USERS =======================
-          // ======================================================
+            (res.data.reports || [])
 
-          else {
+            .map((report) => ({
 
-            const notifRes =
-              await axios.get(
+              _id:
+                report._id,
 
-                "/api/notifications"
-              );
+              message:
+                `Assigned Report: ${report.problemType}`,
 
-            setNotifications(
+              createdAt:
+                report.createdAt,
 
-              notifRes.data.notifications || []
-            );
-          }
+              taskInfo: {
 
-        } catch (error) {
+                ...report,
 
-          console.error(
+                image:
+                  report.imageBase64 || null,
+              },
+            }));
 
-            "❌ Failed to fetch notifications or assigned reports",
 
-            error
+          setNotifications(
+            formatted
           );
-
-        } finally {
-
-          setLoading(false);
         }
-      };
 
-    fetchNotificationsOrTasks();
+        // ======================================================
+        // ================= NORMAL USERS =======================
+        // ======================================================
+
+        else {
+
+          const res =
+            await axios.get(
+              "/api/notifications"
+            );
+
+          setNotifications(
+
+            res.data.notifications || []
+          );
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+      } finally {
+
+        setLoading(false);
+      }
+    };
+
+    fetchData();
 
   }, [currentUser]);
 
 
-
   // ======================================================
-  // ================= MARK AS READ =======================
-  // ======================================================
-
-  const markAsRead =
-    async (id) => {
-
-      try {
-
-        await axios.put(
-
-          `/api/notifications/${id}/read`
-        );
-
-        setNotifications((prev) =>
-
-          prev.map((note) =>
-
-            note._id === id
-
-              ? {
-
-                  ...note,
-
-                  isRead: true,
-                }
-
-              : note
-          )
-        );
-
-      } catch (error) {
-
-        console.error(
-          "❌ Failed to mark as read",
-          error
-        );
-      }
-    };
-
-
-
-  // ======================================================
-  // ================= MARK ALL READ ======================
-  // ======================================================
-
-  const markAllAsRead =
-    async () => {
-
-      try {
-
-        await axios.put(
-
-          "/api/notifications/mark-all-read"
-        );
-
-        setNotifications((prev) =>
-
-          prev.map((note) => ({
-
-            ...note,
-
-            isRead: true,
-          }))
-        );
-
-      } catch (error) {
-
-        console.error(
-          "❌ Failed to mark all read",
-          error
-        );
-      }
-    };
-
-
-
-  // ======================================================
-  // ================= DELETE NOTIFICATION ================
+  // ================= DELETE ============================
   // ======================================================
 
   const deleteNotification =
@@ -495,31 +189,43 @@ const NotificationsPanel = () => {
       try {
 
         await axios.delete(
-
           `/api/notifications/${id}`
         );
 
         setNotifications((prev) =>
 
           prev.filter(
-            (note) =>
-              note._id !== id
+            (item) =>
+              item._id !== id
           )
         );
 
       } catch (error) {
 
-        console.error(
-          "❌ Failed to delete notification",
-          error
-        );
+        console.error(error);
       }
     };
 
 
+  // ======================================================
+  // ================= REMOVE FROM UI ====================
+  // ======================================================
+
+  const removeNotification =
+    (id) => {
+
+      setNotifications((prev) =>
+
+        prev.filter(
+          (item) =>
+            item._id !== id
+        )
+      );
+    };
+
 
   // ======================================================
-  // ================= ACCEPT TASK ========================
+  // ================= ACCEPT / DECLINE ==================
   // ======================================================
 
   const handleTaskResponse =
@@ -535,13 +241,10 @@ const NotificationsPanel = () => {
           "/api/reports/respond-task",
 
           {
-
             reportId,
-
             action,
           }
         );
-
 
         setNotifications((prev) =>
 
@@ -574,17 +277,13 @@ const NotificationsPanel = () => {
 
       } catch (error) {
 
-        console.error(
-          "❌ Task Response Error:",
-          error
-        );
+        console.error(error);
       }
     };
 
 
-
   // ======================================================
-  // ================= FORMAT TIME ========================
+  // ================= FORMAT TIME =======================
   // ======================================================
 
   const formatTime = (timestamp) => {
@@ -592,44 +291,40 @@ const NotificationsPanel = () => {
     const now =
       new Date();
 
-    const createdAt =
+    const created =
       new Date(timestamp);
 
-    const diffInMinutes =
+    const minutes =
       Math.floor(
-
-        (now - createdAt) /
+        (now - created) /
         (1000 * 60)
       );
 
-    if (diffInMinutes < 1)
+    if (minutes < 1)
       return "Just now";
 
-    if (diffInMinutes < 60)
+    if (minutes < 60)
+      return `${minutes} mins ago`;
 
-      return `${diffInMinutes} minutes ago`;
-
-    const diffInHours =
+    const hours =
       Math.floor(
-        diffInMinutes / 60
+        minutes / 60
       );
 
-    if (diffInHours < 24)
+    if (hours < 24)
+      return `${hours} hrs ago`;
 
-      return `${diffInHours} hours ago`;
-
-    const diffInDays =
+    const days =
       Math.floor(
-        diffInHours / 24
+        hours / 24
       );
 
-    return `${diffInDays} days ago`;
+    return `${days} days ago`;
   };
 
 
-
   // ======================================================
-  // ===================== LOADING ========================
+  // ================= LOADING ===========================
   // ======================================================
 
   if (loading) {
@@ -638,33 +333,20 @@ const NotificationsPanel = () => {
 
       <div className="
         bg-white
-        shadow-lg
         rounded-2xl
+        shadow
         p-6
       ">
 
-        <h2 className="
-          text-2xl
-          font-bold
-          mb-4
-        ">
-
-          Notifications
-
-        </h2>
-
-        <p>
-          Loading...
-        </p>
+        Loading...
 
       </div>
     );
   }
 
 
-
   // ======================================================
-  // ======================= UI ===========================
+  // ======================= UI ==========================
   // ======================================================
 
   return (
@@ -673,121 +355,128 @@ const NotificationsPanel = () => {
 
       <div className="
         bg-white
-        shadow-lg
         rounded-2xl
-        p-6
+        shadow-lg
+        p-5
         w-full
         max-w-md
         mx-auto
       ">
 
-        <h2 className="
-          text-2xl
-          font-bold
-          mb-4
-        ">
-
-          Notifications
-
-        </h2>
-
-
-
-        {/* ====================================================== */}
-        {/* ================= TOP BUTTONS ======================== */}
-        {/* ====================================================== */}
+        {/* HEADER */}
 
         <div className="
           flex
           justify-between
-          mb-4
+          items-center
+          mb-5
         ">
 
-          <button
+          <h2 className="
+            text-2xl
+            font-bold
+          ">
 
-            className="
-              text-blue-600
-              hover:underline
-            "
+            Notifications
 
-            onClick={() =>
-              setShowAll(true)
-            }
-          >
-
-            Show All
-
-          </button>
-
-
-
-          <button
-
-            className="
-              text-blue-600
-              hover:underline
-            "
-
-            onClick={markAllAsRead}
-          >
-
-            Mark All Read
-
-          </button>
+          </h2>
 
         </div>
 
 
-
-        {/* ====================================================== */}
-        {/* ================= NOTIFICATION LIST ================== */}
-        {/* ====================================================== */}
+        {/* LIST */}
 
         <div className="
-          space-y-3
-          max-h-[400px]
+          max-h-[500px]
           overflow-y-auto
+          space-y-4
         ">
 
           {
             notifications.length === 0 ? (
 
-              <p className="
+              <div className="
                 text-center
-                py-4
+                py-10
+                text-gray-500
               ">
 
                 No notifications
 
-              </p>
+              </div>
 
             ) : (
 
-              notifications
-              .slice(0, 5)
-
-              .map((note) => (
+              notifications.map((note) => (
 
                 <div
 
                   key={note._id}
 
-                  className={`
-                    p-4
+                  className="
                     border
-                    rounded-xl
-                    ${
-                      !note.isRead
-
-                        ? "bg-blue-50"
-
-                        : "bg-white"
-                    }
-                  `}
+                    rounded-2xl
+                    p-4
+                    relative
+                    bg-gray-50
+                  "
                 >
 
+                  {/* REMOVE BUTTON */}
+
+                  <button
+
+                    onClick={() =>
+
+                      removeNotification(
+                        note._id
+                      )
+                    }
+
+                    className="
+                      absolute
+                      top-2
+                      right-10
+                      text-gray-500
+                      hover:text-black
+                    "
+                  >
+
+                    ✂
+
+                  </button>
+
+
+                  {/* DELETE BUTTON */}
+
+                  <button
+
+                    onClick={() =>
+
+                      deleteNotification(
+                        note._id
+                      )
+                    }
+
+                    className="
+                      absolute
+                      top-2
+                      right-3
+                      text-red-500
+                      hover:text-red-700
+                    "
+                  >
+
+                    🗑
+
+                  </button>
+
+
+                  {/* MESSAGE */}
+
                   <p className="
-                    font-medium
+                    font-semibold
+                    pr-16
                   ">
 
                     {note.message}
@@ -795,15 +484,14 @@ const NotificationsPanel = () => {
                   </p>
 
 
-
-                  {/* ====================================================== */}
-                  {/* ================= TASK INFO ========================== */}
-                  {/* ====================================================== */}
+                  {/* TASK INFO */}
 
                   {
                     note.taskInfo && (
 
-                      <>
+                      <div className="
+                        mt-3
+                      ">
 
                         {/* IMAGE */}
 
@@ -818,16 +506,6 @@ const NotificationsPanel = () => {
 
                               alt="Issue"
 
-                              className="
-                                w-24
-                                h-24
-                                object-cover
-                                rounded
-                                my-2
-                                border
-                                cursor-pointer
-                              "
-
                               onClick={() =>
 
                                 setFullscreenImage(
@@ -835,14 +513,25 @@ const NotificationsPanel = () => {
                                   note.taskInfo.image
                                 )
                               }
+
+                              className="
+                                w-[120px]
+                                h-[100px]
+                                object-cover
+                                rounded-xl
+                                border
+                                cursor-pointer
+                              "
                             />
                           )
                         }
 
 
+                        {/* STATUS */}
 
                         <p className="
                           text-sm
+                          mt-2
                         ">
 
                           <strong>
@@ -858,6 +547,7 @@ const NotificationsPanel = () => {
                         </p>
 
 
+                        {/* PRIORITY */}
 
                         <p className="
                           text-sm
@@ -876,10 +566,7 @@ const NotificationsPanel = () => {
                         </p>
 
 
-
-                        {/* ====================================================== */}
-                        {/* ================= LOCATION =========================== */}
-                        {/* ====================================================== */}
+                        {/* LOCATION */}
 
                         {
                           note.taskInfo
@@ -892,13 +579,6 @@ const NotificationsPanel = () => {
 
                             <button
 
-                              className="
-                                text-blue-600
-                                hover:underline
-                                text-sm
-                                mt-1
-                              "
-
                               onClick={() =>
 
                                 window.open(
@@ -908,6 +588,13 @@ const NotificationsPanel = () => {
                                   "_blank"
                                 )
                               }
+
+                              className="
+                                text-blue-600
+                                text-sm
+                                hover:underline
+                                mt-1
+                              "
                             >
 
                               📍 View Location
@@ -917,10 +604,7 @@ const NotificationsPanel = () => {
                         }
 
 
-
-                        {/* ====================================================== */}
-                        {/* ================= ACCEPT/DECLINE ===================== */}
-                        {/* ====================================================== */}
+                        {/* ACCEPT DECLINE */}
 
                         {
                           note.taskInfo.status ===
@@ -934,14 +618,6 @@ const NotificationsPanel = () => {
 
                               <button
 
-                                className="
-                                  bg-green-600
-                                  text-white
-                                  px-3
-                                  py-1
-                                  rounded
-                                "
-
                                 onClick={() =>
 
                                   handleTaskResponse(
@@ -951,6 +627,14 @@ const NotificationsPanel = () => {
                                     "accept"
                                   )
                                 }
+
+                                className="
+                                  bg-green-600
+                                  text-white
+                                  px-3
+                                  py-1
+                                  rounded-lg
+                                "
                               >
 
                                 Accept
@@ -958,16 +642,7 @@ const NotificationsPanel = () => {
                               </button>
 
 
-
                               <button
-
-                                className="
-                                  bg-red-600
-                                  text-white
-                                  px-3
-                                  py-1
-                                  rounded
-                                "
 
                                 onClick={() =>
 
@@ -978,6 +653,14 @@ const NotificationsPanel = () => {
                                     "decline"
                                   )
                                 }
+
+                                className="
+                                  bg-red-600
+                                  text-white
+                                  px-3
+                                  py-1
+                                  rounded-lg
+                                "
                               >
 
                                 Decline
@@ -988,16 +671,17 @@ const NotificationsPanel = () => {
                           )
                         }
 
-                      </>
+                      </div>
                     )
                   }
 
 
+                  {/* TIME */}
 
                   <p className="
                     text-xs
                     text-gray-500
-                    mt-2
+                    mt-3
                   ">
 
                     {
@@ -1018,10 +702,7 @@ const NotificationsPanel = () => {
       </div>
 
 
-
-      {/* ====================================================== */}
-      {/* ================= FULLSCREEN IMAGE =================== */}
-      {/* ====================================================== */}
+      {/* FULLSCREEN IMAGE */}
 
       {
         fullscreenImage && (
@@ -1041,7 +722,5 @@ const NotificationsPanel = () => {
     </>
   );
 };
-
-
 
 export default NotificationsPanel;
