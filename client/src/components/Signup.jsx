@@ -135,7 +135,7 @@ const Signup = () => {
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Jharkhand_Rajakiya_Chihna.svg/1200px-Jharkhand_Rajakiya_Chihna.svg.png"
+            src="/government-of-jharkhand.png"
             alt="Jharkhand Govt Logo"
             className="h-20 mb-4"
           />

@@ -30,7 +30,7 @@ const Login = () => {
     <div className="min-h-screen bg-[#F9F9F6] relative">
       {/* Watermark emblem behind form */}
       <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Jharkhand_Rajakiya_Chihna.svg/1200px-Jharkhand_Rajakiya_Chihna.svg.png"
+       src="/government-of-jharkhand.png"
         alt="Watermark"
         className="absolute w-[350px] opacity-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
       />
@@ -40,7 +40,7 @@ const Login = () => {
         {/* Logo & Header */}
         <div className="flex flex-col items-center mb-8">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Jharkhand_Rajakiya_Chihna.svg/1200px-Jharkhand_Rajakiya_Chihna.svg.png"
+         src="/government-of-jharkhand.png"
             alt="Jharkhand Govt Logo"
             className="h-20 mb-4"
           />
