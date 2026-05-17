@@ -1,63 +1,188 @@
+/* ====================================================== */
+/* ================= ROOT CONTAINER ===================== */
+/* ====================================================== */
+
+/* Main React root container */
 #root {
+
+  /* Maximum width of app */
   max-width: 1280px;
+
+  /* Center app horizontally */
   margin: 0 auto;
+
+  /* Inner spacing */
   padding: 2rem;
+
+  /* Center align text */
   text-align: center;
 }
 
+
+
+/* ====================================================== */
+/* ====================== LOGO ========================== */
+/* ====================================================== */
+
+/* Logo styling */
 .logo {
+
+  /* Logo height */
   height: 6em;
+
+  /* Space around logo */
   padding: 1.5em;
+
+  /* Performance optimization */
   will-change: filter;
+
+  /* Smooth hover effect */
   transition: filter 300ms;
 }
+
+
+/* Logo hover glow effect */
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+  filter:
+    drop-shadow(
+      0 0 2em #646cffaa
+    );
 }
 
+
+/* React logo special glow */
+.logo.react:hover {
+
+  filter:
+    drop-shadow(
+      0 0 2em #61dafbaa
+    );
+}
+
+
+
+/* ====================================================== */
+/* ================= LOGO ANIMATION ===================== */
+/* ====================================================== */
+
+/* Rotation animation */
 @keyframes logo-spin {
+
   from {
+
     transform: rotate(0deg);
   }
+
   to {
+
     transform: rotate(360deg);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
+
+/* Apply animation only if user allows motion */
+@media (
+  prefers-reduced-motion: no-preference
+) {
+
   a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+
+    animation:
+      logo-spin
+      infinite
+      20s
+      linear;
   }
 }
 
+
+
+/* ====================================================== */
+/* ====================== CARD ========================== */
+/* ====================================================== */
+
+/* Generic card spacing */
 .card {
+
   padding: 2em;
 }
 
+
+
+/* ====================================================== */
+/* ================= DOCS TEXT ========================== */
+/* ====================================================== */
+
+/* Light gray helper text */
 .read-the-docs {
+
   color: #888;
 }
 
-/* Hide Google Translate default banner */
+
+
+/* ====================================================== */
+/* =========== GOOGLE TRANSLATE CUSTOMIZATION =========== */
+/* ====================================================== */
+
+
+/* Hide default Google Translate top banner */
 .goog-te-banner-frame.skiptranslate {
+
   display: none !important;
 }
 
-/* Prevent body shifting on translation */
+
+/* Prevent page shifting after translation */
 body {
+
   top: 0 !important;
 }
 
+
 /* Style Google Translate dropdown */
 #google_translate_element select {
+
   background: white;
+
   border: none;
+
   padding: 4px 8px;
+
   border-radius: 4px;
+
   font-weight: 600;
+
   cursor: pointer;
+
   color: #333;
 }
+
+
+
+/* ====================================================== */
+/* ================= DEBUG HELPERS ====================== */
+/* ====================================================== */
+
+/*
+Useful debugging styles:
+
+1. Uncomment below to see layout boundaries
+
+* {
+  border: 1px solid red;
+}
+
+2. Prevent overflow debugging
+
+body {
+  overflow-x: hidden;
+}
+
+3. Detect hidden elements quickly
+
+.hidden-debug {
+  display: block !important;
+}
+*/
