@@ -13,19 +13,50 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      await login(email, password);
-      navigate("/");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const handleSubmit = async (e) => {
 
+  e.preventDefault();
+
+  setIsLoading(true);
+
+  console.log("🚀 Login Attempt Started");
+  console.log("📧 Email:", email);
+
+  try {
+
+    const result = await login(email, password);
+
+    console.log("✅ Login Success:", result);
+
+    toast.success("Login successful");
+
+    navigate("/");
+
+  } catch (error) {
+
+    console.log("❌ FULL ERROR:", error);
+
+    console.log("❌ ERROR RESPONSE:", error.response);
+
+    console.log("❌ ERROR DATA:", error.response?.data);
+
+    console.log("❌ ERROR MESSAGE:", error.message);
+
+    console.log("❌ STATUS:", error.response?.status);
+
+    toast.error(
+      error.response?.data?.message ||
+      error.message ||
+      "Login failed"
+    );
+
+  } finally {
+
+    setIsLoading(false);
+
+    console.log("🏁 Login Request Finished");
+  }
+};
   return (
     <div className="min-h-screen bg-[#F9F9F6] relative">
       {/* Watermark emblem behind form */}
