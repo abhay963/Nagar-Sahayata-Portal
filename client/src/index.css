@@ -14,3 +14,24 @@ body {
   scrollbar-width: none;     /* Firefox */
 }
 
+/* ===================================================== */
+/* ================= LEAFLET Z INDEX FIX =============== */
+/* ===================================================== */
+
+.leaflet-container {
+  z-index: 1 !important;
+}
+
+.leaflet-pane {
+  z-index: 1 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom,
+.leaflet-control {
+  z-index: 2 !important;
+}
+
+.leaflet-popup {
+  z-index: 3 !important;
+}
