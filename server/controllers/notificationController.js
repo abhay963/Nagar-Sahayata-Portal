@@ -1,85 +1,405 @@
+// Import Notification model
 import Notification from "../models/Notification.js";
 
-// Get all notifications for a user
-export const getNotificationsForUser = async (req, res) => {
-  try {
-    const userId = req.user.id; // Assuming authMiddleware sets req.user
 
-    const notifications = await Notification.find({ userId })
-      .sort({ createdAt: -1 }) // Most recent first
-      .populate("relatedReportId", "problemType location status"); // Populate report details if needed
+// ======================================================
+// ========== GET ALL NOTIFICATIONS FOR USER ============
+// ======================================================
 
-    res.status(200).json(notifications);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+export const getNotificationsForUser =
+  async (req, res) => {
 
-// Mark a notification as read
-export const markNotificationAsRead = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
+    try {
 
-    const notification = await Notification.findOneAndUpdate(
-      { _id: id, userId }, // Ensure user can only mark their own notifications
-      { isRead: true },
-      { new: true }
-    );
+      // ======================================================
+      // ================= USER ID ============================
+      // ======================================================
 
-    if (!notification) {
-      return res.status(404).json({ message: "Notification not found" });
+      const userId =
+        req.user.id;
+
+
+      // ======================================================
+      // ============== FETCH NOTIFICATIONS ===================
+      // ======================================================
+
+      const notifications =
+        await Notification.find({
+
+          userId,
+        })
+
+        .sort({
+
+          createdAt: -1,
+        })
+
+        .populate(
+
+          "relatedReportId",
+
+          `
+          problemType
+          description
+          location
+          status
+          priority
+          department
+          imageBase64
+          assignedStaffName
+          createdAt
+          `
+        )
+
+        .populate(
+
+          "senderId",
+
+          `
+          name
+          email
+          role
+          department
+          `
+        );
+
+
+      // ======================================================
+      // ================= RESPONSE ===========================
+      // ======================================================
+
+      res.status(200).json({
+
+        success: true,
+
+        notifications,
+      });
+
+    } catch (error) {
+
+      console.error(
+
+        "❌ Get Notifications Error:",
+
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
     }
+  };
 
-    res.status(200).json(notification);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
-// Mark all notifications as read for a user
-export const markAllNotificationsAsRead = async (req, res) => {
-  try {
-    const userId = req.user.id;
 
-    await Notification.updateMany(
-      { userId, isRead: false },
-      { isRead: true }
-    );
+// ======================================================
+// ========== MARK SINGLE NOTIFICATION READ =============
+// ======================================================
 
-    res.status(200).json({ message: "All notifications marked as read" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+export const markNotificationAsRead =
+  async (req, res) => {
 
-// Delete a notification
-export const deleteNotification = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
+    try {
 
-    const notification = await Notification.findOneAndDelete({ _id: id, userId });
+      // ======================================================
+      // ================= GET PARAMS =========================
+      // ======================================================
 
-    if (!notification) {
-      return res.status(404).json({ message: "Notification not found" });
+      const { id } =
+        req.params;
+
+      const userId =
+        req.user.id;
+
+
+      // ======================================================
+      // ================= UPDATE =============================
+      // ======================================================
+
+      const notification =
+        await Notification.findOneAndUpdate(
+
+          {
+
+            _id: id,
+
+            userId,
+          },
+
+          {
+
+            isRead: true,
+          },
+
+          {
+
+            new: true,
+          }
+        );
+
+
+      // ======================================================
+      // ================= NOT FOUND ==========================
+      // ======================================================
+
+      if (!notification) {
+
+        return res.status(404)
+        .json({
+
+          success: false,
+
+          message:
+            "Notification not found",
+        });
+      }
+
+
+      // ======================================================
+      // ================= RESPONSE ===========================
+      // ======================================================
+
+      res.status(200).json({
+
+        success: true,
+
+        notification,
+      });
+
+    } catch (error) {
+
+      console.error(
+
+        "❌ Mark Notification Read Error:",
+
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
     }
+  };
 
-    res.status(200).json({ message: "Notification deleted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
-// Get unread notification count for a user
-export const getUnreadNotificationCount = async (req, res) => {
-  try {
-    const userId = req.user.id;
 
-    const count = await Notification.countDocuments({ userId, isRead: false });
+// ======================================================
+// ========== MARK ALL NOTIFICATIONS READ ===============
+// ======================================================
 
-    res.status(200).json({ count });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+export const markAllNotificationsAsRead =
+  async (req, res) => {
+
+    try {
+
+      // ======================================================
+      // ================= USER ID ============================
+      // ======================================================
+
+      const userId =
+        req.user.id;
+
+
+      // ======================================================
+      // ================= UPDATE MANY ========================
+      // ======================================================
+
+      await Notification.updateMany(
+
+        {
+
+          userId,
+
+          isRead: false,
+        },
+
+        {
+
+          isRead: true,
+        }
+      );
+
+
+      // ======================================================
+      // ================= RESPONSE ===========================
+      // ======================================================
+
+      res.status(200).json({
+
+        success: true,
+
+        message:
+          "All notifications marked as read",
+      });
+
+    } catch (error) {
+
+      console.error(
+
+        "❌ Mark All Read Error:",
+
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };
+
+
+
+// ======================================================
+// ================= DELETE NOTIFICATION =================
+// ======================================================
+
+export const deleteNotification =
+  async (req, res) => {
+
+    try {
+
+      // ======================================================
+      // ================= PARAMS =============================
+      // ======================================================
+
+      const { id } =
+        req.params;
+
+      const userId =
+        req.user.id;
+
+
+      // ======================================================
+      // ================= DELETE =============================
+      // ======================================================
+
+      const notification =
+        await Notification.findOneAndDelete({
+
+          _id: id,
+
+          userId,
+        });
+
+
+      // ======================================================
+      // ================= NOT FOUND ==========================
+      // ======================================================
+
+      if (!notification) {
+
+        return res.status(404)
+        .json({
+
+          success: false,
+
+          message:
+            "Notification not found",
+        });
+      }
+
+
+      // ======================================================
+      // ================= RESPONSE ===========================
+      // ======================================================
+
+      res.status(200).json({
+
+        success: true,
+
+        message:
+          "Notification deleted",
+      });
+
+    } catch (error) {
+
+      console.error(
+
+        "❌ Delete Notification Error:",
+
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };
+
+
+
+// ======================================================
+// ========== GET UNREAD NOTIFICATION COUNT =============
+// ======================================================
+
+export const getUnreadNotificationCount =
+  async (req, res) => {
+
+    try {
+
+      // ======================================================
+      // ================= USER ID ============================
+      // ======================================================
+
+      const userId =
+        req.user.id;
+
+
+      // ======================================================
+      // ================= COUNT ==============================
+      // ======================================================
+
+      const count =
+        await Notification.countDocuments({
+
+          userId,
+
+          isRead: false,
+        });
+
+
+      // ======================================================
+      // ================= RESPONSE ===========================
+      // ======================================================
+
+      res.status(200).json({
+
+        success: true,
+
+        count,
+      });
+
+    } catch (error) {
+
+      console.error(
+
+        "❌ Unread Count Error:",
+
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };

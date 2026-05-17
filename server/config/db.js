@@ -1,27 +1,55 @@
 import mongoose from "mongoose";
 
-// Default connection for Users/Auth
-const connectAuthDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI_AUTH);
-    console.log(`✅ Auth DB Connected: ${conn.connection.host}`);
-    return conn;
-  } catch (error) {
-    console.error(`❌ Auth DB Error: ${error.message}`);
-    process.exit(1);
-  }
-};
 
-// Separate connection for Reports
-const connectReportsDB = async () => {
-  try {
-    const reportsConn = await mongoose.createConnection(process.env.MONGO_URI_REPORTS);
-    console.log(`✅ Reports DB Connected: ${reportsConn.name}`); // shows DB name
-    return reportsConn; // export this to define Report models
-  } catch (error) {
-    console.error(`❌ Reports DB Error: ${error.message}`);
-    process.exit(1);
-  }
-};
+// ======================================================
+// ================= SINGLE DATABASE ====================
+// ======================================================
 
-export { connectAuthDB, connectReportsDB };
+export const connectAuthDB =
+  async () => {
+
+    try {
+
+      await mongoose.connect(
+        process.env.MONGO_URI_AUTH
+      );
+
+      console.log(
+        "✅ MongoDB Connected Successfully"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "❌ MongoDB Connection Error:",
+        error.message
+      );
+
+      process.exit(1);
+    }
+  };
+
+
+// ======================================================
+// ================= SAME CONNECTION ====================
+// ======================================================
+
+// Since now everything is inside
+// same database (nagar_auth)
+
+export const reportsConnection =
+  mongoose;
+
+
+// Dummy function so old code
+// does not break
+
+export const connectReportsDB =
+  async () => {
+
+    console.log(
+      "✅ Reports using same Auth DB"
+    );
+
+    return mongoose;
+  };

@@ -1,89 +1,383 @@
-
+// Import User model
 import User from "../models/User.js";
+
+// Import validationResult for validation
 import { validationResult } from "express-validator";
+
+// Import path module
 import path from "path";
+
+// Import file system module
 import fs from "fs";
 
-// @desc Get junior staff users
-// @route GET /api/users/junior-staff
-// @access Private
+
+// ======================================================
+// ================= GET JUNIOR STAFF ===================
+// ======================================================
+
+// @desc    Get junior staff of logged-in staff department
+// @route   GET /api/users/junior-staff
+// @access  Private
+
 export const getJuniorStaff = async (req, res) => {
+
   try {
-    // Ensure the user is Staff
+
+    // ======================================================
+    // ================= ROLE CHECK =========================
+    // ======================================================
+
     if (req.user.role !== "Staff") {
-      return res.json([]); // Return empty if not Staff
+
+      return res.status(403).json({
+
+        success: false,
+
+        message:
+          "Only staff can access junior staff list",
+      });
     }
 
-    const juniorStaff = await User.find({ role: "Junior Staff", department: req.user.department }).select("_id name role");
-    res.json(juniorStaff);
+
+    // ======================================================
+    // ================= FETCH USERS ========================
+    // ======================================================
+
+    const juniorStaff = await User.find({
+
+      role: "Junior Staff",
+
+      department:
+        req.user.department,
+
+    })
+
+    .select(
+
+      "_id name email role department"
+    );
+
+
+    // ======================================================
+    // ================= RESPONSE ===========================
+    // ======================================================
+
+    res.status(200).json({
+
+      success: true,
+
+      juniorStaff,
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error fetching junior staff" });
+
+    console.error(
+
+      "❌ Get Junior Staff Error:",
+
+      error
+    );
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Server error fetching junior staff",
+    });
   }
 };
 
 
-// @desc Update user profile
-// @route PUT /api/users/update-profile
-// @access Private
-export const updateProfile = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    if (req.file) {
-      // delete uploaded file if validation failed
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error("Error deleting file:", err);
+
+// ======================================================
+// =========== GET STAFF BY DEPARTMENT ==================
+// ======================================================
+
+// @desc    Get junior staff by department
+// @route   GET /api/users/junior-staff/:department
+// @access  Private
+
+export const getJuniorStaffByDepartment =
+  async (req, res) => {
+
+    try {
+
+      // ======================================================
+      // ================= GET PARAM ==========================
+      // ======================================================
+
+      const { department } =
+        req.params;
+
+
+      // ======================================================
+      // ================= FIND USERS =========================
+      // ======================================================
+
+      const users =
+        await User.find({
+
+          role: "Junior Staff",
+
+          department:
+            decodeURIComponent(
+              department
+            )
+
+        })
+
+        .select(
+
+          "_id name email department role"
+        );
+
+
+      // ======================================================
+      // ================= RESPONSE ===========================
+      // ======================================================
+
+      res.status(200).json({
+
+        success: true,
+
+        users,
+      });
+
+    } catch (error) {
+
+      console.error(
+
+        "❌ Fetch Junior Staff Error:",
+
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch junior staff",
       });
     }
-    return res.status(400).json({ errors: errors.array() });
+  };
+
+
+
+// ======================================================
+// ================= UPDATE PROFILE =====================
+// ======================================================
+
+// @desc    Update logged-in user profile
+// @route   PUT /api/users/update-profile
+// @access  Private
+
+export const updateProfile = async (req, res) => {
+
+  // ======================================================
+  // ================= VALIDATION =========================
+  // ======================================================
+
+  const errors =
+    validationResult(req);
+
+
+  if (!errors.isEmpty()) {
+
+    // Delete uploaded image if validation fails
+    if (req.file) {
+
+      fs.unlink(
+        req.file.path,
+        (err) => {
+
+          if (err) {
+
+            console.error(
+
+              "❌ Error deleting file:",
+
+              err
+            );
+          }
+        }
+      );
+    }
+
+    return res.status(400).json({
+
+      success: false,
+
+      errors:
+        errors.array(),
+    });
   }
 
+
   try {
-    const user = await User.findById(req.user._id);
+
+    // ======================================================
+    // ================= FIND USER ==========================
+    // ======================================================
+
+    const user =
+      await User.findById(
+        req.user._id
+      );
+
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+
+      return res.status(404).json({
+
+        success: false,
+
+        message:
+          "User not found",
+      });
     }
 
-    // Update allowed fields only
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.empId = req.body.empId || user.empId;
-    user.department = req.body.department || user.department;
-    user.contact = req.body.contact || user.contact;
-    user.address = req.body.address || user.address;
-    // joiningDate should NOT be updated
+
+    // ======================================================
+    // ================= UPDATE FIELDS ======================
+    // ======================================================
+
+    user.name =
+      req.body.name ||
+      user.name;
+
+    user.email =
+      req.body.email ||
+      user.email;
+
+    user.empId =
+      req.body.empId ||
+      user.empId;
+
+    user.department =
+      req.body.department ||
+      user.department;
+
+    user.contact =
+      req.body.contact ||
+      user.contact;
+
+    user.address =
+      req.body.address ||
+      user.address;
+
+
+    // ======================================================
+    // ================= PROFILE IMAGE ======================
+    // ======================================================
 
     if (req.file) {
-      // Delete old profile image if exists
+
+      // Delete old image
       if (user.profileImage) {
-        const oldImagePath = path.join(process.cwd(), user.profileImage.startsWith("/") ? user.profileImage.slice(1) : user.profileImage);
-        fs.unlink(oldImagePath, (err) => {
-          if (err) console.error("Error deleting old profile image:", err);
-        });
+
+        const oldImagePath =
+          path.join(
+
+            process.cwd(),
+
+            user.profileImage.startsWith("/")
+
+              ? user.profileImage.slice(1)
+
+              : user.profileImage
+          );
+
+        fs.unlink(
+          oldImagePath,
+          (err) => {
+
+            if (err) {
+
+              console.error(
+
+                "❌ Error deleting old image:",
+
+                err
+              );
+            }
+          }
+        );
       }
-      // Save new profile image path
-      user.profileImage = `/uploads/profile-images/${req.file.filename}`;
+
+
+      // Save new image path
+      user.profileImage =
+        `/uploads/profile-images/${req.file.filename}`;
     }
 
-    const updatedUser = await user.save();
 
-    res.json({
+    // ======================================================
+    // ================= SAVE USER ==========================
+    // ======================================================
+
+    const updatedUser =
+      await user.save();
+
+
+    // ======================================================
+    // ================= RESPONSE ===========================
+    // ======================================================
+
+    res.status(200).json({
+
+      success: true,
+
       updatedUser: {
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        department: updatedUser.department,
-        contact: updatedUser.contact,
-        empId: updatedUser.empId,
-        address: updatedUser.address,
-        profileImage: updatedUser.profileImage,
-        joiningDate: updatedUser.joiningDate,
+
+        _id:
+          updatedUser._id,
+
+        name:
+          updatedUser.name,
+
+        email:
+          updatedUser.email,
+
+        role:
+          updatedUser.role,
+
+        department:
+          updatedUser.department,
+
+        contact:
+          updatedUser.contact,
+
+        empId:
+          updatedUser.empId,
+
+        address:
+          updatedUser.address,
+
+        profileImage:
+          updatedUser.profileImage,
+
+        joiningDate:
+          updatedUser.joiningDate,
       },
     });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error updating profile" });
+
+    console.error(
+
+      "❌ Update Profile Error:",
+
+      error
+    );
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Server error updating profile",
+    });
   }
 };
