@@ -1,35 +1,376 @@
- // models/report.js
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema({
-  problemType: { type: String, required: true },
-  description: { type: String, required: true },
-  location: { type: String, required: true }, // e.g. "Ranchi, Jharkhand"
-  coordinates: {
-    lat: { type: Number },
-    lng: { type: Number }
-  },
-  imageBase64: { type: String }, // or image URL if using Cloudinary later
-  status: { type: String, default: "Pending" },
-  priority: {
-    type: String,
-    enum: ["Normal", "Medium", "High"],
-    default: "Normal"
-  },
-  department: { 
-    type: String, 
-    required: true // ✅ Now department is mandatory for reports
-  },
-  timestamp: { type: Date, default: Date.now },
-  userId: { type: mongoose.Schema.Types.Mixed, ref: "User", default: null }
-}, { timestamps: true });
 
-// Pre-save middleware to handle userId
-reportSchema.pre('save', function(next) {
-  if (this.userId === "anonymous" || (typeof this.userId === 'string' && !mongoose.Types.ObjectId.isValid(this.userId))) {
-    this.userId = null;
-  }
-  next();
-});
+// ======================================================
+// ================= REPORT SCHEMA ======================
+// ======================================================
 
-export default mongoose.model("Report", reportSchema);
+const reportSchema =
+  new mongoose.Schema(
+
+    {
+
+      // ======================================================
+      // ================= PROBLEM TYPE =======================
+      // ======================================================
+
+      problemType: {
+
+        type: String,
+
+        required: true,
+      },
+
+
+      // ======================================================
+      // ================= DESCRIPTION ========================
+      // ======================================================
+
+      description: {
+
+        type: String,
+
+        required: true,
+      },
+
+
+      // ======================================================
+      // ================= LOCATION ===========================
+      // ======================================================
+
+      location: {
+
+        latitude: Number,
+
+        longitude: Number,
+
+        locationName: String,
+      },
+
+
+      // ======================================================
+      // ================= IMAGE ==============================
+      // ======================================================
+
+      imageBase64: {
+
+        type: String,
+
+        default: "",
+      },
+
+
+      // ======================================================
+      // ================= STATUS =============================
+      // ======================================================
+
+    status: {
+
+  type: String,
+
+  enum: [
+
+    "Pending",
+
+    "Staff Assigned",
+
+    "In Progress",
+
+    "Pending Approval",
+
+    "Unable To Complete",
+
+    "Resolved"
+  ],
+
+  default: "Pending",
+},
+
+
+      // ======================================================
+      // ================= PRIORITY ===========================
+      // ======================================================
+
+      priority: {
+
+        type: String,
+
+        enum: [
+
+          "Normal",
+
+          "Medium",
+
+          "High",
+
+          "Critical",
+        ],
+
+        default: "Normal",
+      },
+
+
+      // ======================================================
+      // ================= DEPARTMENT =========================
+      // ======================================================
+
+      department: {
+
+        type: String,
+
+        required: true,
+      },
+
+
+      // ======================================================
+      // ================= CREATED BY =========================
+      // ======================================================
+
+      userId: {
+
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+
+        default: null,
+      },
+
+
+      // ======================================================
+      // ================= ASSIGNED TO ========================
+      // ======================================================
+
+      assignedTo: {
+
+        type:
+          mongoose.Schema.Types.ObjectId,
+
+        ref: "User",
+
+        default: null,
+      },
+
+
+
+      // ======================================================
+// ================= ASSIGNED BY ========================
+// ======================================================
+
+assignedBy: {
+
+  type:
+    mongoose.Schema.Types.ObjectId,
+
+  ref: "User",
+
+  default: null,
+},
+
+
+// ======================================================
+// ================= ASSIGNED AT ========================
+// ======================================================
+
+assignedAt: {
+
+  type: Date,
+
+  default: null,
+},
+
+      // ======================================================
+      // =========== ASSIGNED STAFF DETAILS ===================
+      // ======================================================
+
+      assignedStaffName: {
+
+        type: String,
+
+        default: "",
+      },
+
+
+      assignedStaffEmail: {
+
+        type: String,
+
+        default: "",
+      },
+
+
+      assignedDepartment: {
+
+        type: String,
+
+        default: "",
+      },
+
+
+      // ======================================================
+      // ================= ACCEPTED AT ========================
+      // ======================================================
+
+      acceptedAt: {
+
+        type: Date,
+
+        default: null,
+      },
+
+      // ======================================================
+// ================= DECLINED AT ========================
+// ======================================================
+
+declinedAt: {
+
+  type: Date,
+
+  default: null,
+},
+
+
+// ======================================================
+// ================= DECLINE REASON =====================
+// ======================================================
+
+declinedReason: {
+
+  type: String,
+
+  default: "",
+},
+
+
+      // ======================================================
+      // ================= RESOLVED AT ========================
+      // ======================================================
+
+      resolvedAt: {
+
+        type: Date,
+
+        default: null,
+      },
+      // ======================================================
+// ============ RESOLUTION DESCRIPTION ==================
+// ======================================================
+
+resolvedDescription: {
+
+  type: String,
+
+  default: "",
+},
+
+
+// ======================================================
+// ============ RESOLUTION IMAGE ========================
+// ======================================================
+
+resolvedImageBase64: {
+
+  type: String,
+
+  default: "",
+},
+
+
+// ======================================================
+// ======= SUBMITTED FOR APPROVAL AT ====================
+// ======================================================
+
+submittedForApprovalAt: {
+
+  type: Date,
+
+  default: null,
+},
+
+
+// ======================================================
+// =========== UNABLE TO COMPLETE REASON ================
+// ======================================================
+
+unableReason: {
+
+  type: String,
+
+  default: "",
+},
+
+
+// ======================================================
+// ============ UNABLE IMAGE ============================
+// ======================================================
+
+unableImageBase64: {
+
+  type: String,
+
+  default: "",
+},
+
+
+// ======================================================
+// ================= UNABLE AT ==========================
+// ======================================================
+
+unableAt: {
+
+  type: Date,
+
+  default: null,
+},
+
+
+// ======================================================
+// ================= VERIFIED BY ========================
+// ======================================================
+
+verifiedBy: {
+
+  type:
+    mongoose.Schema.Types.ObjectId,
+
+  ref: "User",
+
+  default: null,
+},
+
+
+// ======================================================
+// ================= VERIFIED AT ========================
+// ======================================================
+
+verifiedAt: {
+
+  type: Date,
+
+  default: null,
+},
+
+    },
+
+
+
+    // ======================================================
+    // ================= TIMESTAMPS =========================
+    // ======================================================
+
+    {
+      timestamps: true,
+    }
+  );
+
+
+// ======================================================
+// ================= EXPORT MODEL =======================
+// ======================================================
+
+export default mongoose.model(
+
+  "Report",
+
+  reportSchema
+);
