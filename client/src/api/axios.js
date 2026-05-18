@@ -2,10 +2,14 @@ import axios from "axios";
 
 const instance = axios.create({
 
-  baseURL: "https://nagar.up.railway.app",
+  baseURL:
+    import.meta.env.MODE === "development"
+      ? "http://localhost:5000"
+      : "https://nagar.up.railway.app",
 
   withCredentials: true,
 });
+
 
 instance.interceptors.request.use(
 
