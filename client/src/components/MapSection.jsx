@@ -31,7 +31,7 @@ import {
 // ================= MAP SECTION ========================
 // ======================================================
 
-const MapSection = () => {
+const MapSection = ({ isGuest = false }) => {
 
   const [reports, setReports] =
     useState([]);
@@ -43,120 +43,189 @@ const MapSection = () => {
   // ================= FETCH REPORTS ======================
   // ======================================================
 
-  useEffect(() => {
 
-    const fetchReports = async () => {
+useEffect(() => {
 
-      try {
+  const fetchReports = async () => {
 
-        // ======================================================
-        // ================= DUMMY DATA ==========================
-        // ======================================================
+    try {
 
-        const dummyData = [
+      // ======================================================
+      // ================= GUEST USER =========================
+      // ======================================================
 
-          {
-            _id: "1",
+      if (isGuest) {
 
-            problemType:
-              "Pothole",
+        navigator.geolocation.getCurrentPosition(
 
-            description:
-              "Large pothole blocking road.",
+          (position) => {
 
-            address:
-              "Main Road Ranchi",
+            const {
+              latitude,
+              longitude,
+            } = position.coords;
 
-            location: {
-              latitude: 23.3441,
-              longitude: 85.3096,
-            },
 
-            priority: "High",
 
-            status: "Pending",
+            // ======================================================
+            // ================= FAKE NEARBY REPORTS ================
+            // ======================================================
+
+            const guestReports = [
+
+              {
+                _id: "1",
+
+                problemType:
+                  "Pothole",
+
+                description:
+                  "Road damaged due to rain.",
+
+                address:
+                  "Nearby Main Road",
+
+                location: {
+                  latitude:
+                    latitude + 0.002,
+
+                  longitude:
+                    longitude + 0.001,
+                },
+
+                priority: "High",
+
+                status: "Pending",
+              },
+
+              {
+                _id: "2",
+
+                problemType:
+                  "Garbage Overflow",
+
+                description:
+                  "Garbage collection pending.",
+
+                address:
+                  "Near Market Area",
+
+                location: {
+                  latitude:
+                    latitude - 0.0015,
+
+                  longitude:
+                    longitude + 0.002,
+                },
+
+                priority: "Medium",
+
+                status:
+                  "In Progress",
+              },
+
+              {
+                _id: "3",
+
+                problemType:
+                  "Street Light",
+
+                description:
+                  "Street light not working.",
+
+                address:
+                  "Sector Road",
+
+                location: {
+                  latitude:
+                    latitude + 0.001,
+
+                  longitude:
+                    longitude - 0.002,
+                },
+
+                priority: "Low",
+
+                status: "Resolved",
+              },
+
+              {
+                _id: "4",
+
+                problemType:
+                  "Water Leakage",
+
+                description:
+                  "Pipe leakage reported.",
+
+                address:
+                  "Residential Area",
+
+                location: {
+                  latitude:
+                    latitude - 0.002,
+
+                  longitude:
+                    longitude - 0.001,
+                },
+
+                priority: "High",
+
+                status: "Pending",
+              },
+            ];
+
+
+
+            setReports(
+              guestReports
+            );
           },
 
-          {
-            _id: "2",
+          (error) => {
 
-            problemType:
-              "Street Light",
-
-            description:
-              "Street light not working.",
-
-            address:
-              "Kanke Road Ranchi",
-
-            location: {
-              latitude: 23.3501,
-              longitude: 85.3196,
-            },
-
-            priority: "Medium",
-
-            status: "In Progress",
-          },
-
-          {
-            _id: "3",
-
-            problemType:
-              "Garbage",
-
-            description:
-              "Garbage not cleaned.",
-
-            address:
-              "Morabadi Ground Ranchi",
-
-            location: {
-              latitude: 23.3391,
-              longitude: 85.3056,
-            },
-
-            priority: "High",
-
-            status: "Pending",
-          },
-        ];
-
-
-
-        // ======================================================
-        // ================= BACKEND REPORTS ====================
-        // ======================================================
-
-        const response =
-          await axios.get(
-            "/api/reports"
-          );
-
-        const backendReports =
-          response.data.reports || [];
-
-
-
-        setReports([
-          ...dummyData,
-          ...backendReports,
-        ]);
-
-      } catch (error) {
-
-        console.error(
-          "❌ Error fetching reports:",
-          error
+            console.error(
+              "Location error:",
+              error
+            );
+          }
         );
+
+        return;
       }
-    };
-
-    fetchReports();
-
-  }, []);
 
 
+
+      // ======================================================
+      // ================= REAL BACKEND DATA ==================
+      // ======================================================
+
+      const response =
+        await axios.get(
+          "/api/reports"
+        );
+
+      const backendReports =
+        response.data.reports || [];
+
+
+
+      setReports(
+        backendReports
+      );
+
+    } catch (error) {
+
+      console.error(
+        "❌ Error fetching reports:",
+        error
+      );
+    }
+  };
+
+  fetchReports();
+
+}, [isGuest]);
 
 
   // ======================================================
@@ -518,387 +587,202 @@ const MapSection = () => {
         z-0
       ">
 
-        <MapContainer
+      <MapContainer
 
-          center={[
-            23.3441,
-            85.3096,
-          ]}
+  center={
+    reports.length > 0
 
-          zoom={13}
+      ? [
+          reports[0].location.latitude,
+          reports[0].location.longitude,
+        ]
 
-          style={{
-            height: "100%",
-            width: "100%",
-          }}
+      : [20.5937, 78.9629]
+  }
 
-          className="
-            rounded-b-3xl
-            z-0
-          "
-        >
+  zoom={15}
 
-          {/* TILE */}
+  style={{
+    height: "100%",
+    width: "100%",
+  }}
 
-          <TileLayer
+  className="
+    rounded-b-3xl
+    z-0
+  "
+>
 
-            url="
-              https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
-            "
+  {/* TILE */}
 
-            attribution="
-              &copy;
-              OpenStreetMap contributors
-            "
-          />
+  <TileLayer
+
+    url="
+      https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+    "
+
+    attribution="
+      &copy;
+      OpenStreetMap contributors
+    "
+  />
 
 
 
-          {/* REPORT MARKERS */}
+  {/* REPORT MARKERS */}
 
-          {
-            reports
+  {
+    reports
 
-              .filter((report) =>
+      .filter((report) =>
 
-                report?.location &&
-                report.location.latitude &&
-                report.location.longitude
+        report?.location &&
+        report.location.latitude &&
+        report.location.longitude
+      )
+
+      .map((report, index) => {
+
+        const lat =
+          parseFloat(
+            report.location.latitude
+          );
+
+        const lng =
+          parseFloat(
+            report.location.longitude
+          );
+
+
+
+        if (
+          isNaN(lat) ||
+          isNaN(lng)
+        ) {
+
+          return null;
+        }
+
+
+
+        const offset =
+          index * 0.00008;
+
+
+
+        return (
+
+          <Marker
+
+            key={
+              report._id || index
+            }
+
+            position={[
+              lat + offset,
+              lng + offset,
+            ]}
+
+            icon={
+
+              getCustomIcon(
+
+                report.priority,
+
+                report.status
               )
+            }
 
+            eventHandlers={
 
+              isGuest
 
-              .map((report, index) => {
+                ? {}
 
-                // ======================================================
-                // ================= SAFE COORDINATES ===================
-                // ======================================================
+                : {
+                    click: () => {},
+                  }
+            }
+          >
 
-                const lat =
-                  parseFloat(
-                    report.location.latitude
-                  );
+            {/* ====================================================== */}
+            {/* =============== ONLY FOR REAL REPORTS ================= */}
+            {/* ====================================================== */}
 
-                const lng =
-                  parseFloat(
-                    report.location.longitude
-                  );
+            {
+              !isGuest && (
 
+                <Popup>
 
+                  <div className="
+                    min-w-[220px]
+                    space-y-3
+                  ">
 
-                if (
-                  isNaN(lat) ||
-                  isNaN(lng)
-                ) {
+                    <h3 className="
+                      font-bold
+                      text-lg
+                      text-gray-900
+                    ">
 
-                  return null;
-                }
+                      {
+                        report.problemType
+                      }
 
+                    </h3>
 
+                    <p className="
+                      text-sm
+                      text-gray-600
+                    ">
 
-                // ======================================================
-                // ============== PREVENT OVERLAPPING ===================
-                // ======================================================
+                      {
+                        report.description
+                      }
 
-                const offset =
-                  index * 0.00008;
+                    </p>
 
+                    <div className="
+                      flex
+                      gap-2
+                    ">
 
-
-                return (
-
-                  <Marker
-
-                    key={
-                      report._id || index
-                    }
-
-                    position={[
-                      lat + offset,
-                      lng + offset,
-                    ]}
-
-                    icon={
-
-                      getCustomIcon(
-
-                        report.priority,
-
-                        report.status
-                      )
-                    }
-                  >
-
-                    <Popup
-                      className="
-                        custom-popup
-                      "
-                    >
-
-                      <div className="
-                        min-w-[250px]
-                        space-y-3
+                      <span className="
+                        bg-emerald-100
+                        text-emerald-700
+                        px-3
+                        py-1
+                        rounded-full
+                        text-xs
+                        font-semibold
                       ">
 
-                        {/* TITLE */}
+                        {
+                          report.status
+                        }
 
-                        <h3 className="
-                          font-bold
-                          text-lg
-                          text-gray-900
-                        ">
+                      </span>
 
-                          {
-                            report.problemType ||
-                            "Issue"
-                          }
+                    </div>
 
-                        </h3>
+                  </div>
 
+                </Popup>
+              )
+            }
 
+          </Marker>
+        );
+      })
+  }
 
-                        {/* DESCRIPTION */}
 
-                        <p className="
-                          text-sm
-                          text-gray-600
-                        ">
 
-                          {
-                            report.description ||
-                            "No description"
-                          }
+  {/* USER LOCATION BUTTON */}
 
-                        </p>
+  <GetLocationButton />
 
-
-
-                        {/* ADDRESS */}
-
-                        <div className="
-                          bg-gray-100
-                          rounded-xl
-                          px-3
-                          py-2
-                          text-sm
-                          text-gray-700
-                        ">
-
-                          📍
-                          {" "}
-
-                          {
-                            report.address ||
-
-                            report.locationName ||
-
-                            "Location not available"
-                          }
-
-                        </div>
-
-
-
-                        {/* PRIORITY + STATUS */}
-
-                        <div className="
-                          flex
-                          flex-wrap
-                          gap-3
-                          text-sm
-                        ">
-
-                          {/* PRIORITY */}
-
-                          <div>
-
-                            <strong>
-                              Priority:
-                            </strong>
-
-                            <span
-
-                              className={`
-                                ml-1
-                                px-2
-                                py-1
-                                rounded-full
-                                text-xs
-                                font-semibold
-
-                                ${
-                                  report.priority ===
-                                  "High"
-
-                                    ? `
-                                      bg-red-100
-                                      text-red-700
-                                    `
-
-                                    : report.priority ===
-                                      "Medium"
-
-                                    ? `
-                                      bg-amber-100
-                                      text-amber-700
-                                    `
-
-                                    : `
-                                      bg-green-100
-                                      text-green-700
-                                    `
-                                }
-                              `}
-                            >
-
-                              {
-                                report.priority ||
-                                "Low"
-                              }
-
-                            </span>
-
-                          </div>
-
-
-
-                          {/* STATUS */}
-
-                          <div>
-
-                            <strong>
-                              Status:
-                            </strong>
-
-                            <span
-
-                              className={`
-                                ml-1
-                                px-2
-                                py-1
-                                rounded-full
-                                text-xs
-                                font-semibold
-
-                                ${
-                                  report.status ===
-                                  "Pending"
-
-                                    ? `
-                                      bg-yellow-100
-                                      text-yellow-700
-                                    `
-
-                                    : report.status ===
-                                      "In Progress"
-
-                                    ? `
-                                      bg-blue-100
-                                      text-blue-700
-                                    `
-
-                                    : `
-                                      bg-emerald-100
-                                      text-emerald-700
-                                    `
-                                }
-                              `}
-                            >
-
-                              {
-                                report.status ||
-                                "Pending"
-                              }
-
-                            </span>
-
-                          </div>
-
-                        </div>
-
-
-
-                        {/* GOOGLE MAP BUTTON */}
-
-                        <button
-
-                          onClick={() =>
-
-                            window.open(
-
-                              `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
-
-                              "_blank"
-                            )
-                          }
-
-                          className="
-                            w-full
-                            mt-2
-                            bg-emerald-600
-                            hover:bg-emerald-700
-                            text-white
-                            py-2.5
-                            rounded-xl
-                            flex
-                            items-center
-                            justify-center
-                            gap-2
-                            font-medium
-                            transition-all
-                          "
-                        >
-
-                          <ExternalLink
-                            className="
-                              w-4
-                              h-4
-                            "
-                          />
-
-                          Open Location
-
-                        </button>
-
-
-
-                        {/* COORDINATES */}
-
-                        <div className="
-                          text-xs
-                          text-gray-400
-                          pt-2
-                          border-t
-                        ">
-
-                          Lat:
-                          {" "}
-                          {lat.toFixed(5)}
-
-                          {" | "}
-
-                          Lng:
-                          {" "}
-                          {lng.toFixed(5)}
-
-                        </div>
-
-                      </div>
-
-                    </Popup>
-
-                  </Marker>
-                );
-              })
-          }
-
-
-
-          {/* LOCATION BUTTON */}
-
-          <GetLocationButton />
-
-        </MapContainer>
+</MapContainer>
 
       </div>
 
