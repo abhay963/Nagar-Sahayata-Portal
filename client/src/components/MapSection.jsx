@@ -54,146 +54,154 @@ useEffect(() => {
       // ================= GUEST USER =========================
       // ======================================================
 
-      if (isGuest) {
+     if (isGuest) {
 
-        navigator.geolocation.getCurrentPosition(
+  // ======================================================
+  // ================= RANCHI DEFAULT LOCATION ============
+  // ======================================================
 
-          (position) => {
+  const ranchiLatitude = 23.3441;
+  const ranchiLongitude = 85.3096;
 
-            const {
-              latitude,
-              longitude,
-            } = position.coords;
+  const guestReports = [
 
+    {
+      _id: "1",
+      problemType: "Pothole",
+      location: {
+        latitude: 23.3448,
+        longitude: 85.3105,
+      },
+      priority: "High",
+      status: "Pending",
+    },
 
+    {
+      _id: "2",
+      problemType: "Garbage Overflow",
+      location: {
+        latitude: 23.3429,
+        longitude: 85.3079,
+      },
+      priority: "Medium",
+      status: "In Progress",
+    },
 
-            // ======================================================
-            // ================= FAKE NEARBY REPORTS ================
-            // ======================================================
+    {
+      _id: "3",
+      problemType: "Street Light",
+      location: {
+        latitude: 23.3460,
+        longitude: 85.3122,
+      },
+      priority: "Low",
+      status: "Resolved",
+    },
 
-            const guestReports = [
+    {
+      _id: "4",
+      problemType: "Water Leakage",
+      location: {
+        latitude: 23.3415,
+        longitude: 85.3130,
+      },
+      priority: "High",
+      status: "Pending",
+    },
 
-              {
-                _id: "1",
+    {
+      _id: "5",
+      problemType: "Drainage Issue",
+      location: {
+        latitude: 23.3475,
+        longitude: 85.3058,
+      },
+      priority: "High",
+      status: "Pending",
+    },
 
-                problemType:
-                  "Pothole",
+    {
+      _id: "6",
+      problemType: "Broken Road",
+      location: {
+        latitude: 23.3407,
+        longitude: 85.3045,
+      },
+      priority: "Medium",
+      status: "In Progress",
+    },
 
-                description:
-                  "Road damaged due to rain.",
+    {
+      _id: "7",
+      problemType: "Traffic Signal",
+      location: {
+        latitude: 23.3490,
+        longitude: 85.3140,
+      },
+      priority: "Low",
+      status: "Resolved",
+    },
 
-                address:
-                  "Nearby Main Road",
+    {
+      _id: "8",
+      problemType: "Open Manhole",
+      location: {
+        latitude: 23.3430,
+        longitude: 85.3160,
+      },
+      priority: "High",
+      status: "Pending",
+    },
 
-                location: {
-                  latitude:
-                    latitude + 0.002,
+    {
+      _id: "9",
+      problemType: "Garbage Burning",
+      location: {
+        latitude: 23.3455,
+        longitude: 85.3015,
+      },
+      priority: "Medium",
+      status: "Pending",
+    },
 
-                  longitude:
-                    longitude + 0.001,
-                },
+    {
+      _id: "10",
+      problemType: "Flooded Street",
+      location: {
+        latitude: 23.3389,
+        longitude: 85.3091,
+      },
+      priority: "High",
+      status: "In Progress",
+    },
 
-                priority: "High",
+    {
+      _id: "11",
+      problemType: "Sewage Leakage",
+      location: {
+        latitude: 23.3500,
+        longitude: 85.3070,
+      },
+      priority: "Medium",
+      status: "Pending",
+    },
 
-                status: "Pending",
-              },
+    {
+      _id: "12",
+      problemType: "Electric Pole",
+      location: {
+        latitude: 23.3480,
+        longitude: 85.3025,
+      },
+      priority: "High",
+      status: "Resolved",
+    },
+  ];
 
-              {
-                _id: "2",
+  setReports(guestReports);
 
-                problemType:
-                  "Garbage Overflow",
-
-                description:
-                  "Garbage collection pending.",
-
-                address:
-                  "Near Market Area",
-
-                location: {
-                  latitude:
-                    latitude - 0.0015,
-
-                  longitude:
-                    longitude + 0.002,
-                },
-
-                priority: "Medium",
-
-                status:
-                  "In Progress",
-              },
-
-              {
-                _id: "3",
-
-                problemType:
-                  "Street Light",
-
-                description:
-                  "Street light not working.",
-
-                address:
-                  "Sector Road",
-
-                location: {
-                  latitude:
-                    latitude + 0.001,
-
-                  longitude:
-                    longitude - 0.002,
-                },
-
-                priority: "Low",
-
-                status: "Resolved",
-              },
-
-              {
-                _id: "4",
-
-                problemType:
-                  "Water Leakage",
-
-                description:
-                  "Pipe leakage reported.",
-
-                address:
-                  "Residential Area",
-
-                location: {
-                  latitude:
-                    latitude - 0.002,
-
-                  longitude:
-                    longitude - 0.001,
-                },
-
-                priority: "High",
-
-                status: "Pending",
-              },
-            ];
-
-
-
-            setReports(
-              guestReports
-            );
-          },
-
-          (error) => {
-
-            console.error(
-              "Location error:",
-              error
-            );
-          }
-        );
-
-        return;
-      }
-
+  return;
+}
 
 
       // ======================================================
@@ -587,20 +595,13 @@ useEffect(() => {
         z-0
       ">
 
-      <MapContainer
+      
 
-  center={
-    reports.length > 0
+<MapContainer
 
-      ? [
-          reports[0].location.latitude,
-          reports[0].location.longitude,
-        ]
+  center={[23.3441, 85.3096]}
 
-      : [20.5937, 78.9629]
-  }
-
-  zoom={15}
+  zoom={14}
 
   style={{
     height: "100%",
@@ -692,86 +693,8 @@ useEffect(() => {
                 report.status
               )
             }
+          />
 
-            eventHandlers={
-
-              isGuest
-
-                ? {}
-
-                : {
-                    click: () => {},
-                  }
-            }
-          >
-
-            {/* ====================================================== */}
-            {/* =============== ONLY FOR REAL REPORTS ================= */}
-            {/* ====================================================== */}
-
-            {
-              !isGuest && (
-
-                <Popup>
-
-                  <div className="
-                    min-w-[220px]
-                    space-y-3
-                  ">
-
-                    <h3 className="
-                      font-bold
-                      text-lg
-                      text-gray-900
-                    ">
-
-                      {
-                        report.problemType
-                      }
-
-                    </h3>
-
-                    <p className="
-                      text-sm
-                      text-gray-600
-                    ">
-
-                      {
-                        report.description
-                      }
-
-                    </p>
-
-                    <div className="
-                      flex
-                      gap-2
-                    ">
-
-                      <span className="
-                        bg-emerald-100
-                        text-emerald-700
-                        px-3
-                        py-1
-                        rounded-full
-                        text-xs
-                        font-semibold
-                      ">
-
-                        {
-                          report.status
-                        }
-
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </Popup>
-              )
-            }
-
-          </Marker>
         );
       })
   }
@@ -783,6 +706,10 @@ useEffect(() => {
   <GetLocationButton />
 
 </MapContainer>
+
+
+
+
 
       </div>
 
