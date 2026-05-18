@@ -22,7 +22,12 @@ import { motion } from "framer-motion";
 import {
   MapPin,
   Navigation,
+  Building2,
+  AlertTriangle,
+  CheckCircle2,
+  Clock3,
   ExternalLink,
+  MapPinned,
 } from "lucide-react";
 
 
@@ -43,197 +48,146 @@ const MapSection = ({ isGuest = false }) => {
   // ================= FETCH REPORTS ======================
   // ======================================================
 
+  useEffect(() => {
 
-useEffect(() => {
+    const fetchReports = async () => {
 
-  const fetchReports = async () => {
+      try {
 
-    try {
+        // ======================================================
+        // ================= GUEST USER =========================
+        // ======================================================
 
-      // ======================================================
-      // ================= GUEST USER =========================
-      // ======================================================
+        if (isGuest) {
 
-     if (isGuest) {
+          const guestReports = [
 
-  // ======================================================
-  // ================= RANCHI DEFAULT LOCATION ============
-  // ======================================================
+            {
+              _id: "1",
+              problemType: "Pothole",
+              location: {
+                latitude: 23.3448,
+                longitude: 85.3105,
+              },
+              priority: "High",
+              status: "Pending",
+            },
 
-  const ranchiLatitude = 23.3441;
-  const ranchiLongitude = 85.3096;
+            {
+              _id: "2",
+              problemType: "Garbage Overflow",
+              location: {
+                latitude: 23.3429,
+                longitude: 85.3079,
+              },
+              priority: "Medium",
+              status: "In Progress",
+            },
 
-  const guestReports = [
+            {
+              _id: "3",
+              problemType: "Street Light",
+              location: {
+                latitude: 23.3460,
+                longitude: 85.3122,
+              },
+              priority: "Low",
+              status: "Resolved",
+            },
 
-    {
-      _id: "1",
-      problemType: "Pothole",
-      location: {
-        latitude: 23.3448,
-        longitude: 85.3105,
-      },
-      priority: "High",
-      status: "Pending",
-    },
+            {
+              _id: "4",
+              problemType: "Water Leakage",
+              location: {
+                latitude: 23.3415,
+                longitude: 85.3130,
+              },
+              priority: "High",
+              status: "Pending",
+            },
 
-    {
-      _id: "2",
-      problemType: "Garbage Overflow",
-      location: {
-        latitude: 23.3429,
-        longitude: 85.3079,
-      },
-      priority: "Medium",
-      status: "In Progress",
-    },
+            {
+              _id: "5",
+              problemType: "Drainage Issue",
+              location: {
+                latitude: 23.3475,
+                longitude: 85.3058,
+              },
+              priority: "High",
+              status: "Pending",
+            },
 
-    {
-      _id: "3",
-      problemType: "Street Light",
-      location: {
-        latitude: 23.3460,
-        longitude: 85.3122,
-      },
-      priority: "Low",
-      status: "Resolved",
-    },
+            {
+              _id: "6",
+              problemType: "Broken Road",
+              location: {
+                latitude: 23.3407,
+                longitude: 85.3045,
+              },
+              priority: "Medium",
+              status: "In Progress",
+            },
 
-    {
-      _id: "4",
-      problemType: "Water Leakage",
-      location: {
-        latitude: 23.3415,
-        longitude: 85.3130,
-      },
-      priority: "High",
-      status: "Pending",
-    },
+            {
+              _id: "7",
+              problemType: "Traffic Signal",
+              location: {
+                latitude: 23.3490,
+                longitude: 85.3140,
+              },
+              priority: "Low",
+              status: "Resolved",
+            },
 
-    {
-      _id: "5",
-      problemType: "Drainage Issue",
-      location: {
-        latitude: 23.3475,
-        longitude: 85.3058,
-      },
-      priority: "High",
-      status: "Pending",
-    },
+            {
+              _id: "8",
+              problemType: "Open Manhole",
+              location: {
+                latitude: 23.3430,
+                longitude: 85.3160,
+              },
+              priority: "High",
+              status: "Pending",
+            },
+          ];
 
-    {
-      _id: "6",
-      problemType: "Broken Road",
-      location: {
-        latitude: 23.3407,
-        longitude: 85.3045,
-      },
-      priority: "Medium",
-      status: "In Progress",
-    },
+          setReports(guestReports);
 
-    {
-      _id: "7",
-      problemType: "Traffic Signal",
-      location: {
-        latitude: 23.3490,
-        longitude: 85.3140,
-      },
-      priority: "Low",
-      status: "Resolved",
-    },
-
-    {
-      _id: "8",
-      problemType: "Open Manhole",
-      location: {
-        latitude: 23.3430,
-        longitude: 85.3160,
-      },
-      priority: "High",
-      status: "Pending",
-    },
-
-    {
-      _id: "9",
-      problemType: "Garbage Burning",
-      location: {
-        latitude: 23.3455,
-        longitude: 85.3015,
-      },
-      priority: "Medium",
-      status: "Pending",
-    },
-
-    {
-      _id: "10",
-      problemType: "Flooded Street",
-      location: {
-        latitude: 23.3389,
-        longitude: 85.3091,
-      },
-      priority: "High",
-      status: "In Progress",
-    },
-
-    {
-      _id: "11",
-      problemType: "Sewage Leakage",
-      location: {
-        latitude: 23.3500,
-        longitude: 85.3070,
-      },
-      priority: "Medium",
-      status: "Pending",
-    },
-
-    {
-      _id: "12",
-      problemType: "Electric Pole",
-      location: {
-        latitude: 23.3480,
-        longitude: 85.3025,
-      },
-      priority: "High",
-      status: "Resolved",
-    },
-  ];
-
-  setReports(guestReports);
-
-  return;
-}
+          return;
+        }
 
 
-      // ======================================================
-      // ================= REAL BACKEND DATA ==================
-      // ======================================================
 
-      const response =
-        await axios.get(
-          "/api/reports"
+        // ======================================================
+        // ================= REAL BACKEND DATA ==================
+        // ======================================================
+
+        const response =
+          await axios.get(
+            "/api/reports"
+          );
+
+        const backendReports =
+          response.data.reports || [];
+
+        setReports(
+          backendReports
         );
 
-      const backendReports =
-        response.data.reports || [];
+      } catch (error) {
+
+        console.error(
+          "❌ Error fetching reports:",
+          error
+        );
+      }
+    };
+
+    fetchReports();
+
+  }, [isGuest]);
 
 
-
-      setReports(
-        backendReports
-      );
-
-    } catch (error) {
-
-      console.error(
-        "❌ Error fetching reports:",
-        error
-      );
-    }
-  };
-
-  fetchReports();
-
-}, [isGuest]);
 
 
   // ======================================================
@@ -245,8 +199,6 @@ useEffect(() => {
 
       const map =
         useMap();
-
-
 
       const handleClick =
         () => {
@@ -263,8 +215,6 @@ useEffect(() => {
                   latitude,
                   longitude,
                 } = position.coords;
-
-
 
                 map.setView(
                   [latitude, longitude],
@@ -286,7 +236,7 @@ useEffect(() => {
 
 
 
-                // Add new marker
+                // Add user marker
 
                 const userMarker =
                   L.marker(
@@ -318,8 +268,6 @@ useEffect(() => {
                     )
 
                     .openPopup();
-
-
 
                 map._userLocationMarker =
                   userMarker;
@@ -392,7 +340,7 @@ useEffect(() => {
 
 
   // ======================================================
-  // ================= CUSTOM ICON ========================
+  // ================= CUSTOM MARKER ======================
   // ======================================================
 
   const getCustomIcon =
@@ -403,8 +351,6 @@ useEffect(() => {
 
       const isHigh =
         priority === "High";
-
-
 
       const statusColor =
 
@@ -544,8 +490,6 @@ useEffect(() => {
 
           </div>
 
-
-
           <div>
 
             <h2 className="
@@ -563,15 +507,13 @@ useEffect(() => {
               text-sm
             ">
 
-              Real-time reported problems
+              Real-time reported civic issues
 
             </p>
 
           </div>
 
         </div>
-
-
 
         <div className="
           text-sm
@@ -595,121 +537,421 @@ useEffect(() => {
         z-0
       ">
 
-      
+        <MapContainer
 
-<MapContainer
+          center={[
+            23.3441,
+            85.3096
+          ]}
 
-  center={[23.3441, 85.3096]}
+          zoom={14}
 
-  zoom={14}
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
 
-  style={{
-    height: "100%",
-    width: "100%",
-  }}
+          className="
+            rounded-b-3xl
+            z-0
+          "
+        >
 
-  className="
-    rounded-b-3xl
-    z-0
-  "
->
+          {/* TILE */}
 
-  {/* TILE */}
+          <TileLayer
 
-  <TileLayer
+            url="
+              https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+            "
 
-    url="
-      https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
-    "
-
-    attribution="
-      &copy;
-      OpenStreetMap contributors
-    "
-  />
-
-
-
-  {/* REPORT MARKERS */}
-
-  {
-    reports
-
-      .filter((report) =>
-
-        report?.location &&
-        report.location.latitude &&
-        report.location.longitude
-      )
-
-      .map((report, index) => {
-
-        const lat =
-          parseFloat(
-            report.location.latitude
-          );
-
-        const lng =
-          parseFloat(
-            report.location.longitude
-          );
-
-
-
-        if (
-          isNaN(lat) ||
-          isNaN(lng)
-        ) {
-
-          return null;
-        }
-
-
-
-        const offset =
-          index * 0.00008;
-
-
-
-        return (
-
-          <Marker
-
-            key={
-              report._id || index
-            }
-
-            position={[
-              lat + offset,
-              lng + offset,
-            ]}
-
-            icon={
-
-              getCustomIcon(
-
-                report.priority,
-
-                report.status
-              )
-            }
+            attribution="
+              &copy;
+              OpenStreetMap contributors
+            "
           />
 
-        );
-      })
-  }
+
+
+          {/* REPORT MARKERS */}
+
+          {
+            reports
+
+              .filter((report) =>
+
+                report?.location &&
+                report.location.latitude &&
+                report.location.longitude
+              )
+
+              .map((report, index) => {
+
+                const lat =
+                  parseFloat(
+                    report.location.latitude
+                  );
+
+                const lng =
+                  parseFloat(
+                    report.location.longitude
+                  );
+
+                if (
+                  isNaN(lat) ||
+                  isNaN(lng)
+                ) {
+
+                  return null;
+                }
+
+                const offset =
+                  index * 0.00008;
+
+                return (
+
+                  <Marker
+
+                    key={
+                      report._id || index
+                    }
+
+                    position={[
+                      lat + offset,
+                      lng + offset,
+                    ]}
+
+                    icon={
+                      getCustomIcon(
+                        report.priority,
+                        report.status
+                      )
+                    }
+                  >
+
+                    {/* ====================================================== */}
+                    {/* =============== AUTHORIZED USER DETAILS ============== */}
+                    {/* ====================================================== */}
+
+                    {
+                      !isGuest && (
+
+                        <Popup>
+
+                          <div className="
+                            min-w-[260px]
+                            space-y-4
+                          ">
+
+                            {/* TITLE */}
+
+                            <div>
+
+                              <h3 className="
+                                text-xl
+                                font-bold
+                                text-gray-900
+                              ">
+
+                                {
+                                  report.problemType ||
+                                  "Issue"
+                                }
+
+                              </h3>
+
+                              <p className="
+                                text-sm
+                                text-gray-500
+                              ">
+
+                                Complaint Details
+                              </p>
+
+                            </div>
 
 
 
-  {/* USER LOCATION BUTTON */}
+                            {/* STATUS */}
 
-  <GetLocationButton />
+                            <div className="
+                              flex
+                              gap-2
+                              flex-wrap
+                            ">
 
-</MapContainer>
+                              <span className={`
+                                px-3
+                                py-1
+                                rounded-full
+                                text-xs
+                                font-semibold
+                                text-white
+
+                                ${
+                                  report.status === "Pending"
+
+                                    ? "bg-amber-500"
+
+                                    : report.status === "In Progress"
+
+                                    ? "bg-blue-500"
+
+                                    : "bg-emerald-600"
+                                }
+                              `}>
+
+                                {
+                                  report.status || "Pending"
+                                }
+
+                              </span>
 
 
 
+                              <span className={`
+                                px-3
+                                py-1
+                                rounded-full
+                                text-xs
+                                font-semibold
+                                text-white
 
+                                ${
+                                  report.priority === "High"
+
+                                    ? "bg-red-500"
+
+                                    : report.priority === "Medium"
+
+                                    ? "bg-orange-500"
+
+                                    : "bg-gray-500"
+                                }
+                              `}>
+
+                                {
+                                  report.priority || "Low"
+                                } Priority
+
+                              </span>
+
+                            </div>
+
+
+
+                            {/* DETAILS */}
+
+                            <div className="
+                              space-y-3
+                              text-sm
+                            ">
+
+                              <div className="
+                                flex
+                                items-start
+                                gap-2
+                              ">
+
+                                <AlertTriangle
+                                  className="
+                                    w-4
+                                    h-4
+                                    text-emerald-600
+                                    mt-0.5
+                                  "
+                                />
+
+                                <span className="
+                                  text-gray-700
+                                ">
+
+                                  {
+                                    report.description ||
+                                    "No description available."
+                                  }
+
+                                </span>
+
+                              </div>
+
+
+
+                              <div className="
+                                flex
+                                items-start
+                                gap-2
+                              ">
+
+                                <MapPinned
+                                  className="
+                                    w-4
+                                    h-4
+                                    text-emerald-600
+                                    mt-0.5
+                                  "
+                                />
+
+                                <span className="
+                                  text-gray-700
+                                ">
+
+                                  {
+                                    report.address ||
+                                    "Ranchi, Jharkhand"
+                                  }
+
+                                </span>
+
+                              </div>
+
+
+
+                              <div className="
+                                flex
+                                items-start
+                                gap-2
+                              ">
+
+                                <Building2
+                                  className="
+                                    w-4
+                                    h-4
+                                    text-emerald-600
+                                    mt-0.5
+                                  "
+                                />
+
+                                <span className="
+                                  text-gray-700
+                                ">
+
+                                  Department:
+
+                                  {" "}
+
+                                  {
+                                    report.department ||
+                                    "Municipal Department"
+                                  }
+
+                                </span>
+
+                              </div>
+
+
+
+                              <div className="
+                                flex
+                                items-start
+                                gap-2
+                              ">
+
+                                {
+                                  report.status === "Resolved"
+
+                                    ? (
+
+                                      <CheckCircle2
+                                        className="
+                                          w-4
+                                          h-4
+                                          text-emerald-600
+                                          mt-0.5
+                                        "
+                                      />
+                                    )
+
+                                    : (
+
+                                      <Clock3
+                                        className="
+                                          w-4
+                                          h-4
+                                          text-amber-500
+                                          mt-0.5
+                                        "
+                                      />
+                                    )
+                                }
+
+                                <span className="
+                                  text-gray-700
+                                ">
+
+                                  {
+                                    report.status === "Resolved"
+
+                                      ? "Issue resolved successfully."
+
+                                      : "Issue currently under processing."
+                                  }
+
+                                </span>
+
+                              </div>
+
+                            </div>
+
+
+
+                            {/* GOOGLE MAP LINK */}
+
+                            <a
+
+                              href={`
+                                https://www.google.com/maps?q=${lat},${lng}
+                              `}
+
+                              target="_blank"
+
+                              rel="noreferrer"
+
+                              className="
+                                flex
+                                items-center
+                                justify-center
+                                gap-2
+                                w-full
+                                bg-emerald-600
+                                hover:bg-emerald-700
+                                text-white
+                                py-3
+                                rounded-xl
+                                font-medium
+                                transition-all
+                              "
+                            >
+
+                              <ExternalLink
+                                className="
+                                  w-4
+                                  h-4
+                                "
+                              />
+
+                              Open in Google Maps
+
+                            </a>
+
+                          </div>
+
+                        </Popup>
+                      )
+                    }
+
+                  </Marker>
+                );
+              })
+          }
+
+
+
+          {/* USER LOCATION BUTTON */}
+
+          <GetLocationButton />
+
+        </MapContainer>
 
       </div>
 

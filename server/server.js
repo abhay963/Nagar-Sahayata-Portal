@@ -37,11 +37,10 @@ const app = express();
 // ================= MIDDLEWARE =================
 
 app.use(cors({
-
-  origin:
-    process.env.CLIENT_URL ||
+  origin: [
     "http://localhost:5173",
-
+    "https://nagar-sahayata-portal.vercel.app"
+  ],
   credentials: true,
 }));
 
