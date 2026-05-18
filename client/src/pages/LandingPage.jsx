@@ -183,7 +183,7 @@ const LandingPage = () => {
                   whileTap={{ scale: 0.98 }}
                   className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-bold text-sm tracking-wide shadow-lg cursor-pointer border border-emerald-400/20"
                 >
-                  Register as City
+                  Register 
                 </motion.button>
               </Link>
             </div>
