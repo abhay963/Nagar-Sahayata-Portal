@@ -15,6 +15,7 @@ import {
   getJuniorStaff,
 
   getJuniorStaffByDepartment,
+  getDepartmentsList
 
 } from "../controllers/userController.js";
 
@@ -29,26 +30,41 @@ const router = express.Router();
 const validateProfileUpdate = [
 
   body("name")
+    .trim()
     .notEmpty()
     .withMessage("Name is required"),
 
   body("email")
+    .trim()
     .isEmail()
     .withMessage("Valid email is required"),
 
   body("empId")
+    .trim()
     .notEmpty()
     .withMessage("Employee ID is required"),
 
-  body("department")
-    .notEmpty()
-    .withMessage("Department is required"),
+  // Department required only if NOT Higher Authority
+  body("department").custom((value, { req }) => {
+
+    if (
+      req.user?.role !== "Higher Authority" &&
+      (!value || value.trim() === "")
+    ) {
+
+      throw new Error("Department is required");
+    }
+
+    return true;
+  }),
 
   body("city")
+    .trim()
     .notEmpty()
     .withMessage("City is required"),
 
   body("contact")
+    .trim()
     .notEmpty()
     .withMessage("Contact is required"),
 ];
@@ -93,7 +109,11 @@ router.get(
   getJuniorStaffByDepartment
 );
 
-
+router.get(
+  "/departments-list",
+  protect,
+  getDepartmentsList
+);
 // ================= EXPORT =================
 
 export default router;

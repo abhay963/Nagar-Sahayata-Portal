@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import { validationResult } from "express-validator";
-
+import Report from "../models/report.js";
 export const getJuniorStaff = async (req, res) => {
 
   try {
@@ -117,8 +117,7 @@ export const getJuniorStaffByDepartment =
 
 export const updateProfile = async (req, res) => {
 
-  const errors =
-    validationResult(req);
+  const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
 
@@ -126,17 +125,15 @@ export const updateProfile = async (req, res) => {
 
       success: false,
 
-      errors:
-        errors.array(),
+      message: errors.array()[0].msg,
+
+      errors: errors.array(),
     });
   }
 
   try {
 
-    const user =
-      await User.findById(
-        req.user._id
-      );
+    const user = await User.findById(req.user._id);
 
     if (!user) {
 
@@ -144,108 +141,272 @@ export const updateProfile = async (req, res) => {
 
         success: false,
 
-        message:
-          "User not found",
+        message: "User not found",
       });
     }
 
-    user.name =
-      req.body.name ||
-      user.name;
+    // ======================================================
+    // ================= DUPLICATE EMAIL CHECK ==============
+    // ======================================================
 
-    user.email =
-      req.body.email ||
-      user.email;
+    if (
+      req.body.email &&
+      req.body.email !== user.email
+    ) {
 
-    user.empId =
-      req.body.empId ||
-      user.empId;
+      const emailExists = await User.findOne({
+        email: req.body.email,
+      });
 
-    user.department =
-      req.body.department ||
-      user.department;
+      if (emailExists) {
 
-    user.city =
-      req.body.city ||
-      user.city;
+        return res.status(400).json({
 
-    user.contact =
-      req.body.contact ||
-      user.contact;
+          success: false,
 
-    user.address =
-      req.body.address ||
-      user.address;
+          message: "Email already exists",
+        });
+      }
+
+      user.email = req.body.email;
+    }
+
+    // ======================================================
+    // ================= DUPLICATE EMP ID CHECK =============
+    // ======================================================
+
+    if (
+      req.body.empId &&
+      req.body.empId !== user.empId
+    ) {
+
+      const empExists = await User.findOne({
+        empId: req.body.empId,
+      });
+
+      if (empExists) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message: "Employee ID already exists",
+        });
+      }
+
+      user.empId = req.body.empId;
+    }
+
+    // ======================================================
+    // ================= UPDATE OTHER FIELDS ================
+    // ======================================================
+
+    user.name = req.body.name || user.name;
+
+    user.city = req.body.city || user.city;
+
+    user.contact = req.body.contact || user.contact;
+
+    user.address = req.body.address || user.address;
+
+    // ======================================================
+    // ===== HIGHER AUTHORITY CANNOT CHANGE DEPARTMENT ======
+    // ======================================================
+
+    if (req.user.role !== "Higher Authority") {
+
+      user.department =
+        req.body.department || user.department;
+    }
+
+    // ======================================================
+    // ================= PROFILE IMAGE ======================
+    // ======================================================
 
     if (req.file) {
 
-      user.profileImage =
-        req.file.path;
+      user.profileImage = req.file.path;
     }
 
-    const updatedUser =
-      await user.save();
+    // ======================================================
+    // ================= SAVE USER ==========================
+    // ======================================================
+
+    const updatedUser = await user.save();
+
+    // ======================================================
+    // ================= RESPONSE ===========================
+    // ======================================================
 
     res.status(200).json({
 
       success: true,
 
+      message: "Profile updated successfully",
+
       updatedUser: {
 
-        _id:
-          updatedUser._id,
+        _id: updatedUser._id,
 
-        name:
-          updatedUser.name,
+        name: updatedUser.name,
 
-        email:
-          updatedUser.email,
+        email: updatedUser.email,
 
-        role:
-          updatedUser.role,
+        role: updatedUser.role,
 
-        department:
-          updatedUser.department,
+        department: updatedUser.department,
 
-        city:
-          updatedUser.city,
+        city: updatedUser.city,
 
-        contact:
-          updatedUser.contact,
+        contact: updatedUser.contact,
 
-        empId:
-          updatedUser.empId,
+        empId: updatedUser.empId,
 
-        address:
-          updatedUser.address,
+        address: updatedUser.address,
 
-        profileImage:
-          updatedUser.profileImage,
+        profileImage: updatedUser.profileImage,
 
-        joiningDate:
-          updatedUser.joiningDate,
+        joiningDate: updatedUser.joiningDate,
 
-        isApproved:
-          updatedUser.isApproved,
+        isApproved: updatedUser.isApproved,
 
-        accountStatus:
-          updatedUser.accountStatus,
+        accountStatus: updatedUser.accountStatus,
       },
     });
 
   } catch (error) {
 
-    console.error(
-      "❌ Update Profile Error:",
-      error
-    );
+    console.error("❌ Update Profile Error:", error);
+
+    // Mongo duplicate key error
+    if (error.code === 11000) {
+
+      return res.status(400).json({
+
+        success: false,
+
+        message:
+          Object.keys(error.keyPattern)[0] +
+          " already exists",
+      });
+    }
+
+    res.status(500).json({
+
+      success: false,
+
+      message: "Server error updating profile",
+    });
+  }
+};
+
+export const getDepartmentsList = async (req, res) => {
+
+  try {
+
+    // ======================================================
+    // ALL AVAILABLE DEPARTMENTS
+    // ======================================================
+
+    const allDepartments = [
+
+      "Environmental Services",
+
+      "Water Supply",
+
+      "Road Maintenance",
+
+      "Electricity Department",
+
+      "Sanitation",
+
+      "Health Department",
+
+      "Traffic Management",
+
+      "Public Safety",
+
+      "Waste Management",
+
+      "Parks and Recreation",
+
+      "Sewerage Department",
+
+      "Fire Department",
+
+      "Urban Planning",
+
+      "Transport Department",
+
+      "Housing Board",
+    ];
+
+    // ======================================================
+    // GET REPORT COUNTS
+    // ======================================================
+
+    const reportCounts = await Report.aggregate([
+
+      {
+        $group: {
+
+          _id: "$department",
+
+          totalReports: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
+
+    // ======================================================
+    // CONVERT TO MAP
+    // ======================================================
+
+    const reportMap = {};
+
+    reportCounts.forEach((item) => {
+
+      reportMap[item._id] =
+        item.totalReports;
+    });
+
+    // ======================================================
+    // FINAL FORMATTED DATA
+    // ======================================================
+
+    const departments =
+      allDepartments.map((dept) => ({
+
+        department: dept,
+
+        totalReports:
+          reportMap[dept] || 0,
+
+        email:
+          dept
+            .replace(/\s+/g, "")
+            .toLowerCase() +
+          "@nagarportal.com",
+      }));
+
+    res.status(200).json({
+
+      success: true,
+
+      departments,
+    });
+
+  } catch (error) {
+
+    console.error(error);
 
     res.status(500).json({
 
       success: false,
 
       message:
-        "Server error updating profile",
+        "Failed to fetch departments",
     });
   }
 };
