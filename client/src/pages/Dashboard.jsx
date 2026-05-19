@@ -1,8 +1,10 @@
 // ======================================================
 // ================= IMPORTS =============================
 // ======================================================
-
-import React, { useEffect } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
 
 import AcceptedTasks from "../components/AcceptedTasks";
 import JuniorStaffTasks from "../components/juniortask";
@@ -35,54 +37,68 @@ import AddReportForm from "../components/AddReportForm";
 import AnalyticsCharts from "../components/AnalyticsCharts";
 import Footer from "../components/Footer";
 
-
+import axios from "../api/axios";
+  
 // ======================================================
 // ================= DASHBOARD STATS ====================
 // ======================================================
-
-const stats = [
-  {
-    key: "totalIssues",
-    title: "Total Issues",
-    value: 1245,
-    icon: FileText,
-    color: "bg-blue-100 text-blue-600",
-  },
-
-  {
-    key: "resolved",
-    title: "Resolved",
-    value: 980,
-    icon: CheckCircle,
-    color: "bg-green-100 text-green-600",
-  },
-
-  {
-    key: "pending",
-    title: "Pending",
-    value: 265,
-    icon: Clock,
-    color: "bg-yellow-100 text-yellow-600",
-  },
-
-  {
-    key: "departments",
-    title: "Departments",
-    value: 12,
-    icon: Building,
-    color: "bg-purple-100 text-purple-600",
-  },
-];
-
 
 // ======================================================
 // ================= DASHBOARD CARDS ====================
 // ======================================================
 
-const DashboardCards = () => {
+
+const DashboardCards = ({
+  dashboardStats,
+}) => {
+
   const { t } = useTranslation();
 
+  const stats = [
+
+    {
+      key: "totalIssues",
+      title: "Total Issues",
+      value:
+        dashboardStats?.totalIssues || 0,
+      icon: FileText,
+      color:
+        "bg-blue-100 text-blue-600",
+    },
+
+    {
+      key: "resolved",
+      title: "Resolved",
+      value:
+        dashboardStats?.resolved || 0,
+      icon: CheckCircle,
+      color:
+        "bg-green-100 text-green-600",
+    },
+
+    {
+      key: "pending",
+      title: "Pending",
+      value:
+        dashboardStats?.pending || 0,
+      icon: Clock,
+      color:
+        "bg-yellow-100 text-yellow-600",
+    },
+
+    {
+      key: "departments",
+      title: "Active Departments",
+      value:
+        dashboardStats?.departments || 0,
+      icon: Building,
+      color:
+        "bg-purple-100 text-purple-600",
+    },
+  ];
+
   return (
+
     <div
       className="
         grid
@@ -92,7 +108,9 @@ const DashboardCards = () => {
         gap-6
       "
     >
+
       {stats.map((stat, index) => (
+
         <div
           key={index}
           className="
@@ -109,7 +127,9 @@ const DashboardCards = () => {
             overflow-hidden
           "
         >
+
           {/* Glow Effect */}
+
           <div
             className="
               absolute
@@ -124,13 +144,40 @@ const DashboardCards = () => {
             "
           />
 
-          <div className="flex items-center justify-between relative z-10">
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              relative
+              z-10
+            "
+          >
+
             <div>
-              <p className="text-gray-500 text-sm font-medium">
-                {t(`dashboardCards.${stat.key}`, stat.title)}
+
+              <p
+                className="
+                  text-gray-500
+                  text-sm
+                  font-medium
+                "
+              >
+                {t(
+                  `dashboardCards.${stat.key}`,
+                  stat.title
+                )}
               </p>
 
-              <h2 className="text-3xl font-bold text-gray-800 mt-2">
+              <h2
+                className="
+                  text-3xl
+                  font-bold
+                  text-gray-800
+                  mt-2
+                "
+              >
+
                 <CountUp
                   start={0}
                   end={stat.value}
@@ -138,12 +185,26 @@ const DashboardCards = () => {
                   separator=","
                   delay={index * 0.2}
                 />
+
               </h2>
 
-              <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+              <p
+                className="
+                  text-xs
+                  text-green-600
+                  mt-2
+                  flex
+                  items-center
+                  gap-1
+                "
+              >
+
                 <TrendingUp className="w-3 h-3" />
-                +12% this month
+
+                Live Data
+
               </p>
+
             </div>
 
             <div
@@ -153,32 +214,49 @@ const DashboardCards = () => {
                 ${stat.color}
               `}
             >
+
               <stat.icon className="w-7 h-7" />
+
             </div>
+
           </div>
+
         </div>
       ))}
     </div>
   );
 };
-
-
 // ======================================================
 // ================= WELCOME HERO =======================
 // ======================================================
 
-const WelcomeBanner = ({ user }) => {
-  const currentHour = new Date().getHours();
+const WelcomeBanner = ({
+  user,
+  dashboardStats,
+    notificationCount,
+}) => {
 
-  let greeting = "Good Evening";
+  const currentHour =
+    new Date().getHours();
+
+  let greeting =
+    "Good Evening";
 
   if (currentHour < 12) {
-    greeting = "Good Morning";
-  } else if (currentHour < 18) {
-    greeting = "Good Afternoon";
+
+    greeting =
+      "Good Morning";
+
+  } else if (
+    currentHour < 18
+  ) {
+
+    greeting =
+      "Good Afternoon";
   }
 
   return (
+
     <div
       className="
         relative
@@ -193,101 +271,320 @@ const WelcomeBanner = ({ user }) => {
         shadow-xl
       "
     >
-      {/* Decorative circles */}
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
-      <div className="absolute bottom-0 right-20 w-28 h-28 bg-white/10 rounded-full" />
 
-      <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-8">
+      {/* Decorative circles */}
+
+      <div className="
+        absolute
+        -top-10
+        -right-10
+        w-40
+        h-40
+        bg-white/10
+        rounded-full
+      " />
+
+      <div className="
+        absolute
+        bottom-0
+        right-20
+        w-28
+        h-28
+        bg-white/10
+        rounded-full
+      " />
+
+      <div
+        className="
+          relative
+          z-10
+          flex
+          flex-col
+          lg:flex-row
+          justify-between
+          gap-8
+        "
+      >
+
         {/* LEFT */}
+
         <div>
-          <div className="flex items-center gap-2 mb-4">
+
+          <div className="
+            flex
+            items-center
+            gap-2
+            mb-4
+          ">
+
             <Sparkles className="w-5 h-5" />
 
-            <span className="text-sm font-semibold tracking-wide">
+            <span className="
+              text-sm
+              font-semibold
+              tracking-wide
+            ">
               Nagar Sahayata Smart Dashboard
             </span>
+
           </div>
 
-          <h1 className="text-4xl font-bold leading-tight">
+          <h1 className="
+            text-4xl
+            font-bold
+            leading-tight
+          ">
+
             {greeting},
+
             <br />
+
             {user?.name || "User"} 👋
+
           </h1>
 
-          <p className="mt-4 text-white/90 max-w-2xl">
+          <p className="
+            mt-4
+            text-white/90
+            max-w-2xl
+          ">
+
             Welcome back to your smart civic management dashboard.
             Monitor complaints, track staff activity, manage departments,
             and improve city services efficiently.
+
           </p>
 
-          <div className="flex flex-wrap gap-4 mt-6">
-            <div className="bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl">
-              <p className="text-sm text-white/80">Role</p>
-              <p className="font-semibold flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4" />
-                {user?.role}
+          <div className="
+            flex
+            flex-wrap
+            gap-4
+            mt-6
+          ">
+
+            {/* ROLE */}
+
+            <div className="
+              bg-white/10
+              backdrop-blur-md
+              px-4
+              py-3
+              rounded-2xl
+            ">
+
+              <p className="
+                text-sm
+                text-white/80
+              ">
+                Role
               </p>
+
+              <p className="
+                font-semibold
+                flex
+                items-center
+                gap-2
+              ">
+
+                <ShieldCheck className="w-4 h-4" />
+
+                {user?.role}
+
+              </p>
+
             </div>
 
+            {/* DEPARTMENT */}
+
             {user?.department && (
-              <div className="bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl">
-                <p className="text-sm text-white/80">Department</p>
-                <p className="font-semibold flex items-center gap-2">
-                  <Building className="w-4 h-4" />
-                  {user?.department}
+
+              <div className="
+                bg-white/10
+                backdrop-blur-md
+                px-4
+                py-3
+                rounded-2xl
+              ">
+
+                <p className="
+                  text-sm
+                  text-white/80
+                ">
+                  Department
                 </p>
+
+                <p className="
+                  font-semibold
+                  flex
+                  items-center
+                  gap-2
+                ">
+
+                  <Building className="w-4 h-4" />
+
+                  {user?.department}
+
+                </p>
+
               </div>
             )}
 
-            <div className="bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl">
-              <p className="text-sm text-white/80">City</p>
-              <p className="font-semibold flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-               {user?.city}
+            {/* CITY */}
+
+            <div className="
+              bg-white/10
+              backdrop-blur-md
+              px-4
+              py-3
+              rounded-2xl
+            ">
+
+              <p className="
+                text-sm
+                text-white/80
+              ">
+                City
               </p>
+
+              <p className="
+                font-semibold
+                flex
+                items-center
+                gap-2
+              ">
+
+                <MapPin className="w-4 h-4" />
+
+                {user?.city}
+
+              </p>
+
             </div>
+
           </div>
+
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex flex-col justify-center gap-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 min-w-[240px]">
-            <div className="flex items-center justify-between">
+
+        <div className="
+          flex
+          flex-col
+          justify-center
+          gap-4
+        ">
+
+          {/* ACTIVE REPORTS */}
+
+          <div className="
+            bg-white/10
+            backdrop-blur-md
+            rounded-2xl
+            p-5
+            min-w-[240px]
+          ">
+
+            <div className="
+              flex
+              items-center
+              justify-between
+            ">
+
               <div>
-                <p className="text-sm text-white/80">
+
+                <p className="
+                  text-sm
+                  text-white/80
+                ">
                   Active Reports
                 </p>
 
-                <h2 className="text-3xl font-bold mt-1">
-                  265
+                <h2 className="
+                  text-3xl
+                  font-bold
+                  mt-1
+                ">
+
+                <CountUp
+  start={0}
+  end={
+    dashboardStats?.pending || 0
+  }
+  duration={2}
+/>
                 </h2>
+
               </div>
 
-              <Activity className="w-10 h-10 text-white/80" />
+              <Activity className="
+                w-10
+                h-10
+                text-white/80
+              " />
+
             </div>
+
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5">
-            <div className="flex items-center justify-between">
+          {/* NOTIFICATIONS */}
+
+          <div className="
+            bg-white/10
+            backdrop-blur-md
+            rounded-2xl
+            p-5
+          ">
+
+            <div className="
+              flex
+              items-center
+              justify-between
+            ">
+
               <div>
-                <p className="text-sm text-white/80">
+
+                <p className="
+                  text-sm
+                  text-white/80
+                ">
                   Notifications
                 </p>
 
-                <h2 className="text-3xl font-bold mt-1">
-                  18
+                <h2 className="
+                  text-3xl
+                  font-bold
+                  mt-1
+                ">
+
+                  <CountUp
+                    start={0}
+                    end={
+  notificationCount || 0
+}
+                    duration={2}
+                  />
+
                 </h2>
+
               </div>
 
-              <Bell className="w-10 h-10 text-white/80" />
+              <Bell className="
+                w-10
+                h-10
+                text-white/80
+              " />
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
   );
 };
-
 
 // ======================================================
 // ================= QUICK ACTIONS ======================
@@ -379,7 +676,27 @@ const QuickActions = () => {
 // ======================================================
 
 const Dashboard = () => {
+
   const { user } = useAuth();
+
+  // ======================================================
+  // ================= STATES =============================
+  // ======================================================
+
+  const [dashboardStats, setDashboardStats] =
+    useState({
+
+      totalIssues: 0,
+
+      resolved: 0,
+
+      pending: 0,
+
+      departments: 0,
+    });
+
+  const [notificationCount, setNotificationCount] =
+    useState(0);
 
   // ======================================================
   // ================= ROLE CHECKS ========================
@@ -395,10 +712,11 @@ const Dashboard = () => {
     user?.role === "Junior Staff";
 
   // ======================================================
-  // ================= DEBUGGING LOGS =====================
+  // ================= FETCH DATA =========================
   // ======================================================
 
   useEffect(() => {
+
     console.log("📊 Dashboard Loaded");
 
     console.log("👤 Current User:", user);
@@ -406,6 +724,66 @@ const Dashboard = () => {
     console.log("🛡 Role:", user?.role);
 
     console.log("🏢 Department:", user?.department);
+
+    // ======================================================
+    // ================= DASHBOARD STATS ====================
+    // ======================================================
+
+    const fetchDashboardStats =
+      async () => {
+
+        try {
+
+          const res =
+            await axios.get(
+              "/api/reports/dashboard-stats"
+            );
+
+          setDashboardStats(
+            res.data
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Dashboard Stats Error:",
+            error
+          );
+        }
+      };
+
+    // ======================================================
+    // ================= NOTIFICATIONS ======================
+    // ======================================================
+
+    const fetchNotifications =
+      async () => {
+
+        try {
+
+          const res =
+            await axios.get(
+              "/api/notifications"
+            );
+
+          setNotificationCount(
+
+            res.data?.notifications?.length || 0
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Notification Error:",
+            error
+          );
+        }
+      };
+
+    fetchDashboardStats();
+
+    fetchNotifications();
+
   }, [user]);
 
   // ======================================================
@@ -413,15 +791,18 @@ const Dashboard = () => {
   // ======================================================
 
   return (
+
     <div className="flex flex-col space-y-8">
 
       {/* ====================================================== */}
       {/* ================= WELCOME HERO ======================= */}
       {/* ====================================================== */}
 
-      <WelcomeBanner user={user} />
-
-
+      <WelcomeBanner
+        user={user}
+        dashboardStats={dashboardStats}
+        notificationCount={notificationCount}
+      />
 
       {/* ====================================================== */}
       {/* ================= QUICK ACTIONS ====================== */}
@@ -429,15 +810,13 @@ const Dashboard = () => {
 
       <QuickActions />
 
-
-
       {/* ====================================================== */}
       {/* ================= DASHBOARD CARDS ==================== */}
       {/* ====================================================== */}
 
-      <DashboardCards />
-
-
+      <DashboardCards
+        dashboardStats={dashboardStats}
+      />
 
       {/* ====================================================== */}
       {/* ================= MAP SECTION ======================== */}
@@ -453,10 +832,10 @@ const Dashboard = () => {
           border-gray-100
         "
       >
+
         <MapSection />
+
       </div>
-
-
 
       {/* ====================================================== */}
       {/* ================= REPORT SECTION ===================== */}
@@ -472,75 +851,104 @@ const Dashboard = () => {
           border-gray-100
         "
       >
+
         <ReportsTable
           role={user?.role}
           department={user?.department}
         />
-
-
 
         {/* ====================================================== */}
         {/* ================= STAFF SECTION ====================== */}
         {/* ====================================================== */}
 
         {isStaff && (
+
           <div className="mt-10 space-y-10">
 
             <div>
-              <h3 className="text-xl font-bold text-green-700 mb-4">
+
+              <h3 className="
+                text-xl
+                font-bold
+                text-green-700
+                mb-4
+              ">
                 Assign Reports
               </h3>
 
-              <AddReportForm currentUser={user} />
+              <AddReportForm
+                currentUser={user}
+              />
+
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-blue-700 mb-4">
+
+              <h3 className="
+                text-xl
+                font-bold
+                text-blue-700
+                mb-4
+              ">
                 Junior Staff Monitoring
               </h3>
 
               <JuniorStaffAssigned />
+
             </div>
 
           </div>
         )}
-
-
 
         {/* ====================================================== */}
         {/* ================= JUNIOR STAFF ======================= */}
         {/* ====================================================== */}
 
         {isJuniorStaff && (
+
           <div className="mt-10 space-y-10">
 
             <div>
-              <h3 className="text-xl font-bold text-blue-700 mb-4">
+
+              <h3 className="
+                text-xl
+                font-bold
+                text-blue-700
+                mb-4
+              ">
                 Assigned Tasks
               </h3>
 
               <JuniorStaffTasks />
+
             </div>
 
             <div>
-              <h3 className="text-xl font-bold text-green-700 mb-4">
+
+              <h3 className="
+                text-xl
+                font-bold
+                text-green-700
+                mb-4
+              ">
                 Accepted Tasks
               </h3>
 
               <AcceptedTasks />
+
             </div>
 
           </div>
         )}
+
       </div>
-
-
 
       {/* ====================================================== */}
       {/* ================= ACTIVITY LOG ======================= */}
       {/* ====================================================== */}
 
       {isHigherAuthority && (
+
         <div
           className="
             bg-white
@@ -551,11 +959,11 @@ const Dashboard = () => {
             border-gray-100
           "
         >
+
           <ActivityLog />
+
         </div>
       )}
-
-
 
       {/* ====================================================== */}
       {/* ================= ANALYTICS SECTION ================== */}
@@ -571,10 +979,10 @@ const Dashboard = () => {
           border-gray-100
         "
       >
+
         <AnalyticsCharts />
+
       </div>
-
-
 
       {/* ====================================================== */}
       {/* ===================== FOOTER ========================= */}
@@ -590,13 +998,14 @@ const Dashboard = () => {
           border-gray-100
         "
       >
+
         <Footer />
+
       </div>
 
     </div>
   );
 };
-
 
 // ======================================================
 // ================= EXPORT COMPONENT ===================

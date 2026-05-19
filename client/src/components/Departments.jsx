@@ -25,15 +25,99 @@ const Departments = () => {
   }, []);
 
   const fetchDepartments = async () => {
-    try {
-      const res = await axios.get("/api/users/departments-list");
-      setDepartments(res.data.departments);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+  try {
+
+    // ============================================
+    // ===== OFFICIAL FIXED DEPARTMENTS ===========
+    // ============================================
+
+    const civicDepartments = [
+
+      "Public Works",
+
+      "Sanitation",
+
+      "Street Lighting",
+
+      "Parks and Recreation",
+
+      "Water and Drainage",
+
+      "Traffic and Transportation",
+
+      "Urban Planning",
+
+      "Animal Control",
+
+      "Environmental Services",
+
+      "Other",
+    ];
+
+    // ============================================
+    // ===== FETCH REAL DATA FROM BACKEND =========
+    // ============================================
+
+    const res =
+      await axios.get(
+        "/api/users/departments-list"
+      );
+
+    const backendDepartments =
+      res.data.departments || [];
+
+    // ============================================
+    // ===== MAP FIXED DEPARTMENTS ================
+    // ============================================
+
+    const formattedDepartments =
+      civicDepartments.map(
+        (deptName) => {
+
+          // find matching department from backend
+
+          const matchedDept =
+            backendDepartments.find(
+              (item) =>
+                item.department === deptName
+            );
+
+          return {
+
+            department: deptName,
+
+            // if reports exist show count
+            // otherwise show 0
+
+            totalReports:
+              matchedDept?.totalReports || 0,
+
+            email:
+              matchedDept?.email ||
+              `${deptName
+                .toLowerCase()
+                .replace(/\s+/g, "")}@nagarsahayata.gov.in`,
+          };
+        }
+      );
+
+    setDepartments(
+      formattedDepartments
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Departments Fetch Error:",
+      error
+    );
+
+  } finally {
+
+    setLoading(false);
+  }
+};
 
   const filteredDepartments = departments.filter((dept) => {
     const matchesSearch = dept.department.toLowerCase().includes(searchQuery.toLowerCase());

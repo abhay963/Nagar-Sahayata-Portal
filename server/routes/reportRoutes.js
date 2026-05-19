@@ -16,6 +16,7 @@ import {
   getAssignedTasks,
   updateTaskProgress,
   getAnalyticsData,
+  getDashboardStats,
 } from "../controllers/reportController.js";
 
 import {
@@ -178,4 +179,14 @@ router.get(
   protect,
   getAnalyticsData
 );
+
+
+
+router.get(
+  "/dashboard-stats",
+  protect,
+  getDashboardStats
+);
+
+
 export default router;

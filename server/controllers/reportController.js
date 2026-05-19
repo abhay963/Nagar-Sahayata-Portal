@@ -1026,18 +1026,32 @@ export const updateTaskProgress =
 
 export const verifyTaskResolution =
   async (req, res) => {
-if (req.user.role !== "Staff") {
-  return res.status(403).json({
-    success: false,
-    message: "Only Staff can verify tasks",
-  });
-}
+
+    // ======================================================
+    // ONLY STAFF CAN VERIFY
+    // ======================================================
+
+    if (req.user.role !== "Staff") {
+
+      return res.status(403).json({
+
+        success: false,
+
+        message:
+          "Only Staff can verify tasks",
+      });
+    }
+
     try {
 
       const {
         reportId,
         action,
       } = req.body;
+
+      // ======================================================
+      // FIND REPORT
+      // ======================================================
 
       const report =
         await Report.findById(
@@ -1056,6 +1070,10 @@ if (req.user.role !== "Staff") {
         });
       }
 
+      // ======================================================
+      // APPROVE RESOLUTION
+      // ======================================================
+
       if (
         action === "approve"
       ) {
@@ -1073,6 +1091,10 @@ if (req.user.role !== "Staff") {
           new Date();
       }
 
+      // ======================================================
+      // REJECT RESOLUTION
+      // ======================================================
+
       if (
         action === "reject"
       ) {
@@ -1081,9 +1103,130 @@ if (req.user.role !== "Staff") {
           "In Progress";
       }
 
+      // ======================================================
+      // REASSIGN SAME JUNIOR STAFF
+      // ======================================================
+
+      if (
+        action === "reassign"
+      ) {
+
+        report.status =
+          "Staff Assigned";
+
+        // clear unable data
+
+        report.unableAt =
+          null;
+
+        report.unableReason =
+          "";
+
+        report.unableImage =
+          "";
+
+        // reset accept/decline
+
+        report.acceptedAt =
+          null;
+
+        report.declinedAt =
+          null;
+
+        report.declinedReason =
+          "";
+      }
+
+      // ======================================================
+      // MOVE ISSUE BACK TO PENDING
+      // ======================================================
+
+      if (
+        action === "move-to-pending"
+      ) {
+
+        report.status =
+          "Pending";
+
+        // remove assignment
+
+        report.assignedTo =
+          null;
+
+        report.assignedToName =
+          "";
+
+        report.assignedToDepartment =
+          "";
+
+        report.assignedBy =
+          null;
+
+        report.assignedByName =
+          "";
+
+        report.assignedAt =
+          null;
+
+        report.acceptedAt =
+          null;
+
+        // clear unable data
+
+        report.unableAt =
+          null;
+
+        report.unableReason =
+          "";
+
+        report.unableImage =
+          "";
+
+        report.declinedAt =
+          null;
+
+        report.declinedReason =
+          "";
+      }
+
+      // ======================================================
+      // SAVE REPORT
+      // ======================================================
+
       await report.save();
 
+      // ======================================================
+      // NOTIFICATIONS
+      // ======================================================
+
       if (report.assignedTo) {
+
+        let notificationMessage =
+          "";
+
+        if (
+          action === "approve"
+        ) {
+
+          notificationMessage =
+            "Task resolution approved";
+        }
+
+        else if (
+          action === "reject"
+        ) {
+
+          notificationMessage =
+            "Task resolution rejected";
+        }
+
+        else if (
+          action === "reassign"
+        ) {
+
+          notificationMessage =
+            "Task has been reassigned to you";
+        }
 
         await Notification.create({
 
@@ -1102,21 +1245,20 @@ if (req.user.role !== "Staff") {
               : "alert",
 
           message:
-
-            action === "approve"
-
-              ? "Task resolution approved"
-
-              : "Task resolution rejected",
+            notificationMessage,
         });
       }
+
+      // ======================================================
+      // RESPONSE
+      // ======================================================
 
       res.status(200).json({
 
         success: true,
 
         message:
-          `Task ${action}d successfully`,
+          `Task ${action} completed successfully`,
 
         report,
       });
@@ -1482,3 +1624,98 @@ export const getAnalyticsData = async (req, res) => {
     });
   }
 };
+
+export const getDashboardStats = async (req, res) => {
+
+  try {
+
+    const user = req.user;
+
+    let filter = {};
+
+    // =====================================
+    // HIGHER AUTHORITY
+    // =====================================
+
+    if (
+      user.role === "Higher Authority"
+    ) {
+
+      filter = {};
+    }
+
+    // =====================================
+    // STAFF / JUNIOR STAFF
+    // =====================================
+
+    else {
+
+      filter = {
+
+        city: user.city,
+
+        department:
+          user.department,
+      };
+    }
+
+    // =====================================
+    // COUNTS
+    // =====================================
+const totalDepartments =
+  await User.distinct(
+    "department"
+  );
+    const totalIssues =
+      await Report.countDocuments(
+        filter
+      );
+
+    const resolved =
+      await Report.countDocuments({
+
+        ...filter,
+
+        status: "Resolved",
+      });
+
+    const pending =
+      await Report.countDocuments({
+
+        ...filter,
+
+        status: {
+          $ne: "Resolved",
+        },
+      });
+
+    const departments =
+      await Report.distinct(
+        "department",
+        filter
+      );
+
+    res.status(200).json({
+
+      totalIssues,
+
+      resolved,
+
+      pending,
+
+      departments:
+        totalDepartments.length,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      message:
+        "Failed to fetch dashboard stats",
+    });
+  }
+};
+

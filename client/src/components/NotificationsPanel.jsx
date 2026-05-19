@@ -131,7 +131,7 @@ const FullscreenImageModal = ({
 // ================= NOTIFICATION PANEL =================
 // ======================================================
 
-const NotificationsPanel = () => {
+const NotificationsPanel = ({ onClose }) => {
 
   const [notifications, setNotifications] =
     useState([]);
@@ -570,33 +570,6 @@ const NotificationsPanel = () => {
 
             </div>
 
-            <button
-
-              onClick={
-                clearAllNotifications
-              }
-
-              className="
-                flex
-                items-center
-                gap-2
-                bg-red-500
-                hover:bg-red-600
-                text-white
-                px-3
-                py-2
-                rounded-2xl
-                text-sm
-                font-semibold
-                duration-300
-              "
-            >
-
-              <FiScissors />
-
-              Clear
-
-            </button>
 
           </div>
 

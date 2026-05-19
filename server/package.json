@@ -30,6 +30,7 @@
     "passport-google-oauth20": "^2.0.0",
     "react-toastify": "^11.0.5",
     "resend": "^6.12.3",
+    "stream-chat": "^9.44.2",
     "toastify": "^2.0.1"
   },
   "devDependencies": {

@@ -635,6 +635,49 @@ const JuniorStaffAssigned = () => {
                 </div>
               )}
 
+{selectedTask.status ===
+  "Unable To Complete" && (
+
+  <div className="p-8 border-t bg-red-50 flex gap-4">
+
+    {/* REASSIGN SAME STAFF */}
+
+    <button
+      onClick={() =>
+        verifyTask(
+          selectedTask._id,
+          "reassign"
+        )
+      }
+
+      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-semibold"
+    >
+
+      🔄 Reassign Again
+
+    </button>
+
+    {/* MOVE TO PENDING */}
+
+    <button
+      onClick={() =>
+        verifyTask(
+          selectedTask._id,
+          "move-to-pending"
+        )
+      }
+
+      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-4 rounded-2xl font-semibold"
+    >
+
+      📌 Move To Pending
+
+    </button>
+
+  </div>
+)}
+
+
             </motion.div>
 
           </div>
