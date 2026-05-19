@@ -10,7 +10,50 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+// ================= DEPARTMENTS =================
 
+const civicDepartments = [
+  "Public Works",
+  "Sanitation",
+  "Street Lighting",
+  "Parks and Recreation",
+  "Water and Drainage",
+  "Traffic and Transportation",
+  "Urban Planning",
+  "Animal Control",
+  "Environmental Services",
+  "Other",
+];
+
+
+// ================= JHARKHAND CITIES =================
+
+const jharkhandCities = [
+  "Bokaro",
+  "Chaibasa",
+  "Chatra",
+  "Deoghar",
+  "Dhanbad",
+  "Dumka",
+  "Garhwa",
+  "Giridih",
+  "Godda",
+  "Gumla",
+  "Hazaribagh",
+  "Jamshedpur",
+  "Jamtara",
+  "Khunti",
+  "Koderma",
+  "Latehar",
+  "Lohardaga",
+  "Medininagar",
+  "Pakur",
+  "Ramgarh",
+  "Ranchi",
+  "Sahebganj",
+  "Saraikela",
+  "Simdega",
+];
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -264,22 +307,91 @@ const Profile = () => {
                   onChange={handleChange}
                   error={errors.email}
                 />
-              <EditableField
-  label="Department"
-  name="department"
-  value={formData.department}
-  isEditing={isEditing && user.role !== "Higher Authority"}
-  onChange={handleChange}
-  error={errors.department}
-/>
-                <EditableField
-                  label="City"
-                  name="city"
-                  value={formData.city}
-                  isEditing={isEditing}
-                  onChange={handleChange}
-                  error={errors.city}
-                />
+          {/* ================= DEPARTMENT ================= */}
+
+<div>
+  <label className="block text-sm font-medium text-gray-500 mb-1.5">
+    Department
+  </label>
+
+  {isEditing && user.role !== "Higher Authority" ? (
+    <>
+      <select
+        name="department"
+        value={formData.department}
+        onChange={handleChange}
+        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all
+        ${
+          errors.department
+            ? "border-red-500"
+            : "border-gray-300 focus:border-green-500"
+        }`}
+      >
+        <option value="">Select Department</option>
+
+        {civicDepartments.map((dept) => (
+          <option key={dept} value={dept}>
+            {dept}
+          </option>
+        ))}
+      </select>
+
+      {errors.department && (
+        <p className="text-red-500 text-xs mt-1.5">
+          {errors.department}
+        </p>
+      )}
+    </>
+  ) : (
+    <p className="text-gray-800 font-semibold py-3 px-1">
+      {formData.department || "—"}
+    </p>
+  )}
+</div>
+
+
+
+{/* ================= CITY ================= */}
+
+<div>
+  <label className="block text-sm font-medium text-gray-500 mb-1.5">
+    City
+  </label>
+
+  {isEditing ? (
+    <>
+      <select
+        name="city"
+        value={formData.city}
+        onChange={handleChange}
+        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 transition-all
+        ${
+          errors.city
+            ? "border-red-500"
+            : "border-gray-300 focus:border-green-500"
+        }`}
+      >
+        <option value="">Select City</option>
+
+        {jharkhandCities.map((cityName) => (
+          <option key={cityName} value={cityName}>
+            {cityName}
+          </option>
+        ))}
+      </select>
+
+      {errors.city && (
+        <p className="text-red-500 text-xs mt-1.5">
+          {errors.city}
+        </p>
+      )}
+    </>
+  ) : (
+    <p className="text-gray-800 font-semibold py-3 px-1">
+      {formData.city || "—"}
+    </p>
+  )}
+</div>
                 <EditableField
                   label="Contact Number"
                   name="contact"
