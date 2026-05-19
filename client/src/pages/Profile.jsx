@@ -61,17 +61,40 @@ const Profile = () => {
   }
 
   // Validation
-  const validate = () => {
-    const errs = {};
-    if (!formData.name?.trim()) errs.name = "Name is required";
-    if (!formData.email?.trim()) errs.email = "Email is required";
-    if (!formData.empId?.trim()) errs.empId = "Employee ID is required";
-    if (!formData.department?.trim()) errs.department = "Department is required";
-    if (!formData.city?.trim()) errs.city = "City is required";
-    if (!formData.contact?.trim()) errs.contact = "Contact number is required";
+ const validate = () => {
 
-    return errs;
-  };
+  const errs = {};
+
+  if (!formData.name?.trim()) {
+    errs.name = "Name is required";
+  }
+
+  if (!formData.email?.trim()) {
+    errs.email = "Email is required";
+  }
+
+  if (!formData.empId?.trim()) {
+    errs.empId = "Employee ID is required";
+  }
+
+  // Department required only if NOT Higher Authority
+  if (
+    user.role !== "Higher Authority" &&
+    !formData.department?.trim()
+  ) {
+    errs.department = "Department is required";
+  }
+
+  if (!formData.city?.trim()) {
+    errs.city = "City is required";
+  }
+
+  if (!formData.contact?.trim()) {
+    errs.contact = "Contact number is required";
+  }
+
+  return errs;
+};
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -118,7 +141,11 @@ const Profile = () => {
       toast.success("Profile updated successfully!");
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || "Failed to update profile");
+      toast.error(
+  err.response?.data?.message ||
+  err.response?.data?.errors?.[0]?.msg ||
+  "Failed to update profile"
+);
     } finally {
       setSaving(false);
     }
@@ -237,14 +264,14 @@ const Profile = () => {
                   onChange={handleChange}
                   error={errors.email}
                 />
-                <EditableField
-                  label="Department"
-                  name="department"
-                  value={formData.department}
-                  isEditing={isEditing}
-                  onChange={handleChange}
-                  error={errors.department}
-                />
+              <EditableField
+  label="Department"
+  name="department"
+  value={formData.department}
+  isEditing={isEditing && user.role !== "Higher Authority"}
+  onChange={handleChange}
+  error={errors.department}
+/>
                 <EditableField
                   label="City"
                   name="city"

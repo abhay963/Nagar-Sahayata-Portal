@@ -20,7 +20,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
   if (!user) return null;
 
   const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+    { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { name: "Reports", icon: FileText, path: "/reports" },
     { name: "Departments", icon: Building, path: "/departments" },
     { name: "Analytics", icon: BarChart3, path: "/analytics" },
