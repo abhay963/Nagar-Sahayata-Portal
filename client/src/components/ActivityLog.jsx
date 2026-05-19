@@ -390,10 +390,10 @@ const ActivityLog = () => {
                       </p>
                       <div className="overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                         <img
-                          src={selectedReport.imageBase64}
+                          src={selectedReport.image}
                           alt="Original Issue"
                           className="w-full h-auto max-h-[380px] object-contain bg-gray-50 hover:scale-105 transition-transform duration-700"
-                          onClick={() => window.open(selectedReport.imageBase64, "_blank")}
+                          onClick={() => window.open(selectedReport.image, "_blank")}
                         />
                       </div>
                     </div>
@@ -406,10 +406,10 @@ const ActivityLog = () => {
                       </p>
                       <div className="overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                         <img
-                          src={selectedReport.resolvedImageBase64}
+                          src={selectedReport.resolvedImage}
                           alt="Resolution Proof"
                           className="w-full h-auto max-h-[380px] object-contain bg-gray-50 hover:scale-105 transition-transform duration-700"
-                          onClick={() => window.open(selectedReport.resolvedImageBase64, "_blank")}
+                          onClick={() => window.open(selectedReport.resolvedImage, "_blank")}
                         />
                       </div>
                     </div>
@@ -422,10 +422,10 @@ const ActivityLog = () => {
                       </p>
                       <div className="overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all cursor-pointer">
                         <img
-                          src={selectedReport.unableImageBase64}
+                          src={selectedReport.unableImage}
                           alt="Unable Proof"
                           className="w-full h-auto max-h-[380px] object-contain bg-gray-50 hover:scale-105 transition-transform duration-700"
-                          onClick={() => window.open(selectedReport.unableImageBase64, "_blank")}
+                          onClick={() => window.open(selectedReport.unableImage, "_blank")}
                         />
                       </div>
                     </div>
@@ -436,17 +436,26 @@ const ActivityLog = () => {
                 <div>
                   <h3 className="text-2xl font-semibold mb-8 text-gray-900">Task Timeline</h3>
                   
-                  <div className="relative pl-12">
+                  <div className="relative pl-12 py-4">
                     {/* Background Line */}
-                    <div className="absolute left-5 top-2 bottom-2 w-1 bg-emerald-100 rounded-full" />
+                  {/* Background Line */}
 
-                    {/* Animated Growing Line */}
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: "100%" }}
-                      transition={{ duration: 1.4, ease: "easeOut" }}
-                      className="absolute left-5 top-2 w-1 bg-emerald-600 rounded-full origin-top"
-                    />
+
+{/* Background Line */}
+<div className="absolute left-4 top-0 bottom-0 w-[4px] bg-emerald-100 rounded-full overflow-hidden z-0">
+
+  {/* Filling Animation */}
+  <motion.div
+    initial={{ height: 0 }}
+    animate={{ height: "100%" }}
+    transition={{
+      duration: 2,
+      ease: "easeInOut",
+    }}
+    className="absolute left-0 top-0 w-full bg-emerald-500 rounded-full z-10"
+  />
+
+</div>
 
                     <div className="space-y-14">
                       <AnimatedTimelineItem 
@@ -525,34 +534,56 @@ const ActivityLog = () => {
   );
 };
 
-const AnimatedTimelineItem = ({ title, subtitle, time, color, delay }) => (
-  <motion.div
-    initial={{ opacity: 0, x: -30 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.7, delay }}
-    className="relative cursor-default"
-  >
-    {/* Dot */}
-    <motion.div
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ delay: delay + 0.3, type: "spring", stiffness: 200 }}
-      className={`absolute -left-[22px] w-9 h-9 rounded-full border-4 border-white bg-${color}-600 flex items-center justify-center shadow-lg`}
-    >
-      <div className="w-3.5 h-3.5 bg-white rounded-full" />
-    </motion.div>
+const AnimatedTimelineItem = ({ title, subtitle, time, color, delay }) => {
 
-    <div className="ml-4">
-      <p className="font-semibold text-xl text-gray-900">{title}</p>
-      {subtitle && <p className="text-gray-600 mt-2 text-[15px] leading-relaxed">{subtitle}</p>}
-      <p className="text-sm text-gray-500 mt-3 font-medium">
-        {new Date(time).toLocaleString("en-IN", { 
-          dateStyle: "medium", 
-          timeStyle: "short" 
-        })}
-      </p>
-    </div>
-  </motion.div>
-);
+  const colorClasses = {
+    emerald: "bg-emerald-600",
+    blue: "bg-blue-600",
+    red: "bg-red-600",
+    amber: "bg-amber-500",
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.7, delay }}
+      className="relative cursor-default"
+    >
+      {/* Dot */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{
+          delay: delay + 0.3,
+          type: "spring",
+          stiffness: 200,
+        }}
+        className={`absolute -left-[22px] w-9 h-9 rounded-full border-4 border-white ${colorClasses[color]} flex items-center justify-center shadow-lg z-20`}
+      >
+        <div className="w-3.5 h-3.5 bg-white rounded-full" />
+      </motion.div>
+
+      <div className="ml-4">
+        <p className="font-semibold text-xl text-gray-900">
+          {title}
+        </p>
+
+        {subtitle && (
+          <p className="text-gray-600 mt-2 text-[15px] leading-relaxed">
+            {subtitle}
+          </p>
+        )}
+
+        <p className="text-sm text-gray-500 mt-3 font-medium">
+          {new Date(time).toLocaleString("en-IN", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          })}
+        </p>
+      </div>
+    </motion.div>
+  );
+};
 
 export default ActivityLog;

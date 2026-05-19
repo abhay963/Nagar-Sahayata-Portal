@@ -283,3 +283,43 @@ export const getUnreadNotificationCount =
       });
     }
   };
+
+
+
+  export const clearAllNotifications =
+  async (req, res) => {
+
+    try {
+
+      const userId =
+        req.user.id;
+
+      await Notification.deleteMany({
+
+        userId,
+      });
+
+      res.status(200).json({
+
+        success: true,
+
+        message:
+          "All notifications cleared",
+      });
+
+    } catch (error) {
+
+      console.error(
+        "❌ Clear All Notifications Error:",
+        error
+      );
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+      });
+    }
+  };

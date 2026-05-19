@@ -32,7 +32,6 @@ import {
 // ======================================================
 // ================= FULLSCREEN IMAGE ===================
 // ======================================================
-
 const FullscreenImageModal = ({
   image,
   onClose,
@@ -43,6 +42,8 @@ const FullscreenImageModal = ({
     <AnimatePresence>
 
       <motion.div
+
+        onClick={onClose}
 
         initial={{ opacity: 0 }}
 
@@ -63,6 +64,10 @@ const FullscreenImageModal = ({
       >
 
         <motion.img
+
+          onClick={(e) =>
+            e.stopPropagation()
+          }
 
           initial={{
             scale: 0.7,
@@ -94,16 +99,23 @@ const FullscreenImageModal = ({
 
           className="
             absolute
-            top-5
-            right-5
-            text-white
-            text-4xl
-            hover:rotate-90
-            duration-300
+            top-6
+            right-6
+            bg-white
+            text-black
+            w-12
+            h-12
+            rounded-full
+            flex
+            items-center
+            justify-center
+            shadow-2xl
+            hover:scale-110
+            transition
           "
         >
 
-          <FiX />
+          <FiX size={28} />
 
         </button>
 
@@ -279,12 +291,22 @@ const NotificationsPanel = () => {
   // ================= CLEAR ALL ==========================
   // ======================================================
 
-  const clearAllNotifications =
-    () => {
+ const clearAllNotifications =
+  async () => {
+
+    try {
+
+      await axios.delete(
+        "/api/notifications/clear-all"
+      );
 
       setNotifications([]);
-    };
 
+    } catch (error) {
+
+      console.error(error);
+    }
+  };
 
 
   // ======================================================

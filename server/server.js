@@ -6,9 +6,7 @@ import "./config/env.js";
 // ================= PACKAGE IMPORTS =================
 
 import express from "express";
-
 import cors from "cors";
-
 import path from "path";
 
 
@@ -23,55 +21,11 @@ import {
 
 import authRoutes from "./routes/auth.js";
 
-import otpRoutes from "./routes/otpRoutes.js";
-
 import userRoutes from "./routes/userRoutes.js";
 
 import reportRoutes from "./routes/reportRoutes.js";
 
 import notificationRoutes from "./routes/notificationRoutes.js";
-
-
-// ================= ENV DEBUG =================
-
-console.log("\n===== ENV CHECK =====");
-
-console.log(
-  "CLOUDINARY_CLOUD_NAME:",
-  process.env.CLOUDINARY_CLOUD_NAME
-    ? "✅ FOUND"
-    : "❌ MISSING"
-);
-
-console.log(
-  "CLOUDINARY_API_KEY:",
-  process.env.CLOUDINARY_API_KEY
-    ? "✅ FOUND"
-    : "❌ MISSING"
-);
-
-console.log(
-  "CLOUDINARY_API_SECRET:",
-  process.env.CLOUDINARY_API_SECRET
-    ? "✅ FOUND"
-    : "❌ MISSING"
-);
-
-console.log(
-  "MONGO_URI_AUTH:",
-  process.env.MONGO_URI_AUTH
-    ? "✅ FOUND"
-    : "❌ MISSING"
-);
-
-console.log(
-  "JWT_SECRET:",
-  process.env.JWT_SECRET
-    ? "✅ FOUND"
-    : "❌ MISSING"
-);
-
-console.log("======================\n");
 
 
 // ================= EXPRESS APP =================
@@ -81,29 +35,40 @@ const app = express();
 
 // ================= MIDDLEWARE =================
 
-app.use(cors({
+app.use(
 
-  origin: [
-    "http://localhost:5173",
-    "https://nagar-sahayata-portal.vercel.app",
-  ],
+  cors({
 
-  credentials: true,
-}));
+    origin: [
+
+      "http://localhost:5173",
+
+      "https://nagar-sahayata-portal.vercel.app",
+    ],
+
+    credentials: true,
+  })
+);
 
 
-app.use(express.json({
+app.use(
 
-  limit: "50mb",
-}));
+  express.json({
+
+    limit: "50mb",
+  })
+);
 
 
-app.use(express.urlencoded({
+app.use(
 
-  extended: true,
+  express.urlencoded({
 
-  limit: "50mb",
-}));
+    extended: true,
+
+    limit: "50mb",
+  })
+);
 
 
 // ================= STATIC FILES =================
@@ -115,7 +80,9 @@ app.use(
   express.static(
 
     path.join(
+
       process.cwd(),
+
       "uploads/profile-images"
     )
   )
@@ -127,11 +94,6 @@ app.use(
 app.use(
   "/api/auth",
   authRoutes
-);
-
-app.use(
-  "/api/otp",
-  otpRoutes
 );
 
 app.use(
@@ -182,10 +144,9 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
 
   console.error(
-    "\n❌ GLOBAL SERVER ERROR:"
+    "❌ SERVER ERROR:",
+    err.message
   );
-
-  console.error(err);
 
   res.status(
     err.status || 500
@@ -194,7 +155,9 @@ app.use((err, req, res, next) => {
     success: false,
 
     message:
+
       err.message ||
+
       "Internal Server Error",
   });
 });
@@ -212,15 +175,7 @@ const startServer = async () => {
 
   try {
 
-    console.log(
-      "\n🔄 Connecting Database..."
-    );
-
     await connectAuthDB();
-
-    console.log(
-      "✅ MongoDB Connected Successfully"
-    );
 
     app.listen(PORT, () => {
 
@@ -232,10 +187,9 @@ const startServer = async () => {
   } catch (error) {
 
     console.error(
-      "\n❌ Failed to start server:"
+      "❌ Failed to start server:",
+      error.message
     );
-
-    console.error(error);
   }
 };
 

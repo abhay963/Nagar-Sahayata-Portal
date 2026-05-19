@@ -1,1024 +1,851 @@
-// ======================================================
-// ==================== ICON IMPORTS ====================
-// ======================================================
+"use client";
 
-// React icons used in About page
+import React from "react";
+
+import { motion } from "framer-motion";
+
+import { Canvas } from "@react-three/fiber";
+
 import {
+  Float,
+  Stars,
+  Sparkles,
+  OrbitControls,
+} from "@react-three/drei";
 
+import {
   FaLandmark,
-
   FaStar,
-
   FaLightbulb,
-
   FaUserTie,
-
   FaAward,
-
   FaHandshake,
-
   FaGlobe,
-
   FaUsersCog,
-
+  FaChartLine,
+  FaShieldAlt,
 } from "react-icons/fa";
 
+import Navbar from "../components/Navbar";
+
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+
+import {
+  Badge,
+} from "@/components/ui/badge";
+
+import {
+  Button,
+} from "@/components/ui/button";
+
 
 
 // ======================================================
-// ===================== ABOUT PAGE =====================
+// ================= 3D SCENE ===========================
 // ======================================================
 
-const About = () => {
-
-  // Debug log
-  console.log(
-    "📄 About Page Loaded"
-  );
-
-
+const BackgroundScene = () => {
   return (
-
-    <div className="
-      min-h-screen
-      bg-gradient-to-r
-      from-green-50
-      to-green-100
-      py-20
-      px-6
-      md:px-20
-      font-sans
-      text-gray-900
-      relative
-      flex
-      flex-col
-      overflow-hidden
-    ">
-
-      {/* Main container */}
-      <div className="
-        max-w-6xl
-        mx-auto
-        space-y-16
-        flex-grow
-      ">
-
-
-
-        {/* ====================================================== */}
-        {/* ======================= HEADER ======================= */}
-        {/* ====================================================== */}
-
-        <header className="
-          text-center
-          max-w-4xl
-          mx-auto
-          space-y-6
-          animate-fadeSlideDown
-        ">
-
-          {/* Main heading */}
-          <h1 className="
-            text-5xl
-            font-extrabold
-            text-green-900
-          ">
-
-            {/* Government icon */}
-            <FaLandmark
-              className="
-                inline-block
-                mr-3
-                text-green-700
-                animate-bounce
-              "
-            />
-
-            About Nagar Sahayata Portal
-
-          </h1>
-
-
-          {/* Description */}
-          <p className="
-            text-lg
-            text-green-700
-            font-medium
-            leading-relaxed
-            tracking-wide
-            animate-fadeInSlow
-          ">
-
-            The{" "}
-
-            <span className="
-              font-bold
-              text-green-900
-            ">
-
-              Jharkhand Smart Civic Reporting & Management System
-
-            </span>{" "}
-
-            is a government-endorsed platform empowering citizens and municipal
-            teams to{" "}
-
-            <span className="
-              text-green-800
-              decoration-wavy
-            ">
-
-              collaborate efficiently
-
-            </span>{" "}
-
-            in creating safer, cleaner, and smarter cities.
-
-          </p>
-        </header>
-
-
-
-        {/* ====================================================== */}
-        {/* ================= MISSION & VISION =================== */}
-        {/* ====================================================== */}
-
-        <div className="
-          grid
-          md:grid-cols-2
-          gap-12
-        ">
-
-
-          {/* ================= MISSION ================= */}
-
-          <section className="
-            bg-white
-            rounded-lg
-            shadow-lg
-            p-8
-            border
-            border-green-200
-            transition-all
-            duration-500
-            transform
-            hover:-translate-y-2
-            animate-fadeLeft
-          ">
-
-            <h2 className="
-              flex
-              items-center
-              text-3xl
-              font-bold
-              text-green-800
-              mb-4
-              tracking-wide
-            ">
-
-              {/* Mission icon */}
-              <FaStar
-                className="
-                  text-yellow-400
-                  mr-3
-                  animate-pulse
-                "
-              />
-
-              Our Mission
-
-            </h2>
-
-
-            <p className="
-              text-lg
-              leading-relaxed
-              text-gray-700
-            ">
-
-              To build a{" "}
-
-              <strong>
-
-                transparent, responsive, and citizen-first governance
-
-              </strong>{" "}
-
-              system — where civic issues are rapidly addressed, government
-              efforts are recognized, and cities thrive through innovation and
-              trust.
-
-            </p>
-
-          </section>
-
-
-
-          {/* ================= VISION ================= */}
-
-          <section className="
-            bg-white
-            rounded-lg
-            shadow-lg
-            p-8
-            border
-            border-green-200
-            transition-all
-            duration-500
-            transform
-            hover:-translate-y-2
-            animate-fadeRight
-          ">
-
-            <h2 className="
-              flex
-              items-center
-              text-3xl
-              font-bold
-              text-green-800
-              mb-4
-              tracking-wide
-            ">
-
-              {/* Vision icon */}
-              <FaLightbulb
-                className="
-                  text-yellow-500
-                  mr-3
-                  animate-pulse
-                "
-              />
-
-              Our Vision
-
-            </h2>
-
-
-            <p className="
-              text-lg
-              leading-relaxed
-              text-gray-700
-            ">
-
-              Envisioning a future where{" "}
-
-              <span className="
-                text-green-900
-                font-semibold
-              ">
-
-                Jharkhand leads smart governance
-
-              </span>{" "}
-
-              — engaging citizens actively, empowering officials with digital
-              tools, and fostering clean, safe, and digitally connected urban
-              communities.
-
-            </p>
-
-          </section>
-        </div>
-
-
-
-        {/* ====================================================== */}
-        {/* ================= DEDICATED STAFF ==================== */}
-        {/* ====================================================== */}
-
-        <section className="
-          bg-white
-          rounded-lg
-          shadow-lg
-          p-10
-          border
-          border-green-200
-          transition-all
-          duration-500
-          transform
-          hover:-translate-y-2
-          animate-fadeUp
-        ">
-
-          <h2 className="
-            flex
-            items-center
-            text-3xl
-            font-bold
-            text-green-800
-            mb-6
-            tracking-wide
-          ">
-
-            {/* Staff icon */}
-            <FaUserTie
-              className="
-                text-blue-600
-                mr-3
-                animate-pulse
-              "
-            />
-
-            For Our Dedicated Staff
-
-          </h2>
-
-
-          {/* Benefits list */}
-          <ul className="
-            list-disc
-            list-inside
-            space-y-3
-            text-lg
-            text-gray-700
-            max-w-4xl
-            mx-auto
-          ">
-
-            <li>
-
-              <strong>
-                🚀 Streamlined Workflows:
-              </strong>{" "}
-
-              Centralize reports and manage tasks effortlessly from an intuitive dashboard.
-
-            </li>
-
-
-            <li>
-
-              <strong>
-                📍 Intelligent Routing:
-              </strong>{" "}
-
-              Automated issue assignment to relevant departments based on location and type.
-
-            </li>
-
-
-            <li>
-
-              <strong>
-                📊 Powerful Analytics:
-              </strong>{" "}
-
-              Monitor trends and measure response effectiveness with detailed insights.
-
-            </li>
-
-
-            <li>
-
-              <strong>
-                🤝 Transparent Progress:
-              </strong>{" "}
-
-              Foster citizen trust through visible, trackable issue resolutions.
-
-            </li>
-
-
-            <li>
-
-              <FaUsersCog
-                className="
-                  inline
-                  text-green-600
-                  mr-1
-                "
-              />
-
-              <em>
-
-                Plus, ongoing training and support for continuous improvement.
-
-              </em>
-
-            </li>
-          </ul>
-        </section>
-
-
-
-        {/* ====================================================== */}
-        {/* ================= REWARDS SECTION ==================== */}
-        {/* ====================================================== */}
-
-        <section className="
-          bg-white
-          rounded-lg
-          shadow-lg
-          p-10
-          border
-          border-green-200
-          transition-all
-          duration-500
-          transform
-          hover:-translate-y-2
-          animate-fadeUp
-          delay-150
-        ">
-
-          <h2 className="
-            flex
-            items-center
-            text-3xl
-            font-bold
-            text-green-800
-            mb-6
-            tracking-wide
-          ">
-
-            {/* Award icon */}
-            <FaAward
-              className="
-                text-yellow-600
-                mr-3
-                animate-pulse
-              "
-            />
-
-            Rewards & Recognition
-
-          </h2>
-
-
-          {/* Rewards list */}
-          <ul className="
-            list-disc
-            list-inside
-            space-y-3
-            text-lg
-            text-gray-700
-            max-w-4xl
-            mx-auto
-          ">
-
-            <li>
-
-              🥇 Certificates for top-performing individuals and teams.
-
-            </li>
-
-
-            <li>
-
-              🎁 Exclusive perks and incentives for departments with outstanding resolution rates.
-
-            </li>
-
-
-            <li>
-
-              🌟 Monthly spotlight awards to celebrate exceptional dedication and impact.
-
-            </li>
-
-          </ul>
-        </section>
-
-
-
-        {/* ====================================================== */}
-        {/* ================= COMMITMENT SECTION ================= */}
-        {/* ====================================================== */}
-
-        <section className="
-          bg-white
-          rounded-lg
-          shadow-lg
-          p-10
-          border
-          border-green-200
-          transition-all
-          duration-500
-          transform
-          hover:-translate-y-2
-          animate-fadeUp
-          delay-300
-        ">
-
-          <h2 className="
-            flex
-            items-center
-            text-3xl
-            font-bold
-            text-green-800
-            mb-6
-            tracking-wide
-          ">
-
-            {/* Handshake icon */}
-            <FaHandshake
-              className="
-                text-teal-600
-                mr-3
-                animate-pulse
-              "
-            />
-
-            Our Commitment
-
-          </h2>
-
-
-          <p className="
-            text-lg
-            leading-relaxed
-            text-gray-700
-            max-w-4xl
-            mx-auto
-          ">
-
-            The Government of Jharkhand pledges unwavering support to municipal
-            staff by providing{" "}
-
-            <strong>
-
-              modern technology, continuous training, and transparent governance
-
-            </strong>{" "}
-
-            that bridges the gap between citizens and officials, fostering a
-            culture of trust and efficiency.
-
-          </p>
-        </section>
-
-
-
-        {/* ====================================================== */}
-        {/* =================== SLOGAN SECTION =================== */}
-        {/* ====================================================== */}
-
-        <section className="
-          text-center
-          max-w-6xl
-          mx-auto
-          animate-fadeInUp
-          delay-500
-          px-4
-        ">
-
-          <h2 className="
-            text-3xl
-            font-bold
-            text-green-800
-            mb-12
-            tracking-wide
-            flex
-            justify-center
-            items-center
-            gap-2
-          ">
-
-            {/* Globe icon */}
-            <FaGlobe
-              className="
-                text-green-600
-                animate-spin-slow
-              "
-            />
-
-            Inspiring Slogan
-
-          </h2>
-
-
-
-          {/* Slogan cards */}
-          <div className="
-            grid
-            sm:grid-cols-3
-            gap-6
-          ">
-
-            {
-              [
-
-                "Smart Staff, Smarter Cities.",
-
-                "Empowering Governance, Engaging Citizens.",
-
-                "Together for a Cleaner, Safer Jharkhand.",
-
-              ].map((slogan, idx) => (
-
-                <div
-
-                  key={idx}
-
-                  className="
-                    bg-white
-                    shadow-md
-                    border
-                    border-green-200
-                    rounded-lg
-                    p-6
-                    flex
-                    flex-col
-                    justify-center
-                    items-center
-                    transition-transform
-                    duration-300
-                    hover:scale-105
-                    hover:shadow-xl
-                    opacity-0
-                  "
-
-                  style={{
-
-                    animation:
-                      `fadeInUp 0.8s ease forwards`,
-
-                    animationDelay:
-                      `${idx * 0.3}s`,
-                  }}
-
-
-                  // Debug animation completion
-                  onAnimationEnd={(e) => {
-
-                    console.log(
-                      `✅ Slogan animation completed: ${idx}`
-                    );
-
-                    e.currentTarget.style.opacity = 1;
-                  }}
-                >
-
-                  <span className="
-                    text-green-800
-                    text-xl
-                    font-semibold
-                    italic
-                    leading-relaxed
-                    relative
-                  ">
-
-                    <span className="
-                      text-4xl
-                      text-green-400
-                      absolute
-                      -left-3
-                      -top-4
-                    ">
-
-                      “
-
-                    </span>
-
-
-                    {slogan}
-
-
-                    <span className="
-                      text-4xl
-                      text-green-400
-                      absolute
-                      -right-3
-                      -bottom-4
-                    ">
-
-                      ”
-
-                    </span>
-
-                  </span>
-                </div>
-              ))
-            }
-          </div>
-        </section>
-      </div>
-
-
-
-      {/* ====================================================== */}
-      {/* ======================= FOOTER ======================= */}
-      {/* ====================================================== */}
-
-      <footer className="
-        mt-20
-        bg-white
-        shadow-lg
-        border-t
-        border-green-300
-      ">
-
-        <div className="
-          max-w-6xl
-          mx-auto
-          flex
-          flex-col
-          sm:flex-row
-          items-center
-          justify-between
-          gap-4
-          py-6
-          px-6
-          sm:px-12
-        ">
-
-
-          {/* Indian flag strip */}
-          <div className="
-            flex
-            space-x-1
-            w-full
-            sm:w-auto
-            order-2
-            sm:order-1
-          ">
-
-            <div className="
-              h-2
-              w-10
-              bg-orange-500
-              rounded-tl-md
-              rounded-bl-md
-            "></div>
-
-            <div className="
-              h-2
-              w-10
-              bg-white
-              border
-              border-gray-300
-            "></div>
-
-            <div className="
-              h-2
-              w-10
-              bg-green-600
-              rounded-tr-md
-              rounded-br-md
-            "></div>
-
-          </div>
-
-
-
-          {/* Logo + text */}
-          <div className="
-            flex
-            items-center
-            gap-4
-            order-1
-            sm:order-2
-          ">
-
-            {/* Jharkhand logo */}
-            <img
-
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Jharkhand_Rajakiya_Chihna.svg/1200px-Jharkhand_Rajakiya_Chihna.svg.png"
-
-              alt="Government of Jharkhand"
-
-              loading="lazy"
-
-              className="
-                h-14
-                w-auto
-              "
-
-
-              // Image load debugging
-              onError={() => {
-
-                console.error(
-                  "❌ Failed to load Jharkhand logo"
-                );
-              }}
-            />
-
-
-            {/* Footer text */}
-            <span className="
-              text-green-900
-              font-semibold
-              text-lg
-              tracking-wide
-              select-none
-              drop-shadow-sm
-              hover:text-green-700
-              transition-colors
-              duration-300
-              cursor-default
-            ">
-
-              Government of Jharkhand
-
-            </span>
-          </div>
-        </div>
-      </footer>
-
-
-
-      {/* ====================================================== */}
-      {/* ==================== ANIMATIONS ====================== */}
-      {/* ====================================================== */}
-
-      <style>{`
-
-        /* Header animation */
-        @keyframes fadeSlideDown {
-
-          0% {
-
-            opacity: 0;
-
-            transform: translateY(-40px);
-          }
-
-          100% {
-
-            opacity: 1;
-
-            transform: translateY(0);
-          }
-        }
-
-
-        .animate-fadeSlideDown {
-
-          animation:
-            fadeSlideDown
-            1s
-            ease-out
-            forwards;
-        }
-
-
-
-        /* Slow fade */
-        @keyframes fadeInSlow {
-
-          0% {
-
-            opacity: 0;
-          }
-
-          100% {
-
-            opacity: 1;
-          }
-        }
-
-
-        .animate-fadeInSlow {
-
-          animation:
-            fadeInSlow
-            2s
-            ease-in
-            forwards;
-        }
-
-
-
-        /* Left animation */
-        @keyframes fadeLeft {
-
-          0% {
-
-            opacity: 0;
-
-            transform: translateX(-40px);
-          }
-
-          100% {
-
-            opacity: 1;
-
-            transform: translateX(0);
-          }
-        }
-
-
-        .animate-fadeLeft {
-
-          animation:
-            fadeLeft
-            1s
-            ease-out
-            forwards;
-        }
-
-
-
-        /* Right animation */
-        @keyframes fadeRight {
-
-          0% {
-
-            opacity: 0;
-
-            transform: translateX(40px);
-          }
-
-          100% {
-
-            opacity: 1;
-
-            transform: translateX(0);
-          }
-        }
-
-
-        .animate-fadeRight {
-
-          animation:
-            fadeRight
-            1s
-            ease-out
-            forwards;
-        }
-
-
-
-        /* Bottom animation */
-        @keyframes fadeUp {
-
-          0% {
-
-            opacity: 0;
-
-            transform: translateY(40px);
-          }
-
-          100% {
-
-            opacity: 1;
-
-            transform: translateY(0);
-          }
-        }
-
-
-        .animate-fadeUp {
-
-          animation:
-            fadeUp
-            1s
-            ease-out
-            forwards;
-        }
-
-
-
-        /* Card animation */
-        @keyframes fadeInUp {
-
-          0% {
-
-            opacity: 0;
-
-            transform: translateY(30px);
-          }
-
-          100% {
-
-            opacity: 1;
-
-            transform: translateY(0);
-          }
-        }
-
-
-
-        /* Slow rotation */
-        @keyframes spinSlow {
-
-          0% {
-
-            transform: rotate(0deg);
-          }
-
-          100% {
-
-            transform: rotate(360deg);
-          }
-        }
-
-
-        .animate-spin-slow {
-
-          animation:
-            spinSlow
-            8s
-            linear
-            infinite;
-        }
-
-      `}</style>
-
-    </div>
+    <Canvas>
+
+      <color attach="background" args={["#020617"]} />
+
+      <ambientLight intensity={2} />
+
+      <directionalLight position={[2, 2, 5]} intensity={3} />
+
+      <Stars
+        radius={100}
+        depth={50}
+        count={4000}
+        factor={4}
+        fade
+      />
+
+      <Sparkles
+        count={200}
+        scale={12}
+        size={4}
+        speed={0.4}
+      />
+
+      <Float
+        speed={2}
+        rotationIntensity={2}
+        floatIntensity={3}
+      >
+        <mesh>
+          <icosahedronGeometry args={[1.8, 1]} />
+          <meshStandardMaterial
+            color="#22c55e"
+            wireframe
+          />
+        </mesh>
+      </Float>
+
+      <OrbitControls
+        enableZoom={false}
+        autoRotate
+        autoRotateSpeed={0.7}
+      />
+
+    </Canvas>
   );
 };
 
 
-// Export page
+
+// ======================================================
+// ================= ABOUT PAGE =========================
+// ======================================================
+
+const About = () => {
+
+  const cards = [
+    {
+      icon: <FaChartLine />,
+      title: "Smart Dashboard",
+      desc: "Track complaints, analytics and city performance in real-time.",
+    },
+
+    {
+      icon: <FaShieldAlt />,
+      title: "Secure Governance",
+      desc: "Safe and transparent complaint handling with accountability.",
+    },
+
+    {
+      icon: <FaUsersCog />,
+      title: "Team Collaboration",
+      desc: "Departments coordinate together for faster issue resolution.",
+    },
+  ];
+
+
+  return (
+    <>
+      <Navbar />
+
+      <div className="relative min-h-screen bg-slate-950 overflow-hidden text-white">
+
+        {/* ====================================================== */}
+        {/* ================= 3D BACKGROUND ====================== */}
+        {/* ====================================================== */}
+
+        <div className="fixed inset-0 z-0 opacity-60">
+          <BackgroundScene />
+        </div>
+
+        {/* ====================================================== */}
+        {/* ================= GRADIENT OVERLAY =================== */}
+        {/* ====================================================== */}
+
+        <div
+          className="
+            fixed
+            inset-0
+            bg-gradient-to-b
+            from-black/40
+            via-slate-950/80
+            to-slate-950
+            z-10
+          "
+        />
+
+
+
+        {/* ====================================================== */}
+        {/* ================= MAIN CONTENT ======================= */}
+        {/* ====================================================== */}
+
+        <div className="relative z-20">
+
+          {/* ====================================================== */}
+          {/* ================= HERO SECTION ======================= */}
+          {/* ====================================================== */}
+
+          <section
+            className="
+              min-h-screen
+              flex
+              items-center
+              justify-center
+              px-6
+              pt-20
+            "
+          >
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 60,
+              }}
+
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+
+              transition={{
+                duration: 1,
+              }}
+
+              className="
+                max-w-6xl
+                mx-auto
+                text-center
+              "
+            >
+
+              <Badge
+                className="
+                  bg-green-500/20
+                  text-green-300
+                  border
+                  border-green-500/30
+                  px-6
+                  py-2
+                  rounded-full
+                  text-sm
+                  mb-8
+                "
+              >
+
+                <FaLandmark className="mr-2" />
+
+                Government of Jharkhand
+
+              </Badge>
+
+
+              <h1
+                className="
+                  text-6xl
+                  md:text-8xl
+                  font-black
+                  leading-tight
+                  mb-8
+                "
+              >
+
+                Smart Urban{" "}
+
+                <span
+                  className="
+                    bg-gradient-to-r
+                    from-green-400
+                    via-emerald-300
+                    to-teal-400
+                    bg-clip-text
+                    text-transparent
+                  "
+                >
+                  Governance
+                </span>
+
+              </h1>
+
+
+              <p
+                className="
+                  text-xl
+                  md:text-2xl
+                  text-slate-300
+                  leading-relaxed
+                  max-w-4xl
+                  mx-auto
+                  mb-12
+                "
+              >
+
+                Nagar Sahayata is a modern digital governance platform
+                empowering citizens and municipal staff through
+                transparency, AI-powered workflows, and smart complaint
+                management.
+
+              </p>
+
+
+              <div
+                className="
+                  flex
+                  flex-wrap
+                  items-center
+                  justify-center
+                  gap-5
+                "
+              >
+
+                <Button
+                  className="
+                    bg-green-600
+                    hover:bg-green-700
+                    rounded-full
+                    px-8
+                    py-6
+                    text-lg
+                  "
+                >
+                  Explore Platform
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="
+                    rounded-full
+                    px-8
+                    py-6
+                    text-lg
+                    border-slate-600
+                    bg-transparent
+                    text-white
+                    hover:bg-slate-800
+                  "
+                >
+                  Learn More
+                </Button>
+
+              </div>
+
+            </motion.div>
+
+          </section>
+
+
+
+          {/* ====================================================== */}
+          {/* ================= MISSION + VISION =================== */}
+          {/* ====================================================== */}
+
+          <section className="py-28 px-6">
+
+            <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10">
+
+              {/* Mission */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  x: -60,
+                }}
+
+                whileInView={{
+                  opacity: 1,
+                  x: 0,
+                }}
+
+                transition={{
+                  duration: 0.8,
+                }}
+              >
+
+                <Card
+                  className="
+                    bg-white/5
+                    border
+                    border-white/10
+                    backdrop-blur-2xl
+                    rounded-[32px]
+                    p-10
+                    h-full
+                    hover:border-green-500/40
+                    transition-all
+                    duration-500
+                  "
+                >
+
+                  <CardContent className="p-0">
+
+                    <div
+                      className="
+                        w-20
+                        h-20
+                        rounded-2xl
+                        bg-yellow-500/20
+                        flex
+                        items-center
+                        justify-center
+                        mb-8
+                      "
+                    >
+
+                      <FaStar className="text-4xl text-yellow-400" />
+
+                    </div>
+
+                    <h2 className="text-5xl font-black mb-6">
+                      Our Mission
+                    </h2>
+
+                    <p
+                      className="
+                        text-slate-300
+                        text-lg
+                        leading-relaxed
+                      "
+                    >
+                      Building a transparent, efficient, and citizen-first
+                      governance ecosystem where every issue is tracked,
+                      resolved, and monitored digitally.
+                    </p>
+
+                  </CardContent>
+
+                </Card>
+
+              </motion.div>
+
+
+
+              {/* Vision */}
+
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  x: 60,
+                }}
+
+                whileInView={{
+                  opacity: 1,
+                  x: 0,
+                }}
+
+                transition={{
+                  duration: 0.8,
+                }}
+              >
+
+                <Card
+                  className="
+                    bg-white/5
+                    border
+                    border-white/10
+                    backdrop-blur-2xl
+                    rounded-[32px]
+                    p-10
+                    h-full
+                    hover:border-green-500/40
+                    transition-all
+                    duration-500
+                  "
+                >
+
+                  <CardContent className="p-0">
+
+                    <div
+                      className="
+                        w-20
+                        h-20
+                        rounded-2xl
+                        bg-amber-500/20
+                        flex
+                        items-center
+                        justify-center
+                        mb-8
+                      "
+                    >
+
+                      <FaLightbulb className="text-4xl text-amber-400" />
+
+                    </div>
+
+                    <h2 className="text-5xl font-black mb-6">
+                      Our Vision
+                    </h2>
+
+                    <p
+                      className="
+                        text-slate-300
+                        text-lg
+                        leading-relaxed
+                      "
+                    >
+                      Creating smarter, cleaner, and digitally connected
+                      cities where citizens and officials collaborate
+                      seamlessly for urban transformation.
+                    </p>
+
+                  </CardContent>
+
+                </Card>
+
+              </motion.div>
+
+            </div>
+
+          </section>
+
+
+
+          {/* ====================================================== */}
+          {/* ================= FEATURES =========================== */}
+          {/* ====================================================== */}
+
+          <section className="py-28 px-6">
+
+            <div className="max-w-7xl mx-auto">
+
+              <div className="text-center mb-20">
+
+                <Badge
+                  className="
+                    bg-green-500/10
+                    text-green-300
+                    border
+                    border-green-500/30
+                    px-5
+                    py-2
+                    rounded-full
+                    mb-6
+                  "
+                >
+
+                  <FaUserTie className="mr-2" />
+
+                  Staff Features
+
+                </Badge>
+
+                <h2 className="text-6xl font-black">
+                  Built for Modern Governance
+                </h2>
+
+              </div>
+
+
+              <div className="grid md:grid-cols-3 gap-8">
+
+                {
+                  cards.map((card, i) => (
+
+                    <motion.div
+                      key={i}
+
+                      initial={{
+                        opacity: 0,
+                        y: 80,
+                      }}
+
+                      whileInView={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+
+                      transition={{
+                        delay: i * 0.2,
+                      }}
+                    >
+
+                      <Card
+                        className="
+                          bg-white/5
+                          border
+                          border-white/10
+                          backdrop-blur-2xl
+                          rounded-[32px]
+                          p-8
+                          hover:-translate-y-4
+                          hover:border-green-500/40
+                          transition-all
+                          duration-500
+                          h-full
+                        "
+                      >
+
+                        <CardContent className="p-0">
+
+                          <div
+                            className="
+                              w-20
+                              h-20
+                              rounded-2xl
+                              bg-green-500/10
+                              flex
+                              items-center
+                              justify-center
+                              mb-8
+                              text-4xl
+                              text-green-400
+                            "
+                          >
+                            {card.icon}
+                          </div>
+
+                          <h3 className="text-3xl font-bold mb-4">
+                            {card.title}
+                          </h3>
+
+                          <p className="text-slate-300 leading-relaxed text-lg">
+                            {card.desc}
+                          </p>
+
+                        </CardContent>
+
+                      </Card>
+
+                    </motion.div>
+                  ))
+                }
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+
+          {/* ====================================================== */}
+          {/* ================= REWARDS ============================ */}
+          {/* ====================================================== */}
+
+          <section className="py-28 px-6">
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+              }}
+
+              whileInView={{
+                opacity: 1,
+                scale: 1,
+              }}
+
+              transition={{
+                duration: 0.8,
+              }}
+
+              className="
+                max-w-6xl
+                mx-auto
+                rounded-[40px]
+                border
+                border-green-500/20
+                bg-gradient-to-r
+                from-green-500/10
+                to-emerald-500/10
+                backdrop-blur-2xl
+                p-14
+              "
+            >
+
+              <div className="flex items-center gap-5 mb-12">
+
+                <FaAward className="text-6xl text-yellow-400" />
+
+                <h2 className="text-5xl font-black">
+                  Rewards & Recognition
+                </h2>
+
+              </div>
+
+
+              <div className="grid md:grid-cols-3 gap-8">
+
+                {[
+                  "Certificates of Excellence",
+                  "Monthly Performance Awards",
+                  "Department Achievement Trophies",
+                ].map((item, i) => (
+
+                  <div
+                    key={i}
+                    className="
+                      bg-white/5
+                      rounded-3xl
+                      border
+                      border-white/10
+                      p-8
+                    "
+                  >
+
+                    <div className="text-5xl mb-6">
+                      {i === 0 ? "🥇" : i === 1 ? "🎖️" : "🏆"}
+                    </div>
+
+                    <p className="text-xl text-slate-200">
+                      {item}
+                    </p>
+
+                  </div>
+                ))}
+
+              </div>
+
+            </motion.div>
+
+          </section>
+
+
+
+          {/* ====================================================== */}
+          {/* ================= COMMITMENT ========================= */}
+          {/* ====================================================== */}
+
+          <section className="py-28 px-6">
+
+            <motion.div
+              initial={{
+                opacity: 0,
+                y: 60,
+              }}
+
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+
+              transition={{
+                duration: 0.8,
+              }}
+
+              className="
+                max-w-5xl
+                mx-auto
+                text-center
+                bg-white/5
+                border
+                border-white/10
+                backdrop-blur-2xl
+                rounded-[40px]
+                p-14
+              "
+            >
+
+              <FaHandshake className="text-7xl text-teal-400 mx-auto mb-8" />
+
+              <h2 className="text-5xl font-black mb-8">
+                Our Commitment
+              </h2>
+
+              <p
+                className="
+                  text-xl
+                  text-slate-300
+                  leading-relaxed
+                  max-w-4xl
+                  mx-auto
+                "
+              >
+                We are committed to providing advanced digital tools,
+                AI-powered workflows, transparency, accountability,
+                and continuous support for smarter governance.
+              </p>
+
+            </motion.div>
+
+          </section>
+
+
+
+          {/* ====================================================== */}
+          {/* ================= SLOGANS ============================ */}
+          {/* ====================================================== */}
+
+          <section className="py-28 px-6">
+
+            <div className="max-w-7xl mx-auto">
+
+              <div className="text-center mb-16">
+
+                <h2
+                  className="
+                    text-5xl
+                    font-black
+                    flex
+                    items-center
+                    justify-center
+                    gap-4
+                  "
+                >
+
+                  <FaGlobe className="text-green-400" />
+
+                  Our Principles
+
+                </h2>
+
+              </div>
+
+
+              <div className="grid md:grid-cols-3 gap-8">
+
+                {[
+                  "Smart Staff, Smarter Cities",
+                  "Digital Governance for Everyone",
+                  "Together for Better Jharkhand",
+                ].map((item, i) => (
+
+                  <motion.div
+                    key={i}
+
+                    initial={{
+                      opacity: 0,
+                      y: 60,
+                    }}
+
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+
+                    transition={{
+                      delay: i * 0.2,
+                    }}
+                  >
+
+                    <Card
+                      className="
+                        bg-white/5
+                        border
+                        border-white/10
+                        backdrop-blur-2xl
+                        rounded-[32px]
+                        p-10
+                        text-center
+                        hover:-translate-y-3
+                        hover:border-green-500/40
+                        transition-all
+                        duration-500
+                      "
+                    >
+
+                      <CardContent className="p-0">
+
+                        <p
+                          className="
+                            text-2xl
+                            italic
+                            font-semibold
+                            text-green-300
+                            leading-relaxed
+                          "
+                        >
+                          “{item}”
+                        </p>
+
+                      </CardContent>
+
+                    </Card>
+
+                  </motion.div>
+                ))}
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </div>
+    </>
+  );
+};
+
 export default About;

@@ -353,7 +353,7 @@ useEffect(() => {
           </h2>
 
           <p className="text-emerald-100 mt-2">
-            #{selectedReport.reportId || selectedReport._id}
+            #{selectedReport.status}
           </p>
 
         </div>
@@ -366,10 +366,7 @@ useEffect(() => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-            <div>
-              <strong>Report ID:</strong>{" "}
-              {selectedReport.reportId || selectedReport._id}
-            </div>
+            
 
             <div>
               <strong>Problem Type:</strong>{" "}
@@ -487,37 +484,269 @@ useEffect(() => {
 
           {/* IMAGE */}
 
-          {selectedReport.image && (
+        {/* ====================================================== */}
+{/* ================= REPORT IMAGES ====================== */}
+{/* ====================================================== */}
 
-            <div>
+<div className="space-y-8">
 
-              <p className="font-semibold mb-3 text-lg">
-                Attachment
-              </p>
+  <h3 className="
+    text-2xl
+    font-bold
+    text-gray-900
+    flex
+    items-center
+    gap-3
+  ">
+    🖼 Report Attachments
+  </h3>
 
-              <img
-                src={selectedReport.image}
 
-                alt="Report"
+  <div className="
+    grid
+    grid-cols-1
+    md:grid-cols-2
+    gap-8
+  ">
 
-                className="
-                  w-full
-                  rounded-2xl
-                  shadow-md
-                  cursor-pointer
-                  hover:scale-[1.02]
-                  transition-transform
-                "
+    {/* ORIGINAL IMAGE */}
 
-                onClick={() =>
-                  setFullscreenImage(
-                    selectedReport.image
-                  )
-                }
-              />
+    {
+      selectedReport.image && (
 
-            </div>
-          )}
+        <motion.div
+
+          whileHover={{
+            y: -5,
+          }}
+
+          className="
+            bg-white
+            border
+            border-emerald-100
+            rounded-3xl
+            overflow-hidden
+            shadow-lg
+            hover:shadow-2xl
+            transition-all
+          "
+        >
+
+          <div className="
+            px-6
+            py-4
+            bg-emerald-50
+            border-b
+            border-emerald-100
+          ">
+
+            <h4 className="
+              text-lg
+              font-bold
+              text-emerald-700
+              flex
+              items-center
+              gap-2
+            ">
+              📸 Original Issue Image
+            </h4>
+
+          </div>
+
+
+          <div className="p-4">
+
+            <img
+
+              src={selectedReport.image}
+
+              alt="Original Report"
+
+              onClick={() =>
+                setFullscreenImage(
+                  selectedReport.image
+                )
+              }
+
+              className="
+                w-full
+                h-[320px]
+                object-cover
+                rounded-2xl
+                cursor-pointer
+                hover:scale-[1.03]
+                transition-transform
+                duration-500
+              "
+            />
+
+          </div>
+
+        </motion.div>
+      )
+    }
+
+
+
+    {/* RESOLUTION PROOF */}
+
+    {
+      selectedReport.resolvedImage && (
+
+        <motion.div
+
+          whileHover={{
+            y: -5,
+          }}
+
+          className="
+            bg-white
+            border
+            border-green-100
+            rounded-3xl
+            overflow-hidden
+            shadow-lg
+            hover:shadow-2xl
+            transition-all
+          "
+        >
+
+          <div className="
+            px-6
+            py-4
+            bg-green-50
+            border-b
+            border-green-100
+          ">
+
+            <h4 className="
+              text-lg
+              font-bold
+              text-green-700
+              flex
+              items-center
+              gap-2
+            ">
+              ✅ Resolution Proof
+            </h4>
+
+          </div>
+
+
+          <div className="p-4">
+
+            <img
+
+              src={selectedReport.resolvedImage}
+
+              alt="Resolution Proof"
+
+              onClick={() =>
+                setFullscreenImage(
+                  selectedReport.resolvedImage
+                )
+              }
+
+              className="
+                w-full
+                h-[320px]
+                object-cover
+                rounded-2xl
+                cursor-pointer
+                hover:scale-[1.03]
+                transition-transform
+                duration-500
+              "
+            />
+
+          </div>
+
+        </motion.div>
+      )
+    }
+
+
+
+    {/* UNABLE IMAGE */}
+
+    {
+      selectedReport.unableImage && (
+
+        <motion.div
+
+          whileHover={{
+            y: -5,
+          }}
+
+          className="
+            bg-white
+            border
+            border-red-100
+            rounded-3xl
+            overflow-hidden
+            shadow-lg
+            hover:shadow-2xl
+            transition-all
+          "
+        >
+
+          <div className="
+            px-6
+            py-4
+            bg-red-50
+            border-b
+            border-red-100
+          ">
+
+            <h4 className="
+              text-lg
+              font-bold
+              text-red-700
+              flex
+              items-center
+              gap-2
+            ">
+              ❌ Unable Completion Proof
+            </h4>
+
+          </div>
+
+
+          <div className="p-4">
+
+            <img
+
+              src={selectedReport.unableImage}
+
+              alt="Unable Proof"
+
+              onClick={() =>
+                setFullscreenImage(
+                  selectedReport.unableImage
+                )
+              }
+
+              className="
+                w-full
+                h-[320px]
+                object-cover
+                rounded-2xl
+                cursor-pointer
+                hover:scale-[1.03]
+                transition-transform
+                duration-500
+              "
+            />
+
+          </div>
+
+        </motion.div>
+      )
+    }
+
+  </div>
+
+</div>
 
         </div>
 
