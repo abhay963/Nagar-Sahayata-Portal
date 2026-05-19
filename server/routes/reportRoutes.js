@@ -15,6 +15,7 @@ import {
   verifyTaskResolution,
   getAssignedTasks,
   updateTaskProgress,
+  getAnalyticsData,
 } from "../controllers/reportController.js";
 
 import {
@@ -171,4 +172,10 @@ router.put(
 
 
 
+
+router.get(
+  "/analytics",
+  protect,
+  getAnalyticsData
+);
 export default router;

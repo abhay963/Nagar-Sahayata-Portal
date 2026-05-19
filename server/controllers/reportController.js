@@ -1186,3 +1186,299 @@ export const getStaffAssignedTasks =
 
 
 
+export const getAnalyticsData = async (req, res) => {
+
+  try {
+
+    // ======================================================
+    // TOTAL REPORTS
+    // ======================================================
+
+    const totalReports =
+      await Report.countDocuments();
+
+    // ======================================================
+    // RESOLVED REPORTS
+    // ======================================================
+
+    const resolvedReports =
+      await Report.countDocuments({
+
+        status: "Resolved",
+      });
+
+    // ======================================================
+    // PENDING REPORTS
+    // ======================================================
+
+    const pendingReports =
+      await Report.countDocuments({
+
+        status: {
+          $in: [
+            "Pending",
+            "Staff Assigned",
+            "In Progress",
+            "Pending Approval",
+          ],
+        },
+      });
+
+    // ======================================================
+    // HIGH PRIORITY
+    // ======================================================
+
+    const highPriority =
+      await Report.countDocuments({
+
+        priority: "High",
+      });
+
+    // ======================================================
+    // STATUS DISTRIBUTION
+    // ======================================================
+
+    const issueStatusData =
+      await Report.aggregate([
+
+        {
+          $group: {
+
+            _id: "$status",
+
+            value: {
+              $sum: 1,
+            },
+          },
+        },
+
+        {
+          $project: {
+
+            _id: 0,
+
+            name: "$_id",
+
+            value: 1,
+          },
+        },
+      ]);
+
+    // ======================================================
+    // DEPARTMENT ANALYTICS
+    // ======================================================
+
+    const departmentData =
+      await Report.aggregate([
+
+        {
+          $group: {
+
+            _id: "$department",
+
+            Resolved: {
+
+              $sum: {
+
+                $cond: [
+
+                  {
+                    $eq: [
+                      "$status",
+                      "Resolved",
+                    ],
+                  },
+
+                  1,
+
+                  0,
+                ],
+              },
+            },
+
+            Pending: {
+
+              $sum: {
+
+                $cond: [
+
+                  {
+                    $in: [
+
+                      "$status",
+
+                      [
+                        "Pending",
+                        "Staff Assigned",
+                        "Pending Approval",
+                      ],
+                    ],
+                  },
+
+                  1,
+
+                  0,
+                ],
+              },
+            },
+
+            InProgress: {
+
+              $sum: {
+
+                $cond: [
+
+                  {
+                    $eq: [
+                      "$status",
+                      "In Progress",
+                    ],
+                  },
+
+                  1,
+
+                  0,
+                ],
+              },
+            },
+          },
+        },
+
+        {
+          $project: {
+
+            _id: 0,
+
+            department: "$_id",
+
+            Resolved: 1,
+
+            Pending: 1,
+
+            InProgress: 1,
+          },
+        },
+      ]);
+
+    // ======================================================
+    // MONTHLY REPORT TREND
+    // ======================================================
+
+    const monthlyReports =
+      await Report.aggregate([
+
+        {
+          $group: {
+
+            _id: {
+
+              month: {
+                $month: "$createdAt",
+              },
+            },
+
+            reports: {
+              $sum: 1,
+            },
+
+            high: {
+
+              $sum: {
+
+                $cond: [
+
+                  {
+                    $eq: [
+                      "$priority",
+                      "High",
+                    ],
+                  },
+
+                  1,
+
+                  0,
+                ],
+              },
+            },
+          },
+        },
+
+        {
+          $sort: {
+            "_id.month": 1,
+          },
+        },
+      ]);
+
+    const monthNames = [
+
+      "",
+
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    const issueTrendData =
+      monthlyReports.map((item) => ({
+
+        month:
+          monthNames[
+            item._id.month
+          ],
+
+        reports:
+          item.reports,
+
+        high:
+          item.high,
+      }));
+
+    // ======================================================
+    // FINAL RESPONSE
+    // ======================================================
+
+    res.status(200).json({
+
+      success: true,
+
+      analytics: {
+
+        totalReports,
+
+        resolvedReports,
+
+        pendingReports,
+
+        highPriority,
+
+        issueStatusData,
+
+        departmentData,
+
+        issueTrendData,
+      },
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Failed to fetch analytics",
+    });
+  }
+};
