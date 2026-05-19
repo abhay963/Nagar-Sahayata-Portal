@@ -1,111 +1,208 @@
 import Report from "../models/report.js";
-
 import User from "../models/User.js";
-
 import Notification from "../models/Notification.js";
 
+export const createReport = async (req, res) => {
 
-// ======================================================
-// ================= CREATE REPORT ======================
-// ======================================================
+  try {
 
-export const createReport =
-  async (req, res) => {
+    const report = await Report.create({
 
-    try {
+      // ================= REPORT ID =================
 
-      const report =
-        await Report.create({
-
-          ...req.body,
-
-          userId:
-            req.user?._id || null,
-        });
+      reportId: `NS-${Date.now()}`,
 
 
-      res.status(201).json({
+      // ================= BASIC DETAILS =================
 
-        success: true,
+      problemType:
+        req.body.problemType,
 
-        report,
-      });
+      description:
+        req.body.description,
 
-    } catch (error) {
+      city:
+        req.body.city,
 
-      console.error(
-        "❌ Create Report Error:",
-        error
-      );
+      department:
+        req.body.department,
 
-      res.status(500).json({
+      priority:
+        req.body.priority || "Normal",
 
-        success: false,
 
-        message:
-          error.message,
-      });
+      // ================= CITIZEN DETAILS =================
+
+      citizenName:
+        req.body.citizenName || "",
+
+      citizenContact:
+        req.body.citizenContact || "",
+
+
+      // ================= ISSUE IMAGE =================
+
+      image:
+        req.file?.path || "",
+
+
+      // ================= LOCATION =================
+
+      location: {
+
+        latitude:
+          req.body.latitude || 0,
+
+        longitude:
+          req.body.longitude || 0,
+
+        locationName:
+          req.body.locationName || "",
+      },
+
+
+      // ================= USER =================
+
+      userId:
+        req.user?._id || null,
+    });
+
+    res.status(201).json({
+
+      success: true,
+
+      report,
+    });
+
+  } catch (error) {
+
+    console.error(
+      "❌ Create Report Error:",
+      error
+    );
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        error.message,
+    });
+  }
+};
+
+export const getReports = async (req, res) => {
+
+  try {
+
+    let query = {};
+
+    // ======================================================
+    // HIGHER AUTHORITY
+    // ======================================================
+
+    if (
+
+      req.user.role === "Higher Authority" ||
+
+      req.user.role === "Admin" ||
+
+      req.user.role === "Super Admin"
+
+    ) {
+
+      query = {};
     }
-  };
 
+    // ======================================================
+    // STAFF + JUNIOR STAFF
+    // SAME CITY + SAME DEPARTMENT
+    // ======================================================
 
+    else if (
 
-// ======================================================
-// ==================== GET REPORTS =====================
-// ======================================================
+      req.user.role === "Staff" ||
 
-export const getReports =
-  async (req, res) => {
+      req.user.role === "Junior Staff"
 
-    try {
+    ) {
 
-      const reports =
-        await Report.find()
+      query = {
 
-        .populate(
-          "assignedTo",
-          "name email department role"
-        )
+        city: {
+          $regex: new RegExp(
+            `^${req.user.city}$`,
+            "i"
+          ),
+        },
 
-        .populate(
-          "userId",
-          "name email department"
-        )
-
-        .sort({
-          createdAt: -1,
-        });
-
-
-      res.status(200).json({
-
-        success: true,
-
-        reports,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Get Reports Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
+        department: {
+          $regex: new RegExp(
+            `^${req.user.department}$`,
+            "i"
+          ),
+        },
+      };
     }
-  };
 
+    // ======================================================
+    // FIND REPORTS
+    // ======================================================
 
+    const reports = await Report.find(query)
 
-// ======================================================
-// =========== GET REPORTS BY DEPARTMENT ================
-// ======================================================
+      .populate(
+        "assignedTo",
+        "name email department role city profileImage"
+      )
+
+      .populate(
+        "userId",
+        "name email"
+      )
+
+      .populate(
+        "assignedBy",
+        "name email role"
+      )
+
+      .sort({
+        createdAt: -1,
+      });
+
+    console.log("USER:", req.user.role);
+
+    console.log("QUERY:", query);
+
+    console.log("REPORTS FOUND:", reports.length);
+
+    // ======================================================
+    // RESPONSE
+    // ======================================================
+
+    res.status(200).json({
+
+      success: true,
+
+      reports,
+    });
+
+  } catch (error) {
+
+    console.error(
+      "❌ Get Reports Error:",
+      error
+    );
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
 
 export const getDepartmentReports =
   async (req, res) => {
@@ -117,29 +214,28 @@ export const getDepartmentReports =
           req.params.department
         );
 
-
       const reports =
         await Report.find({
 
           department,
 
+          city:
+            req.user.city,
         })
 
         .populate(
           "assignedTo",
-          "name email department role"
+          "name email department role city profileImage"
         )
 
         .populate(
           "userId",
-          "name email department"
+          "name email"
         )
 
         .sort({
-
           createdAt: -1,
         });
-
 
       res.status(200).json({
 
@@ -167,21 +263,34 @@ export const getDepartmentReports =
 
 
 
-// ======================================================
-// =================== ASSIGN REPORT ====================
-// ======================================================
-
 export const assignReport =
   async (req, res) => {
 
     try {
 
+      // ======================================================
+      // ================= ONLY STAFF CAN ASSIGN ==============
+      // ======================================================
+
+      if (
+        req.user.role !==
+        "Staff"
+      ) {
+
+        return res.status(403)
+        .json({
+
+          success: false,
+
+          message:
+            "Only Staff can assign reports",
+        });
+      }
+
+
       const {
-
         reportId,
-
         assignedTo,
-
       } = req.body;
 
 
@@ -193,7 +302,6 @@ export const assignReport =
         await Report.findById(
           reportId
         );
-
 
       if (!report) {
 
@@ -209,11 +317,12 @@ export const assignReport =
 
 
       // ======================================================
-      // ========== PREVENT REASSIGNING =======================
+      // ================= ONLY PENDING =======================
       // ======================================================
 
       if (
-        report.status !== "Pending"
+        report.status !==
+        "Pending"
       ) {
 
         return res.status(400)
@@ -228,6 +337,46 @@ export const assignReport =
 
 
       // ======================================================
+      // ================= SAME CITY CHECK ====================
+      // ======================================================
+
+      if (
+        report.city !==
+        req.user.city
+      ) {
+
+        return res.status(403)
+        .json({
+
+          success: false,
+
+          message:
+            "Cannot assign reports outside your city",
+        });
+      }
+
+
+      // ======================================================
+      // ================= SAME DEPARTMENT CHECK ==============
+      // ======================================================
+
+      if (
+        report.department !==
+        req.user.department
+      ) {
+
+        return res.status(403)
+        .json({
+
+          success: false,
+
+          message:
+            "Cannot assign reports outside your department",
+        });
+      }
+
+
+      // ======================================================
       // ================= FIND JUNIOR STAFF ==================
       // ======================================================
 
@@ -235,7 +384,6 @@ export const assignReport =
         await User.findById(
           assignedTo
         );
-
 
       if (!juniorStaff) {
 
@@ -251,13 +399,36 @@ export const assignReport =
 
 
       // ======================================================
-      // ========== SAME DEPARTMENT VALIDATION ================
+      // ================= ONLY JUNIOR STAFF ==================
+      // ======================================================
+
+      if (
+        juniorStaff.role !==
+        "Junior Staff"
+      ) {
+
+        return res.status(403)
+        .json({
+
+          success: false,
+
+          message:
+            "Task can only be assigned to Junior Staff",
+        });
+      }
+
+
+      // ======================================================
+      // ================= SAME CITY + DEPARTMENT ============
       // ======================================================
 
       if (
 
         juniorStaff.department !==
-        req.user.department
+        req.user.department ||
+
+        juniorStaff.city !==
+        req.user.city
 
       ) {
 
@@ -267,7 +438,7 @@ export const assignReport =
           success: false,
 
           message:
-            "Cannot assign outside department",
+            "Cannot assign outside department or city",
         });
       }
 
@@ -277,48 +448,30 @@ export const assignReport =
       // ======================================================
 
       report.assignedTo =
-  juniorStaff._id;
+        juniorStaff._id;
+
+      report.assignedBy =
+        req.user._id;
+
+      report.assignedByName =
+        req.user.name;
+
+      report.assignedAt =
+        new Date();
+
+      report.assignedToName =
+        juniorStaff.name;
+
+      report.assignedToDepartment =
+        juniorStaff.department;
+
+      report.status =
+        "Staff Assigned";
 
 
-// ======================================================
-// ================= ASSIGNED BY ========================
-// ======================================================
-
-report.assignedBy =
-  req.user._id;
-
-
-// ======================================================
-// ================= ASSIGNED AT ========================
-// ======================================================
-
-report.assignedAt =
-  new Date();
-
-
-// ======================================================
-// =========== ASSIGNED STAFF DETAILS ===================
-// ======================================================
-
-report.assignedStaffName =
-  juniorStaff.name;
-
-
-report.assignedStaffEmail =
-  juniorStaff.email;
-
-
-report.assignedDepartment =
-  juniorStaff.department;
-
-
-// ======================================================
-// ================= STATUS =============================
-// ======================================================
-
-report.status =
-  "Staff Assigned";
-
+      // ======================================================
+      // ================= SAVE REPORT ========================
+      // ======================================================
 
       await report.save();
 
@@ -382,9 +535,8 @@ report.status =
 
 
 
-// ======================================================
-// ============== GET ASSIGNED REPORTS ==================
-// ======================================================
+
+
 
 export const getAssignedReports =
   async (req, res) => {
@@ -396,24 +548,21 @@ export const getAssignedReports =
 
           assignedTo:
             req.user._id,
-
         })
 
         .populate(
           "assignedTo",
-          "name email department role"
+          "name email department role city profileImage"
         )
 
         .populate(
           "userId",
-          "name email department"
+          "name email"
         )
 
         .sort({
-
           createdAt: -1,
         });
-
 
       res.status(200).json({
 
@@ -440,50 +589,21 @@ export const getAssignedReports =
   };
 
 
-
-// ======================================================
-// =========== ACCEPT / DECLINE TASK ====================
-// ======================================================
-
-// ======================================================
-// =========== ACCEPT / DECLINE TASK ====================
-// ======================================================
-
-
-
-
-// ======================================================
-// =========== ACCEPT / DECLINE TASK ====================
-// ======================================================
-
 export const respondToTask =
   async (req, res) => {
 
     try {
 
-      // ======================================================
-      // ================= REQUEST DATA =======================
-      // ======================================================
-
       const {
-
         reportId,
-
         action,
-
       } = req.body;
 
-
-      // ======================================================
-      // ================= VALIDATE ACTION ====================
-      // ======================================================
+      // ================= VALIDATE ACTION =================
 
       if (
-
         action !== "accept" &&
-
         action !== "decline"
-
       ) {
 
         return res.status(400)
@@ -497,19 +617,12 @@ export const respondToTask =
       }
 
 
-      // ======================================================
-      // ================= FIND REPORT ========================
-      // ======================================================
+      // ================= FIND REPORT =================
 
       const report =
         await Report.findById(
           reportId
         );
-
-
-      // ======================================================
-      // ================= REPORT NOT FOUND ===================
-      // ======================================================
 
       if (!report) {
 
@@ -524,39 +637,15 @@ export const respondToTask =
       }
 
 
-      // ======================================================
-      // ================= SECURITY CHECK =====================
-      // ======================================================
-
-      if (!report.assignedTo) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "No assigned staff found",
-        });
-      }
-
-
-      // ======================================================
-      // ===== HANDLE OBJECTID OR POPULATED OBJECT SAFELY =====
-      // ======================================================
+      // ================= VERIFY ASSIGNED USER =================
 
       const assignedUserId =
 
-        report.assignedTo._id
+        report.assignedTo?._id
 
           ? report.assignedTo._id.toString()
 
-          : report.assignedTo.toString();
-
-
-      // ======================================================
-      // ================= AUTHORIZE USER =====================
-      // ======================================================
+          : report.assignedTo?.toString();
 
       if (
 
@@ -576,9 +665,7 @@ export const respondToTask =
       }
 
 
-      // ======================================================
-      // ================= ACCEPT TASK ========================
-      // ======================================================
+      // ================= ACCEPT TASK =================
 
       if (
         action === "accept"
@@ -587,18 +674,17 @@ export const respondToTask =
         report.status =
           "In Progress";
 
-
         report.acceptedAt =
           new Date();
 
+        report.declinedAt =
+          null;
 
-          report.declinedAt = null;
+        report.declinedReason =
+          "";
 
-report.declinedReason = "";
 
-        // ======================================================
-        // =========== CREATE ACCEPT NOTIFICATION ==============
-        // ======================================================
+        // ================= NOTIFICATION =================
 
         if (report.userId) {
 
@@ -623,9 +709,7 @@ report.declinedReason = "";
       }
 
 
-      // ======================================================
-      // ================= DECLINE TASK =======================
-      // ======================================================
+      // ================= DECLINE TASK =================
 
       if (
         action === "decline"
@@ -634,39 +718,37 @@ report.declinedReason = "";
         report.status =
           "Pending";
 
-
         report.assignedTo =
           null;
 
-        report.assignedStaffName =
+        report.assignedToName =
           "";
 
-        report.assignedStaffEmail =
+        report.assignedToDepartment =
           "";
 
-        report.assignedDepartment =
+        // ================= RESET ASSIGNMENT DETAILS =================
+
+        report.assignedBy =
+          null;
+
+        report.assignedByName =
           "";
+
+        report.assignedAt =
+          null;
 
         report.acceptedAt =
           null;
-// ======================================================
-// ================= DECLINED AT ========================
-// ======================================================
 
-report.declinedAt =
-  new Date();
+        report.declinedAt =
+          new Date();
+
+        report.declinedReason =
+          "Task declined by Junior Staff";
 
 
-// ======================================================
-// ================= DECLINE REASON =====================
-// ======================================================
-
-report.declinedReason =
-  "Task declined by Junior Staff";
-
-        // ======================================================
-        // =========== CREATE DECLINE NOTIFICATION =============
-        // ======================================================
+        // ================= NOTIFICATION =================
 
         if (report.userId) {
 
@@ -691,16 +773,12 @@ report.declinedReason =
       }
 
 
-      // ======================================================
-      // ================= SAVE REPORT ========================
-      // ======================================================
+      // ================= SAVE REPORT =================
 
       await report.save();
 
 
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
+      // ================= RESPONSE =================
 
       res.status(200).json({
 
@@ -714,21 +792,10 @@ report.declinedReason =
 
     } catch (error) {
 
-      // ======================================================
-      // ================= ERROR LOGGING ======================
-      // ======================================================
-
       console.error(
         "❌ Respond Task Error:",
-        error.message
+        error
       );
-
-      console.error(error);
-
-
-      // ======================================================
-      // ================= SERVER RESPONSE ====================
-      // ======================================================
 
       res.status(500).json({
 
@@ -738,13 +805,7 @@ report.declinedReason =
           error.message,
       });
     }
-};
-
-
-
-  // ======================================================
-// ============= GET MY ASSIGNED TASKS ==================
-// ======================================================
+  };
 
 export const getAssignedTasks =
   async (req, res) => {
@@ -756,23 +817,21 @@ export const getAssignedTasks =
 
           assignedTo:
             req.user._id,
-
         })
 
         .populate(
           "assignedTo",
-          "name email department role"
+          "name email department role city profileImage"
         )
 
         .populate(
           "userId",
-          "name email department"
+          "name email"
         )
 
         .sort({
           createdAt: -1,
         });
-
 
       res.status(200).json({
 
@@ -796,50 +855,24 @@ export const getAssignedTasks =
           error.message,
       });
     }
-};
+  };
 
-
-// ======================================================
-// ===== MARK TASK RESOLVED / UNABLE TO COMPLETE ========
-// ======================================================
-
-
-// ======================================================
-// ===== MARK TASK RESOLVED / UNABLE TO COMPLETE ========
-// ======================================================
 
 export const updateTaskProgress =
   async (req, res) => {
 
     try {
 
-      // ======================================================
-      // ================= REQUEST DATA =======================
-      // ======================================================
-
       const {
-
         reportId,
         action,
         description,
-        imageBase64,
-
       } = req.body;
-
-
-      // ======================================================
-      // ================= FIND REPORT ========================
-      // ======================================================
 
       const report =
         await Report.findById(
           reportId
         );
-
-
-      // ======================================================
-      // ================= REPORT NOT FOUND ===================
-      // ======================================================
 
       if (!report) {
 
@@ -853,11 +886,6 @@ export const updateTaskProgress =
         });
       }
 
-
-      // ======================================================
-      // ===== HANDLE OBJECTID OR POPULATED OBJECT SAFELY =====
-      // ======================================================
-
       const assignedUserId =
 
         report.assignedTo?._id
@@ -865,11 +893,6 @@ export const updateTaskProgress =
           ? report.assignedTo._id.toString()
 
           : report.assignedTo?.toString();
-
-
-      // ======================================================
-      // ================= AUTHORIZE USER =====================
-      // ======================================================
 
       if (
 
@@ -888,11 +911,6 @@ export const updateTaskProgress =
         });
       }
 
-
-      // ======================================================
-      // ================= STATUS VALIDATION ==================
-      // ======================================================
-
       if (
         report.status !==
         "In Progress"
@@ -908,10 +926,11 @@ export const updateTaskProgress =
         });
       }
 
+      const resolvedImage =
+        req.files?.resolvedImage?.[0]?.path || "";
 
-      // ======================================================
-      // ================= MARK RESOLVED ======================
-      // ======================================================
+      const unableImage =
+        req.files?.unableImage?.[0]?.path || "";
 
       if (
         action === "resolved"
@@ -920,23 +939,15 @@ export const updateTaskProgress =
         report.status =
           "Pending Approval";
 
-
         report.resolvedDescription =
           description;
 
-
-        report.resolvedImageBase64 =
-          imageBase64;
-
+        report.resolvedImage =
+          resolvedImage;
 
         report.submittedForApprovalAt =
           new Date();
       }
-
-
-      // ======================================================
-      // ============= UNABLE TO COMPLETE =====================
-      // ======================================================
 
       if (
         action === "unable"
@@ -945,30 +956,17 @@ export const updateTaskProgress =
         report.status =
           "Unable To Complete";
 
-
         report.unableReason =
           description;
 
-
-        report.unableImageBase64 =
-          imageBase64;
-
+        report.unableImage =
+          unableImage;
 
         report.unableAt =
           new Date();
       }
 
-
-      // ======================================================
-      // ================= SAVE REPORT ========================
-      // ======================================================
-
       await report.save();
-
-
-      // ======================================================
-      // ================= NOTIFICATION =======================
-      // ======================================================
 
       if (report.assignedBy) {
 
@@ -998,11 +996,6 @@ export const updateTaskProgress =
         });
       }
 
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
-
       res.status(200).json({
 
         success: true,
@@ -1031,41 +1024,25 @@ export const updateTaskProgress =
   };
 
 
-
-
-
-
-  // ======================================================
-// ============== VERIFY TASK RESOLUTION ================
-// ======================================================
-
 export const verifyTaskResolution =
   async (req, res) => {
-
+if (req.user.role !== "Staff") {
+  return res.status(403).json({
+    success: false,
+    message: "Only Staff can verify tasks",
+  });
+}
     try {
 
-      // ======================================================
-      // ================= REQUEST DATA =======================
-      // ======================================================
-
       const {
-
         reportId,
-
         action,
-
       } = req.body;
-
-
-      // ======================================================
-      // ================= FIND REPORT ========================
-      // ======================================================
 
       const report =
         await Report.findById(
           reportId
         );
-
 
       if (!report) {
 
@@ -1079,11 +1056,6 @@ export const verifyTaskResolution =
         });
       }
 
-
-      // ======================================================
-      // ================= APPROVE ============================
-      // ======================================================
-
       if (
         action === "approve"
       ) {
@@ -1091,23 +1063,15 @@ export const verifyTaskResolution =
         report.status =
           "Resolved";
 
-
         report.resolvedAt =
           new Date();
-
 
         report.verifiedBy =
           req.user._id;
 
-
         report.verifiedAt =
           new Date();
       }
-
-
-      // ======================================================
-      // ================= REJECT =============================
-      // ======================================================
 
       if (
         action === "reject"
@@ -1117,17 +1081,7 @@ export const verifyTaskResolution =
           "In Progress";
       }
 
-
-      // ======================================================
-      // ================= SAVE REPORT ========================
-      // ======================================================
-
       await report.save();
-
-
-      // ======================================================
-      // ================= NOTIFICATION =======================
-      // ======================================================
 
       if (report.assignedTo) {
 
@@ -1157,11 +1111,6 @@ export const verifyTaskResolution =
         });
       }
 
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
-
       res.status(200).json({
 
         success: true,
@@ -1190,10 +1139,6 @@ export const verifyTaskResolution =
   };
 
 
-  // ======================================================
-// ======== GET STAFF ASSIGNED TASKS ====================
-// ======================================================
-
 export const getStaffAssignedTasks =
   async (req, res) => {
 
@@ -1204,21 +1149,16 @@ export const getStaffAssignedTasks =
 
           assignedBy:
             req.user._id,
-
         })
 
         .populate(
-
           "assignedTo",
-
-          "name email role department"
+          "name email role department city profileImage"
         )
 
         .sort({
-
           createdAt: -1,
         });
-
 
       res.status(200).json({
 
@@ -1243,5 +1183,3 @@ export const getStaffAssignedTasks =
       });
     }
   };
-
-

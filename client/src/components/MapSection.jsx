@@ -33,6 +33,17 @@ import {
 
 
 // ======================================================
+// ================= JAMSHEDPUR LOCATION =================
+// ======================================================
+
+const JAMSHEDPUR_CENTER = [
+  22.8046,
+  86.2029,
+];
+
+
+
+// ======================================================
 // ================= MAP SECTION ========================
 // ======================================================
 
@@ -66,88 +77,96 @@ const MapSection = ({ isGuest = false }) => {
               _id: "1",
               problemType: "Pothole",
               location: {
-                latitude: 23.3448,
-                longitude: 85.3105,
+                latitude: 22.8046,
+                longitude: 86.2029,
               },
               priority: "High",
               status: "Pending",
+              address: "Sakchi, Jamshedpur",
             },
 
             {
               _id: "2",
               problemType: "Garbage Overflow",
               location: {
-                latitude: 23.3429,
-                longitude: 85.3079,
+                latitude: 22.7995,
+                longitude: 86.1910,
               },
               priority: "Medium",
               status: "In Progress",
+              address: "Bistupur, Jamshedpur",
             },
 
             {
               _id: "3",
               problemType: "Street Light",
               location: {
-                latitude: 23.3460,
-                longitude: 85.3122,
+                latitude: 22.8165,
+                longitude: 86.2100,
               },
               priority: "Low",
               status: "Resolved",
+              address: "Kadma, Jamshedpur",
             },
 
             {
               _id: "4",
               problemType: "Water Leakage",
               location: {
-                latitude: 23.3415,
-                longitude: 85.3130,
+                latitude: 22.7900,
+                longitude: 86.2055,
               },
               priority: "High",
               status: "Pending",
+              address: "Sonari, Jamshedpur",
             },
 
             {
               _id: "5",
               problemType: "Drainage Issue",
               location: {
-                latitude: 23.3475,
-                longitude: 85.3058,
+                latitude: 22.8212,
+                longitude: 86.2180,
               },
               priority: "High",
               status: "Pending",
+              address: "Telco, Jamshedpur",
             },
 
             {
               _id: "6",
               problemType: "Broken Road",
               location: {
-                latitude: 23.3407,
-                longitude: 85.3045,
+                latitude: 22.8100,
+                longitude: 86.1850,
               },
               priority: "Medium",
               status: "In Progress",
+              address: "Mango, Jamshedpur",
             },
 
             {
               _id: "7",
               problemType: "Traffic Signal",
               location: {
-                latitude: 23.3490,
-                longitude: 85.3140,
+                latitude: 22.8300,
+                longitude: 86.2070,
               },
               priority: "Low",
               status: "Resolved",
+              address: "Golmuri, Jamshedpur",
             },
 
             {
               _id: "8",
               problemType: "Open Manhole",
               location: {
-                latitude: 23.3430,
-                longitude: 85.3160,
+                latitude: 22.7980,
+                longitude: 86.2200,
               },
               priority: "High",
               status: "Pending",
+              address: "Adityapur, Jamshedpur",
             },
           ];
 
@@ -223,8 +242,6 @@ const MapSection = ({ isGuest = false }) => {
 
 
 
-                // Remove old marker
-
                 if (
                   map._userLocationMarker
                 ) {
@@ -235,8 +252,6 @@ const MapSection = ({ isGuest = false }) => {
                 }
 
 
-
-                // Add user marker
 
                 const userMarker =
                   L.marker(
@@ -456,8 +471,6 @@ const MapSection = ({ isGuest = false }) => {
       z-0
     ">
 
-      {/* HEADER */}
-
       <div className="
         px-8
         py-6
@@ -507,7 +520,7 @@ const MapSection = ({ isGuest = false }) => {
               text-sm
             ">
 
-              Real-time reported civic issues
+              Jamshedpur Smart City Reports
 
             </p>
 
@@ -539,12 +552,9 @@ const MapSection = ({ isGuest = false }) => {
 
         <MapContainer
 
-          center={[
-            23.3441,
-            85.3096
-          ]}
+          center={JAMSHEDPUR_CENTER}
 
-          zoom={14}
+          zoom={13}
 
           style={{
             height: "100%",
@@ -556,8 +566,6 @@ const MapSection = ({ isGuest = false }) => {
             z-0
           "
         >
-
-          {/* TILE */}
 
           <TileLayer
 
@@ -572,8 +580,6 @@ const MapSection = ({ isGuest = false }) => {
           />
 
 
-
-          {/* REPORT MARKERS */}
 
           {
             reports
@@ -629,325 +635,74 @@ const MapSection = ({ isGuest = false }) => {
                     }
                   >
 
-                    {/* ====================================================== */}
-                    {/* =============== AUTHORIZED USER DETAILS ============== */}
-                    {/* ====================================================== */}
+                    <Popup>
 
-                    {
-                      !isGuest && (
+                      <div className="
+                        min-w-[220px]
+                      ">
 
-                        <Popup>
+                        <h3 className="
+                          text-lg
+                          font-bold
+                          mb-2
+                        ">
 
-                          <div className="
-                            min-w-[260px]
-                            space-y-4
-                          ">
+                          {report.problemType}
 
-                            {/* TITLE */}
+                        </h3>
 
-                            <div>
+                        <p className="
+                          text-sm
+                          text-gray-600
+                          mb-2
+                        ">
 
-                              <h3 className="
-                                text-xl
-                                font-bold
-                                text-gray-900
-                              ">
+                          {report.address}
 
-                                {
-                                  report.problemType ||
-                                  "Issue"
-                                }
+                        </p>
 
-                              </h3>
+                        <a
 
-                              <p className="
-                                text-sm
-                                text-gray-500
-                              ">
+                          href={`
+                            https://www.google.com/maps?q=${lat},${lng}
+                          `}
 
-                                Complaint Details
-                              </p>
+                          target="_blank"
 
-                            </div>
+                          rel="noreferrer"
 
+                          className="
+                            inline-flex
+                            items-center
+                            gap-2
+                            bg-emerald-600
+                            text-white
+                            px-4
+                            py-2
+                            rounded-lg
+                            text-sm
+                          "
+                        >
 
+                          <ExternalLink
+                            className="
+                              w-4
+                              h-4
+                            "
+                          />
 
-                            {/* STATUS */}
+                          Open Map
 
-                            <div className="
-                              flex
-                              gap-2
-                              flex-wrap
-                            ">
+                        </a>
 
-                              <span className={`
-                                px-3
-                                py-1
-                                rounded-full
-                                text-xs
-                                font-semibold
-                                text-white
+                      </div>
 
-                                ${
-                                  report.status === "Pending"
-
-                                    ? "bg-amber-500"
-
-                                    : report.status === "In Progress"
-
-                                    ? "bg-blue-500"
-
-                                    : "bg-emerald-600"
-                                }
-                              `}>
-
-                                {
-                                  report.status || "Pending"
-                                }
-
-                              </span>
-
-
-
-                              <span className={`
-                                px-3
-                                py-1
-                                rounded-full
-                                text-xs
-                                font-semibold
-                                text-white
-
-                                ${
-                                  report.priority === "High"
-
-                                    ? "bg-red-500"
-
-                                    : report.priority === "Medium"
-
-                                    ? "bg-orange-500"
-
-                                    : "bg-gray-500"
-                                }
-                              `}>
-
-                                {
-                                  report.priority || "Low"
-                                } Priority
-
-                              </span>
-
-                            </div>
-
-
-
-                            {/* DETAILS */}
-
-                            <div className="
-                              space-y-3
-                              text-sm
-                            ">
-
-                              <div className="
-                                flex
-                                items-start
-                                gap-2
-                              ">
-
-                                <AlertTriangle
-                                  className="
-                                    w-4
-                                    h-4
-                                    text-emerald-600
-                                    mt-0.5
-                                  "
-                                />
-
-                                <span className="
-                                  text-gray-700
-                                ">
-
-                                  {
-                                    report.description ||
-                                    "No description available."
-                                  }
-
-                                </span>
-
-                              </div>
-
-
-
-                              <div className="
-                                flex
-                                items-start
-                                gap-2
-                              ">
-
-                                <MapPinned
-                                  className="
-                                    w-4
-                                    h-4
-                                    text-emerald-600
-                                    mt-0.5
-                                  "
-                                />
-
-                                <span className="
-                                  text-gray-700
-                                ">
-
-                                  {
-                                    report.address ||
-                                    "Ranchi, Jharkhand"
-                                  }
-
-                                </span>
-
-                              </div>
-
-
-
-                              <div className="
-                                flex
-                                items-start
-                                gap-2
-                              ">
-
-                                <Building2
-                                  className="
-                                    w-4
-                                    h-4
-                                    text-emerald-600
-                                    mt-0.5
-                                  "
-                                />
-
-                                <span className="
-                                  text-gray-700
-                                ">
-
-                                  Department:
-
-                                  {" "}
-
-                                  {
-                                    report.department ||
-                                    "Municipal Department"
-                                  }
-
-                                </span>
-
-                              </div>
-
-
-
-                              <div className="
-                                flex
-                                items-start
-                                gap-2
-                              ">
-
-                                {
-                                  report.status === "Resolved"
-
-                                    ? (
-
-                                      <CheckCircle2
-                                        className="
-                                          w-4
-                                          h-4
-                                          text-emerald-600
-                                          mt-0.5
-                                        "
-                                      />
-                                    )
-
-                                    : (
-
-                                      <Clock3
-                                        className="
-                                          w-4
-                                          h-4
-                                          text-amber-500
-                                          mt-0.5
-                                        "
-                                      />
-                                    )
-                                }
-
-                                <span className="
-                                  text-gray-700
-                                ">
-
-                                  {
-                                    report.status === "Resolved"
-
-                                      ? "Issue resolved successfully."
-
-                                      : "Issue currently under processing."
-                                  }
-
-                                </span>
-
-                              </div>
-
-                            </div>
-
-
-
-                            {/* GOOGLE MAP LINK */}
-
-                            <a
-
-                              href={`
-                                https://www.google.com/maps?q=${lat},${lng}
-                              `}
-
-                              target="_blank"
-
-                              rel="noreferrer"
-
-                              className="
-                                flex
-                                items-center
-                                justify-center
-                                gap-2
-                                w-full
-                                bg-emerald-600
-                                hover:bg-emerald-700
-                                text-white
-                                py-3
-                                rounded-xl
-                                font-medium
-                                transition-all
-                              "
-                            >
-
-                              <ExternalLink
-                                className="
-                                  w-4
-                                  h-4
-                                "
-                              />
-
-                              Open in Google Maps
-
-                            </a>
-
-                          </div>
-
-                        </Popup>
-                      )
-                    }
+                    </Popup>
 
                   </Marker>
                 );
               })
           }
-
-
-
-          {/* USER LOCATION BUTTON */}
 
           <GetLocationButton />
 

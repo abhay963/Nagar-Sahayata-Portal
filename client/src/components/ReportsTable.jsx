@@ -16,39 +16,90 @@ const ReportsTable = ({ role, department }) => {
 
   const [debouncedSearch] = useDebounce(searchTerm, 300);
 
-  const isHigherAuthority = role === "Higher Authority";
-  const isStaff = role === "Staff";
-  const isJuniorStaff = role === "Junior Staff";
+  // ============================================
+// ROLE CHECKS
+// ============================================
+// ============================================
+// ROLE CHECKS
+// ============================================
 
-  // Fetch Reports
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        setLoading(true);
-        let apiUrl = "/api/reports";
+const isHigherAuthority =
+  role === "Higher Authority" ||
+  role === "Admin" ||
+  role === "Super Admin";
 
-        if (isStaff || isJuniorStaff) {
-          apiUrl = `/api/reports/department/${department}`;
-        }
+const isStaff =
+  role === "Staff";
 
-        const res = await axios.get(apiUrl);
-        const reportsData = res.data.reports || [];
+const isJuniorStaff =
+  role === "Junior Staff";
 
-        const processedReports = reportsData.map((report) => ({
+
+
+// ============================================
+// FETCH REPORTS
+// ============================================
+
+// ============================================
+// FETCH REPORTS
+// ============================================
+
+useEffect(() => {
+
+  const fetchReports = async () => {
+
+    try {
+
+      setLoading(true);
+
+      const res = await axios.get(
+        "/api/reports"
+      );
+
+      let reportsData =
+        res.data.reports || [];
+
+      console.log("ROLE:", role);
+
+      console.log("REPORTS:", reportsData);
+
+      // ============================================
+      // PROCESS REPORTS
+      // ============================================
+
+      const processedReports =
+        reportsData.map((report) => ({
+
           ...report,
-          locationName: report.location?.locationName || "N/A",
+
+          locationName:
+            report.location?.locationName ||
+
+            report.address ||
+
+            "N/A",
+
         }));
 
-        setReports(processedReports);
-      } catch (error) {
-        console.error("❌ Error fetching reports:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setReports(processedReports);
 
-    fetchReports();
-  }, [role, department, isHigherAuthority, isStaff, isJuniorStaff]);
+    } catch (error) {
+
+      console.error(
+        "❌ Error fetching reports:",
+        error
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
+
+  fetchReports();
+
+}, [role]);
 
   // Sorting
   const sortedReports = useMemo(() => {
@@ -142,7 +193,9 @@ const ReportsTable = ({ role, department }) => {
             <option value="Pending Approval">Pending Approval</option>
             <option value="Resolved">Resolved</option>
             <option value="Declined">Declined</option>
-            <option value="Unable">Unable</option>
+          <option value="Unable To Complete">
+  Unable To Complete
+</option>
           </select>
 
           <select
@@ -153,7 +206,9 @@ const ReportsTable = ({ role, department }) => {
             <option value="All">All Priority</option>
             <option value="High">High</option>
             <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
+           <option value="Normal">Normal</option>
+
+<option value="Critical">Critical</option>
           </select>
         </div>
 
@@ -235,65 +290,243 @@ const ReportsTable = ({ role, department }) => {
         </div>
       </div>
 
-      {/* Detail Modal */}
-      <AnimatePresence>
-        {selectedReport && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-lg z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden"
-            >
-              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8 relative">
-                <button
-                  onClick={() => setSelectedReport(null)}
-                  className="absolute top-6 right-6 text-4xl hover:scale-110 transition"
-                >
-                  ×
-                </button>
-                <h2 className="text-3xl font-bold">{selectedReport.problemType}</h2>
-                <p className="text-emerald-100 mt-2">#{selectedReport._id}</p>
-              </div>
+  
+  {/* Detail Modal */}
+<AnimatePresence>
 
-              <div className="p-8 space-y-6 text-gray-700">
-                <div>
-                  <strong>Location:</strong> {selectedReport.locationName}
-                </div>
-                <div>
-                  <strong>Assigned To:</strong>{" "}
-                  {selectedReport.assignedTo?.name || "Not Assigned"}
-                </div>
-                <div>
-                  <strong>Priority:</strong> {selectedReport.priority}
-                </div>
-                <div>
-                  <strong>Status:</strong> {selectedReport.status}
-                </div>
+  {selectedReport && (
 
-                <div>
-                  <strong className="block mb-2">Description</strong>
-                  <p className="leading-relaxed">{selectedReport.description}</p>
-                </div>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-lg z-50 flex items-center justify-center p-4">
 
-                {selectedReport.imageBase64 && (
-                  <div>
-                    <p className="font-semibold mb-3">Attachment</p>
-                    <img
-                      src={`data:image/jpeg;base64,${selectedReport.imageBase64}`}
-                      alt="Report"
-                      className="w-full rounded-2xl shadow-md cursor-pointer hover:scale-[1.02] transition-transform"
-                      onClick={() =>
-                        setFullscreenImage(`data:image/jpeg;base64,${selectedReport.imageBase64}`)
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-            </motion.div>
+      <motion.div
+
+        initial={{
+          opacity: 0,
+          scale: 0.9,
+        }}
+
+        animate={{
+          opacity: 1,
+          scale: 1,
+        }}
+
+        exit={{
+          opacity: 0,
+          scale: 0.9,
+        }}
+
+        className="
+          bg-white
+          rounded-3xl
+          shadow-2xl
+          max-w-4xl
+          w-full
+          overflow-hidden
+          max-h-[90vh]
+          overflow-y-auto
+        "
+      >
+
+        {/* HEADER */}
+
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8 relative">
+
+          <button
+            onClick={() =>
+              setSelectedReport(null)
+            }
+
+            className="
+              absolute
+              top-6
+              right-6
+              text-4xl
+              hover:scale-110
+              transition
+            "
+          >
+            ×
+          </button>
+
+          <h2 className="text-3xl font-bold">
+            {selectedReport.problemType}
+          </h2>
+
+          <p className="text-emerald-100 mt-2">
+            #{selectedReport.reportId || selectedReport._id}
+          </p>
+
+        </div>
+
+        {/* CONTENT */}
+
+        <div className="p-8 space-y-8 text-gray-700">
+
+          {/* REPORT DETAILS */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            <div>
+              <strong>Report ID:</strong>{" "}
+              {selectedReport.reportId || selectedReport._id}
+            </div>
+
+            <div>
+              <strong>Problem Type:</strong>{" "}
+              {selectedReport.problemType}
+            </div>
+
+            <div>
+              <strong>Department:</strong>{" "}
+              {selectedReport.department}
+            </div>
+
+            <div>
+              <strong>City:</strong>{" "}
+              {selectedReport.city}
+            </div>
+
+            <div>
+              <strong>Location:</strong>{" "}
+              {selectedReport.locationName}
+            </div>
+
+            <div>
+              <strong>Priority:</strong>{" "}
+              {selectedReport.priority}
+            </div>
+
+            <div>
+              <strong>Status:</strong>{" "}
+              {selectedReport.status}
+            </div>
+
+            <div>
+              <strong>Citizen Name:</strong>{" "}
+              {selectedReport.citizenName || "N/A"}
+            </div>
+
+            <div>
+              <strong>Citizen Contact:</strong>{" "}
+              {selectedReport.citizenContact || "N/A"}
+            </div>
+
+            <div>
+              <strong>Assigned To:</strong>{" "}
+              {selectedReport.assignedToName || "Not Assigned"}
+            </div>
+
+            <div>
+              <strong>Assigned By:</strong>{" "}
+              {selectedReport.assignedByName || "N/A"}
+            </div>
+
+            <div>
+              <strong>Assigned Department:</strong>{" "}
+              {selectedReport.assignedToDepartment || "N/A"}
+            </div>
+
+            <div>
+              <strong>Created At:</strong>{" "}
+              {new Date(
+                selectedReport.createdAt
+              ).toLocaleString()}
+            </div>
+
+            <div>
+              <strong>Assigned At:</strong>{" "}
+
+              {selectedReport.assignedAt
+
+                ? new Date(
+                    selectedReport.assignedAt
+                  ).toLocaleString()
+
+                : "N/A"}
+            </div>
+
+            <div>
+              <strong>Accepted At:</strong>{" "}
+
+              {selectedReport.acceptedAt
+
+                ? new Date(
+                    selectedReport.acceptedAt
+                  ).toLocaleString()
+
+                : "N/A"}
+            </div>
+
+            <div>
+              <strong>Resolved At:</strong>{" "}
+
+              {selectedReport.resolvedAt
+
+                ? new Date(
+                    selectedReport.resolvedAt
+                  ).toLocaleString()
+
+                : "N/A"}
+            </div>
+
           </div>
-        )}
-      </AnimatePresence>
+
+          {/* DESCRIPTION */}
+
+          <div>
+
+            <strong className="block mb-2 text-lg">
+              Description
+            </strong>
+
+            <p className="leading-relaxed bg-emerald-50 p-4 rounded-2xl">
+              {selectedReport.description}
+            </p>
+
+          </div>
+
+          {/* IMAGE */}
+
+          {selectedReport.image && (
+
+            <div>
+
+              <p className="font-semibold mb-3 text-lg">
+                Attachment
+              </p>
+
+              <img
+                src={selectedReport.image}
+
+                alt="Report"
+
+                className="
+                  w-full
+                  rounded-2xl
+                  shadow-md
+                  cursor-pointer
+                  hover:scale-[1.02]
+                  transition-transform
+                "
+
+                onClick={() =>
+                  setFullscreenImage(
+                    selectedReport.image
+                  )
+                }
+              />
+
+            </div>
+          )}
+
+        </div>
+
+      </motion.div>
+
+    </div>
+  )}
+
+</AnimatePresence>
 
       {/* Fullscreen Image */}
       <AnimatePresence>

@@ -65,41 +65,44 @@ setUser(res.data.user);
     }
   };
 
-  const completeSignup = async (
-    name,
-    email,
-    password,
-    role,
-    department,
-    contact,
-    empId,
-    address,
-    otp
-  ) => {
-    try {
-      const res = await axios.post("/api/auth/complete-signup", {
-        name,
-        email,
-        password,
-        role,
-        department,
-        contact,
-        empId,
-        address,
-        otp,
-      });
+ const completeSignup = async (formData) => {
 
-      const { token, redirectUrl, ...userData } = res.data;
+  try {
 
-      localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(userData);
+    const res = await axios.post(
 
-      return { ...userData, redirectUrl };
-    } catch (error) {
-      throw error;
-    }
-  };
+      "/api/auth/complete-signup",
+
+      formData
+    );
+
+    const {
+      token,
+      redirectUrl,
+      ...userData
+    } = res.data;
+
+    localStorage.setItem(
+      "token",
+      token
+    );
+
+    axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${token}`;
+
+    setUser(userData);
+
+    return {
+      ...userData,
+      redirectUrl,
+    };
+
+  } catch (error) {
+
+    throw error;
+  }
+};
 
   const sendOtp = async (email, type) => {
     try {

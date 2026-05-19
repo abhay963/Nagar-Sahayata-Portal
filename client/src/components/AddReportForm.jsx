@@ -399,8 +399,8 @@ const AddReportForm = ({
 
                   ...report,
 
-                  status:
-                    "In Progress",
+              status:
+  "Staff Assigned",
 
                   assignedTo:
                     formData.assignedTo,

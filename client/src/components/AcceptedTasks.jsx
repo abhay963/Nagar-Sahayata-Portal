@@ -7,6 +7,7 @@ import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { Canvas } from "@react-three/fiber";
+
 import {
   OrbitControls,
   Environment,
@@ -22,8 +23,7 @@ const AcceptedTasks = () => {
     useState(true);
 
   // ============================================
-  // STORE DESCRIPTION + IMAGE SEPARATELY
-  // FOR EACH TASK
+  // STORE DESCRIPTION + IMAGE
   // ============================================
 
   const [taskInputs, setTaskInputs] =
@@ -36,6 +36,8 @@ const AcceptedTasks = () => {
   const fetchTasks = async () => {
 
     try {
+
+      setLoading(true);
 
       const res = await axios.get(
         "/api/reports/my-assigned-tasks"
@@ -68,12 +70,12 @@ const AcceptedTasks = () => {
   // CONVERT IMAGE TO BASE64
   // ============================================
 
-  const convertToBase64 = (file) => {
+  const convertToBase64 = (
+    file
+  ) => {
 
     return new Promise(
       (resolve, reject) => {
-
-        // CHECK FILE EXISTS
 
         if (!file) {
 
@@ -83,8 +85,6 @@ const AcceptedTasks = () => {
 
           return;
         }
-
-        // CHECK FILE TYPE
 
         if (
           !file.type.startsWith(
@@ -102,11 +102,15 @@ const AcceptedTasks = () => {
         const reader =
           new FileReader();
 
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(
+          file
+        );
 
         reader.onload = () => {
 
-          resolve(reader.result);
+          resolve(
+            reader.result
+          );
 
         };
 
@@ -141,13 +145,17 @@ const AcceptedTasks = () => {
           );
 
         setTaskInputs((prev) => ({
+
           ...prev,
 
           [taskId]: {
+
             ...prev[taskId],
 
             imageBase64:
               base64,
+
+            file: file,
           },
         }));
 
@@ -169,9 +177,11 @@ const AcceptedTasks = () => {
     (value, taskId) => {
 
       setTaskInputs((prev) => ({
+
         ...prev,
 
         [taskId]: {
+
           ...prev[taskId],
 
           description:
@@ -194,9 +204,16 @@ const AcceptedTasks = () => {
       const currentTask =
         taskInputs[reportId];
 
+      // ============================================
+      // VALIDATION
+      // ============================================
+
       if (
+
         !currentTask?.description ||
-        !currentTask?.imageBase64
+
+        !currentTask?.file
+
       ) {
 
         return toast.error(
@@ -209,25 +226,70 @@ const AcceptedTasks = () => {
           "token"
         );
 
+      // ============================================
+      // FORMDATA
+      // ============================================
+
+      const formData =
+        new FormData();
+
+      formData.append(
+        "reportId",
+        reportId
+      );
+
+      formData.append(
+        "action",
+        action
+      );
+
+      formData.append(
+        "description",
+        currentTask.description
+      );
+
+      // ============================================
+      // IMAGE
+      // ============================================
+
+      if (
+        action === "resolved"
+      ) {
+
+        formData.append(
+          "resolvedImage",
+          currentTask.file
+        );
+      }
+
+      if (
+        action === "unable"
+      ) {
+
+        formData.append(
+          "unableImage",
+          currentTask.file
+        );
+      }
+
+      // ============================================
+      // API CALL
+      // ============================================
+
       await axios.put(
+
         "/api/reports/update-task-progress",
 
-        {
-          reportId,
-
-          action,
-
-          description:
-            currentTask.description,
-
-          imageBase64:
-            currentTask.imageBase64,
-        },
+        formData,
 
         {
           headers: {
+
             Authorization:
               `Bearer ${token}`,
+
+            "Content-Type":
+              "multipart/form-data",
           },
         }
       );
@@ -236,15 +298,21 @@ const AcceptedTasks = () => {
         "Task updated successfully"
       );
 
-      // CLEAR INPUTS OF THAT TASK
+      // ============================================
+      // CLEAR INPUTS
+      // ============================================
 
       setTaskInputs((prev) => ({
 
         ...prev,
 
         [reportId]: {
+
           description: "",
+
           imageBase64: "",
+
+          file: null,
         },
       }));
 
@@ -255,9 +323,11 @@ const AcceptedTasks = () => {
       console.error(error);
 
       toast.error(
+
         error?.response?.data
           ?.message ||
-          "Failed to update task"
+
+        "Failed to update task"
       );
     }
   };
@@ -476,9 +546,6 @@ const AcceptedTasks = () => {
 
                 whileHover={{
                   y: -6,
-                  transition: {
-                    duration: 0.2,
-                  },
                 }}
 
                 className="bg-white border border-emerald-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
@@ -486,7 +553,7 @@ const AcceptedTasks = () => {
 
                 <div className="p-9">
 
-                  {/* TASK HEADER */}
+                  {/* HEADER */}
 
                   <div className="flex justify-between items-start mb-6">
 
@@ -497,9 +564,7 @@ const AcceptedTasks = () => {
                       </div>
 
                       <h2 className="text-3xl font-bold text-gray-900 mt-4">
-                        {
-                          task.problemType
-                        }
+                        {task.problemType}
                       </h2>
 
                     </div>
@@ -507,16 +572,19 @@ const AcceptedTasks = () => {
                     <div className="text-right text-sm text-gray-500">
 
                       ID:
+
                       <span className="font-mono">
+
                         {" "}
-                        {task._id.slice(
-                          -8
-                        )}
+                        {task._id.slice(-8)}
+
                       </span>
 
                     </div>
 
                   </div>
+
+                  {/* DESCRIPTION */}
 
                   <p className="text-gray-700 leading-relaxed text-[17px]">
                     {task.description}
@@ -524,17 +592,13 @@ const AcceptedTasks = () => {
 
                   {/* ISSUE IMAGE */}
 
-                  {task.imageBase64 && (
+                  {task.image && (
 
                     <div className="mt-8 rounded-2xl overflow-hidden border border-emerald-100">
 
                       <img
-                        src={
-                          task.imageBase64
-                        }
-
+                        src={task.image}
                         alt="Issue"
-
                         className="w-full max-h-[360px] object-cover"
                       />
 
@@ -560,15 +624,12 @@ const AcceptedTasks = () => {
                           taskInputs[
                             task._id
                           ]
-                            ?.description ||
-                          ""
+                            ?.description || ""
                         }
 
                         onChange={(e) =>
                           handleDescriptionChange(
-                            e.target
-                              .value,
-
+                            e.target.value,
                             task._id
                           )
                         }
@@ -590,13 +651,11 @@ const AcceptedTasks = () => {
 
                         <input
                           type="file"
-
                           accept="image/*"
 
                           onChange={(e) =>
                             handleImageChange(
                               e,
-
                               task._id
                             )
                           }
@@ -614,10 +673,33 @@ const AcceptedTasks = () => {
                             task._id
                           ]
                             ?.imageBase64
+
                             ? "✓ Image Selected"
+
                             : "Upload Before/After Photo"}
 
                         </p>
+
+                        {/* PREVIEW */}
+
+                        {taskInputs[
+                          task._id
+                        ]
+                          ?.imageBase64 && (
+
+                          <img
+                            src={
+                              taskInputs[
+                                task._id
+                              ]
+                                .imageBase64
+                            }
+
+                            alt="Preview"
+
+                            className="mt-5 w-40 h-40 object-cover rounded-2xl mx-auto border border-emerald-200"
+                          />
+                        )}
 
                       </label>
 
@@ -630,6 +712,8 @@ const AcceptedTasks = () => {
                 {/* BUTTONS */}
 
                 <div className="border-t border-emerald-100 bg-emerald-50/50 px-9 py-6 flex gap-4">
+
+                  {/* RESOLVED */}
 
                   <motion.button
                     whileHover={{
@@ -653,6 +737,8 @@ const AcceptedTasks = () => {
                     ✅ Mark as Resolved
 
                   </motion.button>
+
+                  {/* UNABLE */}
 
                   <motion.button
                     whileHover={{

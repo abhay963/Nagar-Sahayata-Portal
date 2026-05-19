@@ -1,27 +1,12 @@
-// Import Notification model
 import Notification from "../models/Notification.js";
-
-
-// ======================================================
-// ========== GET ALL NOTIFICATIONS FOR USER ============
-// ======================================================
 
 export const getNotificationsForUser =
   async (req, res) => {
 
     try {
 
-      // ======================================================
-      // ================= USER ID ============================
-      // ======================================================
-
       const userId =
         req.user.id;
-
-
-      // ======================================================
-      // ============== FETCH NOTIFICATIONS ===================
-      // ======================================================
 
       const notifications =
         await Notification.find({
@@ -30,7 +15,6 @@ export const getNotificationsForUser =
         })
 
         .sort({
-
           createdAt: -1,
         })
 
@@ -41,12 +25,14 @@ export const getNotificationsForUser =
           `
           problemType
           description
+          city
           location
           status
           priority
           department
-          imageBase64
-          assignedStaffName
+          image
+          assignedToName
+          assignedToDepartment
           createdAt
           `
         )
@@ -60,13 +46,10 @@ export const getNotificationsForUser =
           email
           role
           department
+          city
+          profileImage
           `
         );
-
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
 
       res.status(200).json({
 
@@ -78,9 +61,7 @@ export const getNotificationsForUser =
     } catch (error) {
 
       console.error(
-
         "❌ Get Notifications Error:",
-
         error
       );
 
@@ -95,19 +76,10 @@ export const getNotificationsForUser =
   };
 
 
-
-// ======================================================
-// ========== MARK SINGLE NOTIFICATION READ =============
-// ======================================================
-
 export const markNotificationAsRead =
   async (req, res) => {
 
     try {
-
-      // ======================================================
-      // ================= GET PARAMS =========================
-      // ======================================================
 
       const { id } =
         req.params;
@@ -115,36 +87,22 @@ export const markNotificationAsRead =
       const userId =
         req.user.id;
 
-
-      // ======================================================
-      // ================= UPDATE =============================
-      // ======================================================
-
       const notification =
         await Notification.findOneAndUpdate(
 
           {
-
             _id: id,
-
             userId,
           },
 
           {
-
             isRead: true,
           },
 
           {
-
             new: true,
           }
         );
-
-
-      // ======================================================
-      // ================= NOT FOUND ==========================
-      // ======================================================
 
       if (!notification) {
 
@@ -158,11 +116,6 @@ export const markNotificationAsRead =
         });
       }
 
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
-
       res.status(200).json({
 
         success: true,
@@ -173,9 +126,7 @@ export const markNotificationAsRead =
     } catch (error) {
 
       console.error(
-
         "❌ Mark Notification Read Error:",
-
         error
       );
 
@@ -190,47 +141,25 @@ export const markNotificationAsRead =
   };
 
 
-
-// ======================================================
-// ========== MARK ALL NOTIFICATIONS READ ===============
-// ======================================================
-
 export const markAllNotificationsAsRead =
   async (req, res) => {
 
     try {
 
-      // ======================================================
-      // ================= USER ID ============================
-      // ======================================================
-
       const userId =
         req.user.id;
-
-
-      // ======================================================
-      // ================= UPDATE MANY ========================
-      // ======================================================
 
       await Notification.updateMany(
 
         {
-
           userId,
-
           isRead: false,
         },
 
         {
-
           isRead: true,
         }
       );
-
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
 
       res.status(200).json({
 
@@ -243,9 +172,7 @@ export const markAllNotificationsAsRead =
     } catch (error) {
 
       console.error(
-
         "❌ Mark All Read Error:",
-
         error
       );
 
@@ -260,30 +187,16 @@ export const markAllNotificationsAsRead =
   };
 
 
-
-// ======================================================
-// ================= DELETE NOTIFICATION =================
-// ======================================================
-
 export const deleteNotification =
   async (req, res) => {
 
     try {
-
-      // ======================================================
-      // ================= PARAMS =============================
-      // ======================================================
 
       const { id } =
         req.params;
 
       const userId =
         req.user.id;
-
-
-      // ======================================================
-      // ================= DELETE =============================
-      // ======================================================
 
       const notification =
         await Notification.findOneAndDelete({
@@ -292,11 +205,6 @@ export const deleteNotification =
 
           userId,
         });
-
-
-      // ======================================================
-      // ================= NOT FOUND ==========================
-      // ======================================================
 
       if (!notification) {
 
@@ -310,11 +218,6 @@ export const deleteNotification =
         });
       }
 
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
-
       res.status(200).json({
 
         success: true,
@@ -326,9 +229,7 @@ export const deleteNotification =
     } catch (error) {
 
       console.error(
-
         "❌ Delete Notification Error:",
-
         error
       );
 
@@ -343,27 +244,13 @@ export const deleteNotification =
   };
 
 
-
-// ======================================================
-// ========== GET UNREAD NOTIFICATION COUNT =============
-// ======================================================
-
 export const getUnreadNotificationCount =
   async (req, res) => {
 
     try {
 
-      // ======================================================
-      // ================= USER ID ============================
-      // ======================================================
-
       const userId =
         req.user.id;
-
-
-      // ======================================================
-      // ================= COUNT ==============================
-      // ======================================================
 
       const count =
         await Notification.countDocuments({
@@ -372,11 +259,6 @@ export const getUnreadNotificationCount =
 
           isRead: false,
         });
-
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
 
       res.status(200).json({
 
@@ -388,9 +270,7 @@ export const getUnreadNotificationCount =
     } catch (error) {
 
       console.error(
-
         "❌ Unread Count Error:",
-
         error
       );
 

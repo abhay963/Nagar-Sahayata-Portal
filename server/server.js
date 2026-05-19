@@ -1,8 +1,13 @@
+// ================= LOAD ENV FIRST =================
+
+import "./config/env.js";
+
+
+// ================= PACKAGE IMPORTS =================
+
 import express from "express";
 
 import cors from "cors";
-
-import dotenv from "dotenv";
 
 import path from "path";
 
@@ -27,9 +32,49 @@ import reportRoutes from "./routes/reportRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 
 
-// ================= CONFIG =================
+// ================= ENV DEBUG =================
 
-dotenv.config();
+console.log("\n===== ENV CHECK =====");
+
+console.log(
+  "CLOUDINARY_CLOUD_NAME:",
+  process.env.CLOUDINARY_CLOUD_NAME
+    ? "✅ FOUND"
+    : "❌ MISSING"
+);
+
+console.log(
+  "CLOUDINARY_API_KEY:",
+  process.env.CLOUDINARY_API_KEY
+    ? "✅ FOUND"
+    : "❌ MISSING"
+);
+
+console.log(
+  "CLOUDINARY_API_SECRET:",
+  process.env.CLOUDINARY_API_SECRET
+    ? "✅ FOUND"
+    : "❌ MISSING"
+);
+
+console.log(
+  "MONGO_URI_AUTH:",
+  process.env.MONGO_URI_AUTH
+    ? "✅ FOUND"
+    : "❌ MISSING"
+);
+
+console.log(
+  "JWT_SECRET:",
+  process.env.JWT_SECRET
+    ? "✅ FOUND"
+    : "❌ MISSING"
+);
+
+console.log("======================\n");
+
+
+// ================= EXPRESS APP =================
 
 const app = express();
 
@@ -37,15 +82,18 @@ const app = express();
 // ================= MIDDLEWARE =================
 
 app.use(cors({
+
   origin: [
     "http://localhost:5173",
-    "https://nagar-sahayata-portal.vercel.app"
+    "https://nagar-sahayata-portal.vercel.app",
   ],
+
   credentials: true,
 }));
 
 
 app.use(express.json({
+
   limit: "50mb",
 }));
 
@@ -134,9 +182,10 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
 
   console.error(
-    "❌ Server Error:",
-    err
+    "\n❌ GLOBAL SERVER ERROR:"
   );
+
+  console.error(err);
 
   res.status(
     err.status || 500
@@ -151,7 +200,7 @@ app.use((err, req, res, next) => {
 });
 
 
-// ================= SERVER START =================
+// ================= PORT =================
 
 const PORT =
   process.env.PORT || 5000;
@@ -163,7 +212,15 @@ const startServer = async () => {
 
   try {
 
+    console.log(
+      "\n🔄 Connecting Database..."
+    );
+
     await connectAuthDB();
+
+    console.log(
+      "✅ MongoDB Connected Successfully"
+    );
 
     app.listen(PORT, () => {
 
@@ -175,11 +232,14 @@ const startServer = async () => {
   } catch (error) {
 
     console.error(
-      "❌ Failed to start server:",
-      error
+      "\n❌ Failed to start server:"
     );
+
+    console.error(error);
   }
 };
 
+
+// ================= START APP =================
 
 startServer();

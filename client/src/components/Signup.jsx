@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Building2,
   Sparkles,
+  ImagePlus,
 } from "lucide-react";
 
 const Signup = () => {
@@ -33,6 +34,12 @@ const Signup = () => {
   const [department, setDepartment] = useState("");
   const [contact, setContact] = useState("");
   const [address, setAddress] = useState("");
+
+  // NEW STATES
+  const [city, setCity] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [profilePreview, setProfilePreview] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -55,11 +62,53 @@ const Signup = () => {
     "Other",
   ];
 
+  // ALL JHARKHAND CITIES
+  const jharkhandCities = [
+    "Bokaro",
+    "Chaibasa",
+    "Chatra",
+    "Deoghar",
+    "Dhanbad",
+    "Dumka",
+    "Garhwa",
+    "Giridih",
+    "Godda",
+    "Gumla",
+    "Hazaribagh",
+    "Jamshedpur",
+    "Jamtara",
+    "Khunti",
+    "Koderma",
+    "Latehar",
+    "Lohardaga",
+    "Medininagar",
+    "Pakur",
+    "Ramgarh",
+    "Ranchi",
+    "Sahebganj",
+    "Saraikela",
+    "Simdega",
+  ];
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setProfileImage(file);
+      setProfilePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!role) {
       toast.error("Please select your role");
+      return;
+    }
+
+    if (!city) {
+      toast.error("Please select your city");
       return;
     }
 
@@ -75,6 +124,11 @@ const Signup = () => {
 
     if (!/^JH/i.test(employeeId)) {
       toast.error("Employee ID must start with 'JH'");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      toast.error("Please accept the declaration");
       return;
     }
 
@@ -96,23 +150,37 @@ const Signup = () => {
       const departmentToSubmit =
         role === "Higher Authority" ? "" : department;
 
-      const { redirectUrl } = await completeSignup(
-        name,
-        email,
-        password,
-        role,
-        departmentToSubmit,
-        contact,
-        employeeId,
-        address,
-        otp
-      );
+      // FORM DATA FOR IMAGE UPLOAD
+      const formData = new FormData();
+
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("role", role);
+      formData.append("department", departmentToSubmit);
+      formData.append("contact", contact);
+      formData.append("empId", employeeId);
+      formData.append("address", address);
+      formData.append("city", city);
+      formData.append("acceptedTerms", acceptedTerms);
+      formData.append("otp", otp);
+
+      if (profileImage) {
+        formData.append("profileImage", profileImage);
+      }
+
+      const { redirectUrl } = await completeSignup(formData);
 
       setShowOtpModal(false);
+
+      toast.success(
+        "Registration successful."
+      );
+
       navigate(redirectUrl);
     } catch (err) {
       toast.error(err.response?.data?.message || "OTP verification failed");
-    } finally {
+    } finally {l
       setIsLoading(false);
     }
   };
@@ -129,7 +197,6 @@ const Signup = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 pt-4">
         <div className="max-w-7xl mx-auto bg-gradient-to-r from-emerald-900/90 via-green-800/90 to-teal-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl">
           <div className="px-6 py-4 flex items-center justify-between">
-            {/* LOGO */}
             <div
               className="flex items-center gap-3 cursor-pointer group"
               onClick={() => navigate("/")}
@@ -156,7 +223,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* DESKTOP MENU */}
             <div className="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide">
               <Link
                 to="/"
@@ -183,7 +249,6 @@ const Signup = () => {
               </Link>
             </div>
 
-            {/* MOBILE BUTTON */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden text-emerald-400"
@@ -193,7 +258,6 @@ const Signup = () => {
           </div>
         </div>
 
-        {/* MOBILE MENU */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -271,26 +335,6 @@ const Signup = () => {
               public grievance resolutions with real-time transparency and smart
               departmental coordination.
             </p>
-
-            <div className="mt-10 grid grid-cols-2 gap-5">
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
-                <ShieldCheck className="text-emerald-400 mb-4" size={34} />
-                <h3 className="font-bold text-xl mb-2">Secure Access</h3>
-                <p className="text-sm text-emerald-100/60 leading-relaxed">
-                  Verified officer onboarding with OTP and department-based
-                  authorization.
-                </p>
-              </div>
-
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl">
-                <Building2 className="text-teal-400 mb-4" size={34} />
-                <h3 className="font-bold text-xl mb-2">Unified Governance</h3>
-                <p className="text-sm text-emerald-100/60 leading-relaxed">
-                  Connect departments, field staff, and higher authorities in
-                  one portal.
-                </p>
-              </div>
-            </div>
           </motion.div>
 
           {/* FORM CARD */}
@@ -303,7 +347,6 @@ const Signup = () => {
             <div className="absolute -top-12 -right-12 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl" />
 
             <div className="relative bg-white/5 border border-white/10 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl overflow-hidden">
-              {/* TOP HEADER */}
               <div className="p-8 border-b border-white/10">
                 <div className="flex items-center gap-4">
                   <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-3 rounded-2xl shadow-lg">
@@ -326,45 +369,43 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* FORM */}
               <form
                 onSubmit={handleSubmit}
                 className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-5"
               >
-                {/* INPUT STYLE */}
-                {[
-                  {
-                    icon: User,
-                    type: "text",
-                    placeholder: "Full Name",
-                    value: name,
-                    onChange: setName,
-                  },
+                {/* NAME */}
+                <div className="relative group">
+                  <User
+                    size={18}
+                    className="absolute left-4 top-4 text-emerald-300/50"
+                  />
 
-                  {
-                    icon: Mail,
-                    type: "email",
-                    placeholder: "Department Email",
-                    value: email,
-                    onChange: setEmail,
-                  },
-                ].map((field, i) => (
-                  <div key={i} className="relative group">
-                    <field.icon
-                      size={18}
-                      className="absolute left-4 top-4 text-emerald-300/50 group-focus-within:text-emerald-400 transition-colors"
-                    />
+                  <input
+                    type="text"
+                    placeholder="Full Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 focus:border-emerald-500/40 outline-none text-white placeholder:text-emerald-100/35"
+                  />
+                </div>
 
-                    <input
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      value={field.value}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      required
-                      className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 focus:border-emerald-500/40 focus:bg-white/[0.07] outline-none text-white placeholder:text-emerald-100/35 transition-all"
-                    />
-                  </div>
-                ))}
+                {/* EMAIL */}
+                <div className="relative group">
+                  <Mail
+                    size={18}
+                    className="absolute left-4 top-4 text-emerald-300/50"
+                  />
+
+                  <input
+                    type="email"
+                    placeholder="Department Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 focus:border-emerald-500/40 outline-none text-white placeholder:text-emerald-100/35"
+                  />
+                </div>
 
                 {/* PASSWORD */}
                 <div className="relative group">
@@ -385,7 +426,7 @@ const Signup = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-4 text-emerald-100/40 hover:text-white transition-colors"
+                    className="absolute right-4 top-4 text-emerald-100/40 hover:text-white"
                   >
                     {showPassword ? (
                       <EyeOff size={18} />
@@ -431,6 +472,35 @@ const Signup = () => {
                     <option className="bg-[#062419]" value="Junior Staff">
                       Junior Staff
                     </option>
+                  </select>
+                </div>
+
+                {/* CITY */}
+                <div className="relative">
+                  <MapPin
+                    size={18}
+                    className="absolute left-4 top-4 text-emerald-300/50"
+                  />
+
+                  <select
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 focus:border-emerald-500/40 outline-none text-white appearance-none cursor-pointer"
+                  >
+                    <option className="bg-[#062419]" value="">
+                      Select City
+                    </option>
+
+                    {jharkhandCities.map((cityName) => (
+                      <option
+                        key={cityName}
+                        value={cityName}
+                        className="bg-[#062419]"
+                      >
+                        {cityName}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -501,7 +571,35 @@ const Signup = () => {
                   />
                 </div>
 
-                {/* ADDRESS */}
+                {/* PROFILE IMAGE */}
+                <div className="relative sm:col-span-2">
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:border-emerald-500/40 transition-all w-full">
+                      <ImagePlus size={20} className="text-emerald-400" />
+
+                      <span className="text-emerald-100/70">
+                        Upload Profile Image
+                      </span>
+
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {profilePreview && (
+                      <img
+                        src={profilePreview}
+                        alt="preview"
+                        className="w-14 h-14 rounded-xl object-cover border border-white/10"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* ADDRESS OPTIONAL */}
                 <div className="relative sm:col-span-2">
                   <MapPin
                     size={18}
@@ -510,12 +608,29 @@ const Signup = () => {
 
                   <input
                     type="text"
-                    placeholder="Official Posting Address"
+                    placeholder="Official Posting Address (Optional)"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    required
                     className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-white/5 border border-white/10 focus:border-emerald-500/40 outline-none text-white placeholder:text-emerald-100/35"
                   />
+                </div>
+
+                {/* TERMS */}
+                <div className="sm:col-span-2">
+                  <label className="flex items-start gap-3 text-sm text-emerald-100/70 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      className="mt-1 accent-emerald-500"
+                    />
+
+                    <span>
+                      I confirm that I am an authorized government /
+                      municipal employee. Any misuse may lead to legal or
+                      administrative action.
+                    </span>
+                  </label>
                 </div>
 
                 {/* SUBMIT */}
@@ -542,7 +657,7 @@ const Signup = () => {
                   </motion.button>
                 </div>
 
-                {/* FOOTER LINKS */}
+                {/* FOOTER */}
                 <div className="sm:col-span-2 flex flex-col sm:flex-row justify-between items-center gap-3 pt-5 border-t border-white/10 text-sm">
                   <div className="text-emerald-100/50">
                     Already have an account?{" "}

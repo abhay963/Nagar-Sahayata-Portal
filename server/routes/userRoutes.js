@@ -1,127 +1,27 @@
-// Import express framework
+// ================= IMPORTS =================
+
 import express from "express";
 
-// Import authentication middleware
-import {
-  protect
-} from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
 
-// Import validation library
 import { body } from "express-validator";
 
-// Import multer for file uploads
-import multer from "multer";
+import upload from "../middleware/upload.js";
 
-// Import path module for file paths
-import path from "path";
-
-// Import fs module for file system operations
-import fs from "fs";
-
-// Import controller functions
 import {
 
   updateProfile,
 
   getJuniorStaff,
 
-  getJuniorStaffByDepartment
+  getJuniorStaffByDepartment,
 
 } from "../controllers/userController.js";
 
 
-// Create router object
+// ================= ROUTER =================
+
 const router = express.Router();
-
-
-// ================= MULTER SETUP =================
-
-const storage = multer.diskStorage({
-
-  // Upload folder
-  destination: (req, file, cb) => {
-
-    const uploadDir = path.join(
-
-      process.cwd(),
-
-      "uploads/profile-images"
-    );
-
-    // Create folder if not exists
-    if (!fs.existsSync(uploadDir)) {
-
-      fs.mkdirSync(uploadDir, {
-        recursive: true
-      });
-    }
-
-    cb(null, uploadDir);
-  },
-
-
-  // File name
-  filename: (req, file, cb) => {
-
-    const ext =
-      path.extname(
-        file.originalname
-      );
-
-    const filename =
-      `user-${req.user.id}-${Date.now()}${ext}`;
-
-    cb(null, filename);
-  },
-});
-
-
-// ================= FILE FILTER =================
-
-const fileFilter = (req, file, cb) => {
-
-  const allowed = [
-
-    "image/png",
-
-    "image/jpeg",
-
-    "image/jpg",
-  ];
-
-  if (
-    allowed.includes(
-      file.mimetype
-    )
-  ) {
-
-    cb(null, true);
-
-  } else {
-
-    cb(
-      new Error(
-        "Only PNG, JPEG, JPG allowed"
-      )
-    );
-  }
-};
-
-
-// ================= MULTER INSTANCE =================
-
-const upload = multer({
-
-  storage,
-
-  fileFilter,
-
-  limits: {
-
-    fileSize:
-      2 * 1024 * 1024,
-  },
-});
 
 
 // ================= VALIDATION =================
@@ -144,19 +44,17 @@ const validateProfileUpdate = [
     .notEmpty()
     .withMessage("Department is required"),
 
+  body("city")
+    .notEmpty()
+    .withMessage("City is required"),
+
   body("contact")
     .notEmpty()
     .withMessage("Contact is required"),
-
-  body("address")
-    .notEmpty()
-    .withMessage("Address is required"),
 ];
 
 
-// ======================================================
-// ================= UPDATE PROFILE =====================
-// ======================================================
+// ================= UPDATE PROFILE =================
 
 router.put(
 
@@ -164,9 +62,7 @@ router.put(
 
   protect,
 
-  upload.single(
-    "profileImage"
-  ),
+  upload.single("profileImage"),
 
   validateProfileUpdate,
 
@@ -174,9 +70,19 @@ router.put(
 );
 
 
-// ======================================================
-// =========== GET JUNIOR STAFF BY DEPARTMENT ===========
-// ======================================================
+// ================= GET JUNIOR STAFF =================
+
+router.get(
+
+  "/junior-staff",
+
+  protect,
+
+  getJuniorStaff
+);
+
+
+// ================= GET JUNIOR STAFF BY DEPARTMENT =================
 
 router.get(
 
@@ -188,15 +94,6 @@ router.get(
 );
 
 
-
-
-
-
-
-
-
-// ======================================================
-// ================= EXPORT ROUTER ======================
-// ======================================================
+// ================= EXPORT =================
 
 export default router;

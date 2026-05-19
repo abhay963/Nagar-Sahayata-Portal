@@ -1,31 +1,9 @@
-// Import User model
 import User from "../models/User.js";
-
-// Import validationResult for validation
 import { validationResult } from "express-validator";
-
-// Import path module
-import path from "path";
-
-// Import file system module
-import fs from "fs";
-
-
-// ======================================================
-// ================= GET JUNIOR STAFF ===================
-// ======================================================
-
-// @desc    Get junior staff of logged-in staff department
-// @route   GET /api/users/junior-staff
-// @access  Private
 
 export const getJuniorStaff = async (req, res) => {
 
   try {
-
-    // ======================================================
-    // ================= ROLE CHECK =========================
-    // ======================================================
 
     if (req.user.role !== "Staff") {
 
@@ -38,11 +16,6 @@ export const getJuniorStaff = async (req, res) => {
       });
     }
 
-
-    // ======================================================
-    // ================= FETCH USERS ========================
-    // ======================================================
-
     const juniorStaff = await User.find({
 
       role: "Junior Staff",
@@ -50,17 +23,17 @@ export const getJuniorStaff = async (req, res) => {
       department:
         req.user.department,
 
+      city:
+        req.user.city,
+
+      isApproved: true,
+
+      accountStatus: "Active",
     })
 
     .select(
-
-      "_id name email role department"
+      "_id name email role department city profileImage"
     );
-
-
-    // ======================================================
-    // ================= RESPONSE ===========================
-    // ======================================================
 
     res.status(200).json({
 
@@ -72,9 +45,7 @@ export const getJuniorStaff = async (req, res) => {
   } catch (error) {
 
     console.error(
-
       "❌ Get Junior Staff Error:",
-
       error
     );
 
@@ -89,31 +60,13 @@ export const getJuniorStaff = async (req, res) => {
 };
 
 
-
-// ======================================================
-// =========== GET STAFF BY DEPARTMENT ==================
-// ======================================================
-
-// @desc    Get junior staff by department
-// @route   GET /api/users/junior-staff/:department
-// @access  Private
-
 export const getJuniorStaffByDepartment =
   async (req, res) => {
 
     try {
 
-      // ======================================================
-      // ================= GET PARAM ==========================
-      // ======================================================
-
       const { department } =
         req.params;
-
-
-      // ======================================================
-      // ================= FIND USERS =========================
-      // ======================================================
 
       const users =
         await User.find({
@@ -123,19 +76,19 @@ export const getJuniorStaffByDepartment =
           department:
             decodeURIComponent(
               department
-            )
+            ),
 
+          city:
+            req.user.city,
+
+          isApproved: true,
+
+          accountStatus: "Active",
         })
 
         .select(
-
-          "_id name email department role"
+          "_id name email department role city profileImage"
         );
-
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
 
       res.status(200).json({
 
@@ -147,9 +100,7 @@ export const getJuniorStaffByDepartment =
     } catch (error) {
 
       console.error(
-
         "❌ Fetch Junior Staff Error:",
-
         error
       );
 
@@ -164,46 +115,12 @@ export const getJuniorStaffByDepartment =
   };
 
 
-
-// ======================================================
-// ================= UPDATE PROFILE =====================
-// ======================================================
-
-// @desc    Update logged-in user profile
-// @route   PUT /api/users/update-profile
-// @access  Private
-
 export const updateProfile = async (req, res) => {
-
-  // ======================================================
-  // ================= VALIDATION =========================
-  // ======================================================
 
   const errors =
     validationResult(req);
 
-
   if (!errors.isEmpty()) {
-
-    // Delete uploaded image if validation fails
-    if (req.file) {
-
-      fs.unlink(
-        req.file.path,
-        (err) => {
-
-          if (err) {
-
-            console.error(
-
-              "❌ Error deleting file:",
-
-              err
-            );
-          }
-        }
-      );
-    }
 
     return res.status(400).json({
 
@@ -214,18 +131,12 @@ export const updateProfile = async (req, res) => {
     });
   }
 
-
   try {
-
-    // ======================================================
-    // ================= FIND USER ==========================
-    // ======================================================
 
     const user =
       await User.findById(
         req.user._id
       );
-
 
     if (!user) {
 
@@ -237,11 +148,6 @@ export const updateProfile = async (req, res) => {
           "User not found",
       });
     }
-
-
-    // ======================================================
-    // ================= UPDATE FIELDS ======================
-    // ======================================================
 
     user.name =
       req.body.name ||
@@ -259,6 +165,10 @@ export const updateProfile = async (req, res) => {
       req.body.department ||
       user.department;
 
+    user.city =
+      req.body.city ||
+      user.city;
+
     user.contact =
       req.body.contact ||
       user.contact;
@@ -267,63 +177,14 @@ export const updateProfile = async (req, res) => {
       req.body.address ||
       user.address;
 
-
-    // ======================================================
-    // ================= PROFILE IMAGE ======================
-    // ======================================================
-
     if (req.file) {
 
-      // Delete old image
-      if (user.profileImage) {
-
-        const oldImagePath =
-          path.join(
-
-            process.cwd(),
-
-            user.profileImage.startsWith("/")
-
-              ? user.profileImage.slice(1)
-
-              : user.profileImage
-          );
-
-        fs.unlink(
-          oldImagePath,
-          (err) => {
-
-            if (err) {
-
-              console.error(
-
-                "❌ Error deleting old image:",
-
-                err
-              );
-            }
-          }
-        );
-      }
-
-
-      // Save new image path
       user.profileImage =
-        `/uploads/profile-images/${req.file.filename}`;
+        req.file.path;
     }
-
-
-    // ======================================================
-    // ================= SAVE USER ==========================
-    // ======================================================
 
     const updatedUser =
       await user.save();
-
-
-    // ======================================================
-    // ================= RESPONSE ===========================
-    // ======================================================
 
     res.status(200).json({
 
@@ -346,6 +207,9 @@ export const updateProfile = async (req, res) => {
         department:
           updatedUser.department,
 
+        city:
+          updatedUser.city,
+
         contact:
           updatedUser.contact,
 
@@ -360,15 +224,19 @@ export const updateProfile = async (req, res) => {
 
         joiningDate:
           updatedUser.joiningDate,
+
+        isApproved:
+          updatedUser.isApproved,
+
+        accountStatus:
+          updatedUser.accountStatus,
       },
     });
 
   } catch (error) {
 
     console.error(
-
       "❌ Update Profile Error:",
-
       error
     );
 

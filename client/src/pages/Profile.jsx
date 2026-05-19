@@ -1,28 +1,19 @@
-// Import React hooks
 import React, {
   useState,
   useEffect
 } from "react";
 
-// Auth context
 import { useAuth }
 from "../context/AuthContext";
 
-// Axios instance
 import axios from "../api/axios";
 
-// Toast notifications
 import { toast }
 from "react-toastify";
 
 
-
-
-
-
 const Profile = () => {
 
-  // Get auth data/functions
   const {
 
     user,
@@ -38,7 +29,6 @@ const Profile = () => {
 
   // ================= EDIT MODE =================
 
-  // Controls edit mode
   const [
 
     isEditing,
@@ -50,7 +40,6 @@ const Profile = () => {
 
   // ================= FORM DATA =================
 
-  // User form fields
   const [
 
     formData,
@@ -67,13 +56,17 @@ const Profile = () => {
 
     department: "",
 
+    city: "",
+
     contact: "",
 
     address: "",
+
+    profileImage: null,
   });
 
 
-  // ================= VALIDATION ERRORS =================
+  // ================= ERRORS =================
 
   const [
 
@@ -84,7 +77,7 @@ const Profile = () => {
   ] = useState({});
 
 
-  // ================= SAVE BUTTON LOADING =================
+  // ================= LOADING =================
 
   const [
 
@@ -93,6 +86,45 @@ const Profile = () => {
     setSaving
 
   ] = useState(false);
+
+
+
+  // ======================================================
+  // ================= PREFILL USER DATA ==================
+  // ======================================================
+
+  useEffect(() => {
+
+    if (user) {
+
+      setFormData({
+
+        name:
+          user.name || "",
+
+        email:
+          user.email || "",
+
+        empId:
+          user.empId || "",
+
+        department:
+          user.department || "",
+
+        city:
+          user.city || "",
+
+        contact:
+          user.contact || "",
+
+        address:
+          user.address || "",
+
+        profileImage: null,
+      });
+    }
+
+  }, [user]);
 
 
 
@@ -138,21 +170,6 @@ const Profile = () => {
 
         You are not logged in.
 
-        <a
-
-          href="/login"
-
-          className="
-            text-blue-600
-            underline
-            ml-2
-          "
-        >
-
-          Login
-
-        </a>
-
       </div>
     );
   }
@@ -160,107 +177,48 @@ const Profile = () => {
 
 
   // ======================================================
-  // =============== PREFILL USER DATA ====================
-  // ======================================================
-
-  useEffect(() => {
-
-    if (user) {
-
-      // Fill form with current user data
-      setFormData({
-
-        name:
-          user.name || "",
-
-        email:
-          user.email || "",
-
-        empId:
-          user.empId || "",
-
-        department:
-          user.department || "",
-
-        contact:
-          user.contact || "",
-
-        address:
-          user.address || "",
-      });
-    }
-
-  }, [user]);
-
-
-
-  // ======================================================
-  // ================= FORM VALIDATION ====================
+  // ================= VALIDATION =========================
   // ======================================================
 
   const validate = () => {
 
     const errs = {};
 
-
-    // Name validation
     if (!formData.name.trim()) {
 
       errs.name =
         "Name is required";
     }
 
-
-    // Email validation
     if (!formData.email.trim()) {
 
       errs.email =
         "Email is required";
-
-    } else if (
-
-      !/^\S+@\S+\.\S+$/.test(
-        formData.email
-      )
-
-    ) {
-
-      errs.email =
-        "Email is invalid";
     }
 
-
-    // Employee ID validation
     if (!formData.empId.trim()) {
 
       errs.empId =
-        "Employee ID is required";
+        "Employee ID required";
     }
 
-
-    // Department validation
     if (!formData.department.trim()) {
 
       errs.department =
-        "Department is required";
+        "Department required";
     }
 
+    if (!formData.city.trim()) {
 
-    // Contact validation
+      errs.city =
+        "City required";
+    }
+
     if (!formData.contact.trim()) {
 
       errs.contact =
-        "Contact number is required";
+        "Contact required";
     }
-
-
-    // Address validation
-    if (!formData.address.trim()) {
-
-      errs.address =
-        "Address is required";
-    }
-
 
     return errs;
   };
@@ -268,7 +226,7 @@ const Profile = () => {
 
 
   // ======================================================
-  // ================= HANDLE INPUT CHANGE ================
+  // ================= HANDLE CHANGE ======================
   // ======================================================
 
   const handleChange = (e) => {
@@ -277,35 +235,44 @@ const Profile = () => {
 
       name,
 
-      value
+      value,
+
+      files
 
     } = e.target;
 
+    if (files) {
 
-    // Update field dynamically
-    setFormData((prev) => ({
+      setFormData((prev) => ({
 
-      ...prev,
+        ...prev,
 
-      [name]: value,
-    }));
+        [name]: files[0],
+      }));
+
+    } else {
+
+      setFormData((prev) => ({
+
+        ...prev,
+
+        [name]: value,
+      }));
+    }
   };
 
 
 
   // ======================================================
-  // ===================== SAVE PROFILE ===================
+  // ================= SAVE PROFILE =======================
   // ======================================================
 
   const handleSave = async () => {
 
-    // Validate form
     const errs = validate();
 
     setErrors(errs);
 
-
-    // Stop if validation fails
     if (
 
       Object.keys(errs).length > 0
@@ -319,61 +286,53 @@ const Profile = () => {
       return;
     }
 
-
     try {
 
       setSaving(true);
 
-      console.log(
-        "📤 Updating profile:",
-        formData
-      );
+      const data = new FormData();
 
+      Object.keys(formData).forEach((key) => {
 
-      // API request
+        data.append(
+          key,
+          formData[key]
+        );
+      });
+
       const res = await axios.put(
 
         "/api/users/update-profile",
 
-        formData
+        data,
+
+        {
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
       );
 
-
-      console.log(
-        "✅ Profile Updated:",
-        res.data
-      );
-
-
-      // Update user globally
       setUser(
         res.data.updatedUser
       );
 
-
-      // Exit edit mode
       setIsEditing(false);
 
-
-      // Success toast
       toast.success(
         "Profile updated successfully"
       );
 
     } catch (err) {
 
-      console.error(
-        "❌ Update failed:",
-        err
-      );
+      console.error(err);
 
-
-      // Backend error
       toast.error(
 
         err.response?.data?.message ||
 
-        "Failed to update profile."
+        "Update failed"
       );
 
     } finally {
@@ -385,52 +344,25 @@ const Profile = () => {
 
 
   // ======================================================
-  // ==================== CANCEL EDIT =====================
+  // ================= CANCEL EDIT ========================
   // ======================================================
 
   const handleCancel = () => {
 
-    // Exit edit mode
     setIsEditing(false);
 
-
-    // Reset form data
-    setFormData({
-
-      name:
-        user.name || "",
-
-      email:
-        user.email || "",
-
-      empId:
-        user.empId || "",
-
-      department:
-        user.department || "",
-
-      contact:
-        user.contact || "",
-
-      address:
-        user.address || "",
-    });
-
-
-    // Clear validation errors
     setErrors({});
   };
 
 
 
   // ======================================================
-  // ==================== USER INITIALS ===================
+  // ================= USER INITIALS ======================
   // ======================================================
 
   const getInitials = (name) => {
 
     if (!name) return "U";
-
 
     return name
 
@@ -446,76 +378,68 @@ const Profile = () => {
 
 
   // ======================================================
-  // ======================= UI ===========================
+  // ================= MAIN UI ============================
   // ======================================================
 
   return (
 
     <div className="
       min-h-screen
-      bg-[#f4f4f4]
+      bg-gray-100
       py-10
       px-4
-      font-sans
     ">
 
       <div className="
-        max-w-5xl
+        max-w-6xl
         mx-auto
         bg-white
-        border
-        border-gray-300
-        rounded-md
-        shadow-md
+        rounded-2xl
+        shadow-xl
+        overflow-hidden
       ">
 
         {/* ================= HEADER ================= */}
 
         <div className="
-          bg-[#006400]
+          bg-green-700
           text-white
           text-center
-          py-4
-          rounded-t-md
-          border-b
-          border-green-800
+          py-5
         ">
 
           <h1 className="
-            text-2xl
-            font-semibold
-            uppercase
-            tracking-wide
+            text-3xl
+            font-bold
           ">
 
-            Profile
+            My Profile
 
           </h1>
 
           <p className="
             text-sm
-            font-light
+            mt-1
           ">
 
-            Government of Jharkhand
+            Nagar Sahayata Portal
 
           </p>
         </div>
 
 
 
-        {/* ================= PROFILE CONTENT ================= */}
+        {/* ================= CONTENT ================= */}
 
         <div className="
           grid
           grid-cols-1
           md:grid-cols-3
-          gap-6
-          px-6
-          py-8
+          gap-8
+          p-8
         ">
 
-          {/* ================= LEFT SIDE ================= */}
+          {/* ================= LEFT ================= */}
 
           <div className="
             flex
@@ -523,56 +447,89 @@ const Profile = () => {
             items-center
           ">
 
-            {/* User initials avatar */}
-            <div className="
-              w-36
-              h-36
-              rounded-full
-              flex
-              items-center
-              justify-center
-              mb-4
-              bg-gradient-to-br
-              from-green-200
-              to-green-500
-              text-white
-              text-5xl
+            {
+              user.profileImage ? (
+
+                <img
+
+                  src={user.profileImage}
+
+                  alt="Profile"
+
+                  className="
+                    w-40
+                    h-40
+                    rounded-full
+                    object-cover
+                    border-4
+                    border-green-600
+                    shadow-lg
+                  "
+                />
+
+              ) : (
+
+                <div className="
+                  w-40
+                  h-40
+                  rounded-full
+                  flex
+                  items-center
+                  justify-center
+                  bg-gradient-to-br
+                  from-green-300
+                  to-green-700
+                  text-white
+                  text-5xl
+                  font-bold
+                ">
+
+                  {getInitials(user.name)}
+
+                </div>
+              )
+            }
+
+            <h2 className="
+              text-2xl
               font-bold
-              uppercase
-              shadow-inner
-            ">
-
-              {getInitials(user.name)}
-
-            </div>
-
-
-            {/* User name */}
-            <p className="
-              text-lg
-              font-semibold
-              mt-2
+              mt-5
             ">
 
               {user.name}
 
-            </p>
+            </h2>
 
-
-            {/* User role */}
             <p className="
-              text-sm
-              text-gray-700
+              text-gray-600
+              mt-1
             ">
 
               {user.role}
+
+            </p>
+
+            <p className="
+              text-sm
+              mt-2
+              text-green-700
+              font-semibold
+            ">
+
+              {
+                user.isApproved
+
+                  ? "Approved ✅"
+
+                  : "Pending Approval ⏳"
+              }
 
             </p>
           </div>
 
 
 
-          {/* ================= RIGHT SIDE FORM ================= */}
+          {/* ================= RIGHT ================= */}
 
           <div className="
             md:col-span-2
@@ -619,7 +576,16 @@ const Profile = () => {
             />
 
             <EditableField
-              label="Phone"
+              label="City"
+              name="city"
+              value={formData.city}
+              isEditing={isEditing}
+              onChange={handleChange}
+              error={errors.city}
+            />
+
+            <EditableField
+              label="Contact"
               name="contact"
               value={formData.contact}
               isEditing={isEditing}
@@ -633,43 +599,101 @@ const Profile = () => {
               value={formData.address}
               isEditing={isEditing}
               onChange={handleChange}
-              error={errors.address}
             />
 
 
-            {/* Joining date */}
-            <div>
+            {/* Role */}
+            <DisplayField
+              label="Role"
+              value={user.role}
+            />
 
-              <p className="
-                text-xs
-                font-medium
-                text-gray-500
-                uppercase
-              ">
+            {/* Account Status */}
+            <DisplayField
+              label="Account Status"
+              value={user.accountStatus}
+            />
 
-                Joining Date
+            {/* MongoDB ID */}
+            <DisplayField
+              label="User ID"
+              value={user._id}
+            />
 
-              </p>
+            {/* Created */}
+            <DisplayField
+              label="Created At"
+              value={
+                user.createdAt
 
-              <p className="
-                text-sm
-                font-semibold
-                text-gray-800
-                mt-1
-              ">
+                  ? new Date(
+                      user.createdAt
+                    ).toLocaleString("en-IN")
 
-                {
-                  user.joiningDate
+                  : "N/A"
+              }
+            />
 
-                    ? new Date(
-                        user.joiningDate
-                      ).toLocaleDateString("en-IN")
+            {/* Joining Date */}
+            <DisplayField
+              label="Joining Date"
+              value={
+                user.joiningDate
 
-                    : "N/A"
-                }
+                  ? new Date(
+                      user.joiningDate
+                    ).toLocaleDateString("en-IN")
 
-              </p>
-            </div>
+                  : "N/A"
+              }
+            />
+
+            {/* System */}
+            <DisplayField
+              label="System Status"
+              value="All Good ✅"
+            />
+
+
+            {/* Upload Image */}
+            {
+              isEditing && (
+
+                <div className="
+                  sm:col-span-2
+                ">
+
+                  <p className="
+                    text-xs
+                    font-medium
+                    text-gray-500
+                    uppercase
+                  ">
+
+                    Profile Image
+
+                  </p>
+
+                  <input
+
+                    type="file"
+
+                    name="profileImage"
+
+                    accept="image/*"
+
+                    onChange={handleChange}
+
+                    className="
+                      mt-2
+                      block
+                      w-full
+                    "
+                  />
+
+                </div>
+              )
+            }
           </div>
         </div>
 
@@ -679,10 +703,11 @@ const Profile = () => {
 
         <div className="
           border-t
-          border-gray-300
-          p-4
-          text-center
-          space-x-4
+          p-6
+          flex
+          flex-wrap
+          gap-4
+          justify-center
         ">
 
           {
@@ -690,7 +715,6 @@ const Profile = () => {
 
               <>
 
-                {/* Save button */}
                 <button
 
                   onClick={handleSave}
@@ -699,14 +723,11 @@ const Profile = () => {
 
                   className="
                     bg-green-700
-                    hover:bg-green-900
+                    hover:bg-green-800
                     text-white
-                    px-5
+                    px-6
                     py-2
-                    rounded
-                    text-sm
-                    cursor-pointer
-                    disabled:opacity-50
+                    rounded-lg
                   "
                 >
 
@@ -715,13 +736,11 @@ const Profile = () => {
 
                       ? "Saving..."
 
-                      : "Save"
+                      : "Save Profile"
                   }
 
                 </button>
 
-
-                {/* Cancel button */}
                 <button
 
                   onClick={handleCancel}
@@ -730,11 +749,9 @@ const Profile = () => {
                     bg-gray-500
                     hover:bg-gray-700
                     text-white
-                    px-5
+                    px-6
                     py-2
-                    rounded
-                    text-sm
-                    cursor-pointer
+                    rounded-lg
                   "
                 >
 
@@ -746,7 +763,6 @@ const Profile = () => {
 
             ) : (
 
-              // Edit button
               <button
 
                 onClick={() =>
@@ -759,9 +775,7 @@ const Profile = () => {
                   text-white
                   px-6
                   py-2
-                  rounded
-                  text-sm
-                  cursor-pointer
+                  rounded-lg
                 "
               >
 
@@ -771,15 +785,9 @@ const Profile = () => {
             )
           }
 
-
-          {/* Logout button */}
           <button
 
             onClick={() => {
-
-              console.log(
-                "🚪 User logged out"
-              );
 
               logout();
 
@@ -793,9 +801,7 @@ const Profile = () => {
               text-white
               px-6
               py-2
-              rounded
-              text-sm
-              cursor-pointer
+              rounded-lg
             "
           >
 
@@ -836,7 +842,6 @@ const EditableField = ({
 
     <div>
 
-      {/* Field label */}
       <p className="
         text-xs
         font-medium
@@ -848,13 +853,11 @@ const EditableField = ({
 
       </p>
 
-
       {
         isEditing ? (
 
           <>
 
-            {/* Editable input */}
             <input
 
               type={type}
@@ -869,13 +872,10 @@ const EditableField = ({
                 mt-1
                 w-full
                 border
-                rounded
+                rounded-lg
                 px-3
-                py-1
+                py-2
                 text-sm
-                focus:outline-none
-                focus:ring-2
-                focus:ring-green-700
 
                 ${
                   error
@@ -887,14 +887,12 @@ const EditableField = ({
               `}
             />
 
-
-            {/* Error text */}
             {
               error && (
 
                 <p className="
-                  text-xs
                   text-red-600
+                  text-xs
                   mt-1
                 ">
 
@@ -908,7 +906,6 @@ const EditableField = ({
 
         ) : (
 
-          // Read-only text
           <p className="
             text-sm
             font-semibold
@@ -927,5 +924,49 @@ const EditableField = ({
 };
 
 
-// Export component
+
+// ======================================================
+// ================= DISPLAY FIELD ======================
+// ======================================================
+
+const DisplayField = ({
+
+  label,
+
+  value
+
+}) => {
+
+  return (
+
+    <div>
+
+      <p className="
+        text-xs
+        font-medium
+        text-gray-500
+        uppercase
+      ">
+
+        {label}
+
+      </p>
+
+      <p className="
+        text-sm
+        font-semibold
+        text-gray-800
+        mt-1
+        break-all
+      ">
+
+        {value || "N/A"}
+
+      </p>
+
+    </div>
+  );
+};
+
+
 export default Profile;

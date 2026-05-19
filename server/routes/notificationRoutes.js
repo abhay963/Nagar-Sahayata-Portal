@@ -1,58 +1,49 @@
-// Import express framework
 import express from "express";
 
-// Import notification controller functions
 import {
-  getNotificationsForUser,      // Get all notifications of logged-in user
-  markNotificationAsRead,       // Mark single notification as read
-  markAllNotificationsAsRead,   // Mark all notifications as read
-  deleteNotification,           // Delete notification
-  getUnreadNotificationCount,   // Count unread notifications
+  getNotificationsForUser,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
+  getUnreadNotificationCount,
 } from "../controllers/notificationController.js";
 
-// Import authentication middleware
-// protect checks JWT token and verifies user
-import { protect } from "../middleware/authMiddleware.js";
+import {
+  protect,
+} from "../middleware/authMiddleware.js";
 
-// Create router object
 const router = express.Router();
 
-
-// ================= MIDDLEWARE =================
-
-// Apply authentication middleware to ALL notification routes
-// User must be logged in to access notifications
 router.use(protect);
 
+router.get(
+  "/",
 
-// ================= NOTIFICATION ROUTES =================
+  getNotificationsForUser
+);
 
-// Get all notifications for logged-in user
-// GET -> /api/notifications
-router.get("/", getNotificationsForUser);
+router.get(
+  "/unread-count",
 
+  getUnreadNotificationCount
+);
 
-// Get unread notification count
-// Useful for notification badge in frontend
-// GET -> /api/notifications/unread-count
-router.get("/unread-count", getUnreadNotificationCount);
+router.put(
+  "/:id/read",
 
+  markNotificationAsRead
+);
 
-// Mark single notification as read
-// :id = notification id
-// PUT -> /api/notifications/:id/read
-router.put("/:id/read", markNotificationAsRead);
+router.put(
+  "/mark-all-read",
 
+  markAllNotificationsAsRead
+);
 
-// Mark all notifications as read
-// PUT -> /api/notifications/mark-all-read
-router.put("/mark-all-read", markAllNotificationsAsRead);
+router.delete(
+  "/:id",
 
+  deleteNotification
+);
 
-// Delete notification by ID
-// DELETE -> /api/notifications/:id
-router.delete("/:id", deleteNotification);
-
-
-// Export router
 export default router;

@@ -1,376 +1,205 @@
 import mongoose from "mongoose";
 
-
-// ======================================================
-// ================= REPORT SCHEMA ======================
-// ======================================================
-
-const reportSchema =
-  new mongoose.Schema(
-
-    {
-
-      // ======================================================
-      // ================= PROBLEM TYPE =======================
-      // ======================================================
-
-      problemType: {
-
-        type: String,
-
-        required: true,
-      },
-
-
-      // ======================================================
-      // ================= DESCRIPTION ========================
-      // ======================================================
-
-      description: {
-
-        type: String,
-
-        required: true,
-      },
-
-
-      // ======================================================
-      // ================= LOCATION ===========================
-      // ======================================================
-
-      location: {
-
-        latitude: Number,
-
-        longitude: Number,
-
-        locationName: String,
-      },
-
-
-      // ======================================================
-      // ================= IMAGE ==============================
-      // ======================================================
-
-      imageBase64: {
-
-        type: String,
-
-        default: "",
-      },
-
-
-      // ======================================================
-      // ================= STATUS =============================
-      // ======================================================
-
-    status: {
-
-  type: String,
-
-  enum: [
-
-    "Pending",
-
-    "Staff Assigned",
-
-    "In Progress",
-
-    "Pending Approval",
-
-    "Unable To Complete",
-
-    "Resolved"
-  ],
-
-  default: "Pending",
-},
-
-
-      // ======================================================
-      // ================= PRIORITY ===========================
-      // ======================================================
-
-      priority: {
-
-        type: String,
-
-        enum: [
-
-          "Normal",
-
-          "Medium",
-
-          "High",
-
-          "Critical",
-        ],
-
-        default: "Normal",
-      },
-
-
-      // ======================================================
-      // ================= DEPARTMENT =========================
-      // ======================================================
-
-      department: {
-
-        type: String,
-
-        required: true,
-      },
-
-
-      // ======================================================
-      // ================= CREATED BY =========================
-      // ======================================================
-
-      userId: {
-
-        type:
-          mongoose.Schema.Types.ObjectId,
-
-        ref: "User",
-
-        default: null,
-      },
-
-
-      // ======================================================
-      // ================= ASSIGNED TO ========================
-      // ======================================================
-
-      assignedTo: {
-
-        type:
-          mongoose.Schema.Types.ObjectId,
-
-        ref: "User",
-
-        default: null,
-      },
-
-
-
-      // ======================================================
-// ================= ASSIGNED BY ========================
-// ======================================================
-
-assignedBy: {
-
-  type:
-    mongoose.Schema.Types.ObjectId,
-
-  ref: "User",
-
-  default: null,
-},
-
-
-// ======================================================
-// ================= ASSIGNED AT ========================
-// ======================================================
-
-assignedAt: {
-
-  type: Date,
-
-  default: null,
-},
-
-      // ======================================================
-      // =========== ASSIGNED STAFF DETAILS ===================
-      // ======================================================
-
-      assignedStaffName: {
-
-        type: String,
-
-        default: "",
-      },
-
-
-      assignedStaffEmail: {
-
-        type: String,
-
-        default: "",
-      },
-
-
-      assignedDepartment: {
-
-        type: String,
-
-        default: "",
-      },
-
-
-      // ======================================================
-      // ================= ACCEPTED AT ========================
-      // ======================================================
-
-      acceptedAt: {
-
-        type: Date,
-
-        default: null,
-      },
-
-      // ======================================================
-// ================= DECLINED AT ========================
-// ======================================================
-
-declinedAt: {
-
-  type: Date,
-
-  default: null,
-},
-
-
-// ======================================================
-// ================= DECLINE REASON =====================
-// ======================================================
-
-declinedReason: {
-
-  type: String,
-
-  default: "",
-},
-
-
-      // ======================================================
-      // ================= RESOLVED AT ========================
-      // ======================================================
-
-      resolvedAt: {
-
-        type: Date,
-
-        default: null,
-      },
-      // ======================================================
-// ============ RESOLUTION DESCRIPTION ==================
-// ======================================================
-
-resolvedDescription: {
-
-  type: String,
-
-  default: "",
-},
-
-
-// ======================================================
-// ============ RESOLUTION IMAGE ========================
-// ======================================================
-
-resolvedImageBase64: {
-
-  type: String,
-
-  default: "",
-},
-
-
-// ======================================================
-// ======= SUBMITTED FOR APPROVAL AT ====================
-// ======================================================
-
-submittedForApprovalAt: {
-
-  type: Date,
-
-  default: null,
-},
-
-
-// ======================================================
-// =========== UNABLE TO COMPLETE REASON ================
-// ======================================================
-
-unableReason: {
-
-  type: String,
-
-  default: "",
-},
-
-
-// ======================================================
-// ============ UNABLE IMAGE ============================
-// ======================================================
-
-unableImageBase64: {
-
-  type: String,
-
-  default: "",
-},
-
-
-// ======================================================
-// ================= UNABLE AT ==========================
-// ======================================================
-
-unableAt: {
-
-  type: Date,
-
-  default: null,
-},
-
-
-// ======================================================
-// ================= VERIFIED BY ========================
-// ======================================================
-
-verifiedBy: {
-
-  type:
-    mongoose.Schema.Types.ObjectId,
-
-  ref: "User",
-
-  default: null,
-},
-
-
-// ======================================================
-// ================= VERIFIED AT ========================
-// ======================================================
-
-verifiedAt: {
-
-  type: Date,
-
-  default: null,
-},
-
+const reportSchema = new mongoose.Schema(
+  {
+    reportId: {
+      type: String,
+      unique: true,
+      default: "",
     },
 
+    problemType: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-    // ======================================================
-    // ================= TIMESTAMPS =========================
-    // ======================================================
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-    {
-      timestamps: true,
-    }
-  );
+    department: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
+    priority: {
+      type: String,
 
-// ======================================================
-// ================= EXPORT MODEL =======================
-// ======================================================
+      enum: [
+        "Normal",
+        "Medium",
+        "High",
+        "Critical",
+      ],
+
+      default: "Normal",
+    },
+
+    status: {
+      type: String,
+
+      enum: [
+        "Pending",
+        "Staff Assigned",
+        "In Progress",
+        "Pending Approval",
+        "Unable To Complete",
+        "Resolved",
+      ],
+
+      default: "Pending",
+    },
+
+    citizenName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    citizenContact: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    location: {
+      latitude: {
+        type: Number,
+        default: 0,
+      },
+
+      longitude: {
+        type: Number,
+        default: 0,
+      },
+
+      locationName: {
+        type: String,
+        default: "",
+      },
+    },
+
+    image: {
+      type: String,
+      default: "",
+    },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    assignedToName: {
+      type: String,
+      default: "",
+    },
+
+    assignedToDepartment: {
+      type: String,
+      default: "",
+    },
+
+    assignedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    assignedByName: {
+      type: String,
+      default: "",
+    },
+
+    assignedAt: {
+      type: Date,
+      default: null,
+    },
+
+    acceptedAt: {
+      type: Date,
+      default: null,
+    },
+
+    declinedAt: {
+      type: Date,
+      default: null,
+    },
+
+    declinedReason: {
+      type: String,
+      default: "",
+    },
+
+    resolvedAt: {
+      type: Date,
+      default: null,
+    },
+
+    resolvedDescription: {
+      type: String,
+      default: "",
+    },
+
+    resolvedImage: {
+      type: String,
+      default: "",
+    },
+
+    submittedForApprovalAt: {
+      type: Date,
+      default: null,
+    },
+
+    unableReason: {
+      type: String,
+      default: "",
+    },
+
+    unableImage: {
+      type: String,
+      default: "",
+    },
+
+    unableAt: {
+      type: Date,
+      default: null,
+    },
+
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
+    verifiedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.model(
-
   "Report",
-
   reportSchema
 );

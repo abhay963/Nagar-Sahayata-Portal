@@ -23,6 +23,8 @@ import {
   FiXCircle,
   FiClock,
   FiX,
+  FiUser,
+  FiAlertTriangle,
 } from "react-icons/fi";
 
 
@@ -146,6 +148,10 @@ const NotificationsPanel = () => {
 
       try {
 
+        // ============================================
+        // JUNIOR STAFF
+        // ============================================
+
         if (
           currentUser?.role ===
           "Junior Staff"
@@ -176,7 +182,7 @@ const NotificationsPanel = () => {
                 ...report,
 
                 image:
-                  report.imageBase64 || null,
+                  report.image || null,
               },
             }));
 
@@ -185,7 +191,16 @@ const NotificationsPanel = () => {
             formatted
           );
 
-        } else {
+        }
+
+        // ============================================
+        // STAFF
+        // ============================================
+
+        else if (
+          currentUser?.role ===
+          "Staff"
+        ) {
 
           const res =
             await axios.get(
@@ -411,7 +426,7 @@ const NotificationsPanel = () => {
         top-20
         right-5
         z-50
-        w-[380px]
+        w-[400px]
       ">
 
         <motion.div
@@ -448,15 +463,11 @@ const NotificationsPanel = () => {
             to-indigo-50
           ">
 
-            {/* LEFT */}
-
             <div className="
               flex
               items-center
               gap-3
             ">
-
-              {/* ICON */}
 
               <div className="
                 relative
@@ -486,10 +497,6 @@ const NotificationsPanel = () => {
 
                 </motion.div>
 
-
-
-                {/* COUNT */}
-
                 <div className="
                   absolute
                   -top-2
@@ -517,10 +524,6 @@ const NotificationsPanel = () => {
 
               </div>
 
-
-
-              {/* TITLE */}
-
               <div>
 
                 <h2 className="
@@ -537,17 +540,13 @@ const NotificationsPanel = () => {
                   text-gray-500
                 ">
 
-                  Manage all updates
+                  Latest updates
 
                 </p>
 
               </div>
 
             </div>
-
-
-
-            {/* CLEAR BUTTON */}
 
             <button
 
@@ -584,7 +583,7 @@ const NotificationsPanel = () => {
           {/* LIST */}
 
           <div className="
-            max-h-[500px]
+            max-h-[550px]
             overflow-y-auto
             p-4
             space-y-4
@@ -686,15 +685,12 @@ const NotificationsPanel = () => {
                                 rounded-xl
                                 bg-yellow-100
                                 text-yellow-700
-                                hover:bg-yellow-200
                               "
                             >
 
                               <FiScissors size={14} />
 
                             </button>
-
-
 
                             <button
 
@@ -710,7 +706,6 @@ const NotificationsPanel = () => {
                                 rounded-xl
                                 bg-red-100
                                 text-red-600
-                                hover:bg-red-200
                               "
                             >
 
@@ -742,8 +737,7 @@ const NotificationsPanel = () => {
 
                               <h3 className="
                                 font-bold
-                                text-[17px]
-                                leading-tight
+                                text-[16px]
                               ">
 
                                 {note.message}
@@ -753,10 +747,13 @@ const NotificationsPanel = () => {
                               <p className="
                                 text-sm
                                 text-gray-500
-                                mt-1
                               ">
 
-                                Notification update
+                                {
+                                  formatTime(
+                                    note.createdAt
+                                  )
+                                }
 
                               </p>
 
@@ -766,46 +763,7 @@ const NotificationsPanel = () => {
 
 
 
-                          {/* IMAGE */}
-
-                          {
-                            note.taskInfo?.image && (
-
-                              <motion.img
-
-                                whileHover={{
-                                  scale: 1.02,
-                                }}
-
-                                src={
-                                  note.taskInfo.image
-                                }
-
-                                alt="Issue"
-
-                                onClick={() =>
-
-                                  setFullscreenImage(
-
-                                    note.taskInfo.image
-                                  )
-                                }
-
-                                className="
-                                  w-full
-                                  h-[180px]
-                                  object-cover
-                                  rounded-2xl
-                                  mt-4
-                                  cursor-pointer
-                                "
-                              />
-                            )
-                          }
-
-
-
-                          {/* DETAILS */}
+                          {/* TASK DETAILS */}
 
                           {
                             note.taskInfo && (
@@ -816,66 +774,152 @@ const NotificationsPanel = () => {
                               ">
 
                                 <div className="
-                                  flex
-                                  items-center
-                                  gap-2
+                                  grid
+                                  grid-cols-2
+                                  gap-3
+                                  text-sm
                                 ">
 
-                                  <FiClock
-                                    className="
-                                      text-blue-500
-                                    "
-                                  />
-
-                                  <span>
-
+                                  <div>
                                     <strong>
-                                      Status:
+                                      Problem:
                                     </strong>
 
-                                    {" "}
+                                    <p>
+                                      {
+                                        note.taskInfo.problemType
+                                      }
+                                    </p>
+                                  </div>
 
-                                    {
-                                      note.taskInfo.status
-                                    }
-
-                                  </span>
-
-                                </div>
-
-
-
-                                <div className="
-                                  flex
-                                  items-center
-                                  gap-2
-                                ">
-
-                                  <FiCheckCircle
-                                    className="
-                                      text-green-500
-                                    "
-                                  />
-
-                                  <span>
-
+                                  <div>
                                     <strong>
                                       Priority:
                                     </strong>
 
-                                    {" "}
+                                    <p>
+                                      {
+                                        note.taskInfo.priority
+                                      }
+                                    </p>
+                                  </div>
 
-                                    {
-                                      note.taskInfo.priority
-                                    }
+                                  <div>
+                                    <strong>
+                                      Status:
+                                    </strong>
 
-                                  </span>
+                                    <p>
+                                      {
+                                        note.taskInfo.status
+                                      }
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <strong>
+                                      Department:
+                                    </strong>
+
+                                    <p>
+                                      {
+                                        note.taskInfo.department
+                                      }
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <strong>
+                                      City:
+                                    </strong>
+
+                                    <p>
+                                      {
+                                        note.taskInfo.city
+                                      }
+                                    </p>
+                                  </div>
+
+                                  <div>
+                                    <strong>
+                                      Citizen:
+                                    </strong>
+
+                                    <p>
+                                      {
+                                        note.taskInfo.citizenName || "N/A"
+                                      }
+                                    </p>
+                                  </div>
 
                                 </div>
 
 
 
-                                {/* LOCATION */}
+                                {/* DESCRIPTION */}
+
+                                <div>
+
+                                  <strong>
+                                    Description:
+                                  </strong>
+
+                                  <p className="
+                                    text-sm
+                                    text-gray-600
+                                    mt-1
+                                  ">
+
+                                    {
+                                      note.taskInfo.description
+                                    }
+
+                                  </p>
+
+                                </div>
+
+
+
+                                {/* IMAGE */}
+
+                                {
+                                  note.taskInfo.image && (
+
+                                    <motion.img
+
+                                      whileHover={{
+                                        scale: 1.02,
+                                      }}
+
+                                      src={
+                                        note.taskInfo.image
+                                      }
+
+                                      alt="Issue"
+
+                                      onClick={() =>
+
+                                        setFullscreenImage(
+
+                                          note.taskInfo.image
+                                        )
+                                      }
+
+                                      className="
+                                        w-full
+                                        h-[200px]
+                                        object-cover
+                                        rounded-2xl
+                                        mt-3
+                                        cursor-pointer
+                                      "
+                                    />
+                                  )
+                                }
+
+
+
+                                {/* MAP */}
 
                                 {
                                   note.taskInfo
@@ -960,8 +1004,6 @@ const NotificationsPanel = () => {
 
                                       </button>
 
-
-
                                       <button
 
                                         onClick={() =>
@@ -1002,24 +1044,6 @@ const NotificationsPanel = () => {
                               </div>
                             )
                           }
-
-
-
-                          {/* TIME */}
-
-                          <div className="
-                            mt-4
-                            text-xs
-                            text-gray-400
-                          ">
-
-                            {
-                              formatTime(
-                                note.createdAt
-                              )
-                            }
-
-                          </div>
 
                         </motion.div>
                       )

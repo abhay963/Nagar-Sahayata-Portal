@@ -131,7 +131,9 @@ const ActivityLog = () => {
               <div className="col-span-5 font-medium text-gray-900 group-hover:text-emerald-700 transition">
                 {report.problemType}
               </div>
-              <div className="col-span-2 text-gray-600">River & Environment</div>
+             <div className="col-span-2 text-gray-600">
+  {report.department}
+</div>
               <div className="col-span-3">
                 <span
                   className={`inline-flex px-5 py-2 rounded-full text-sm font-medium ${
@@ -177,13 +179,211 @@ const ActivityLog = () => {
               </div>
 
               <div className="p-10 overflow-y-auto flex-1">
-                <p className="text-gray-700 leading-relaxed text-lg mb-10">
-                  {selectedReport.description}
-                </p>
+           
+{/* ================= DESCRIPTION ================= */}
 
+<p className="text-gray-700 leading-relaxed text-lg mb-10">
+  {selectedReport.description}
+</p>
+
+
+{/* ================= COMPLETE DETAILS ================= */}
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+
+  {/* Report Details */}
+  <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100">
+    <h3 className="text-xl font-bold text-emerald-700 mb-5">
+      📋 Report Details
+    </h3>
+
+    <div className="space-y-4 text-sm">
+
+      <div>
+        <p className="text-gray-500">Report ID</p>
+        <p className="font-semibold">
+          {selectedReport.reportId || selectedReport._id}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Problem Type</p>
+        <p className="font-semibold">
+          {selectedReport.problemType}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Department</p>
+        <p className="font-semibold">
+          {selectedReport.department}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Priority</p>
+        <p className="font-semibold">
+          {selectedReport.priority}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Status</p>
+        <p className="font-semibold">
+          {selectedReport.status}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">City</p>
+        <p className="font-semibold">
+          {selectedReport.city}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  {/* Citizen Details */}
+  <div className="bg-blue-50 rounded-3xl p-6 border border-blue-100">
+    <h3 className="text-xl font-bold text-blue-700 mb-5">
+      👤 Citizen Details
+    </h3>
+
+    <div className="space-y-4 text-sm">
+
+      <div>
+        <p className="text-gray-500">Citizen Name</p>
+        <p className="font-semibold">
+          {selectedReport.citizenName || "Not Available"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Citizen Contact</p>
+        <p className="font-semibold">
+          {selectedReport.citizenContact || "Not Available"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Location Name</p>
+        <p className="font-semibold">
+          {selectedReport.location?.locationName || "Not Available"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Latitude</p>
+        <p className="font-semibold">
+          {selectedReport.location?.latitude}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Longitude</p>
+        <p className="font-semibold">
+          {selectedReport.location?.longitude}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  {/* Assignment Details */}
+  <div className="bg-purple-50 rounded-3xl p-6 border border-purple-100">
+    <h3 className="text-xl font-bold text-purple-700 mb-5">
+      🛡 Assignment Details
+    </h3>
+
+    <div className="space-y-4 text-sm">
+
+      <div>
+        <p className="text-gray-500">Assigned To</p>
+        <p className="font-semibold">
+          {selectedReport.assignedToName || "Not Assigned"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Assigned Department</p>
+        <p className="font-semibold">
+          {selectedReport.assignedToDepartment || "N/A"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Assigned By</p>
+        <p className="font-semibold">
+          {selectedReport.assignedByName || "N/A"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Assigned At</p>
+        <p className="font-semibold">
+          {selectedReport.assignedAt
+            ? new Date(selectedReport.assignedAt).toLocaleString()
+            : "N/A"}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  {/* Resolution Details */}
+  <div className="bg-green-50 rounded-3xl p-6 border border-green-100">
+    <h3 className="text-xl font-bold text-green-700 mb-5">
+      ✅ Resolution Details
+    </h3>
+
+    <div className="space-y-4 text-sm">
+
+      <div>
+        <p className="text-gray-500">Resolved Description</p>
+        <p className="font-semibold">
+          {selectedReport.resolvedDescription || "Not Available"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Unable Reason</p>
+        <p className="font-semibold">
+          {selectedReport.unableReason || "N/A"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Verified At</p>
+        <p className="font-semibold">
+          {selectedReport.verifiedAt
+            ? new Date(selectedReport.verifiedAt).toLocaleString()
+            : "Not Verified"}
+        </p>
+      </div>
+
+      <div>
+        <p className="text-gray-500">Resolved At</p>
+        <p className="font-semibold">
+          {selectedReport.resolvedAt
+            ? new Date(selectedReport.resolvedAt).toLocaleString()
+            : "Not Resolved"}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
                 {/* Images */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                  {selectedReport.imageBase64 && (
+                  {selectedReport.image && (
                     <div>
                       <p className="font-semibold mb-3 text-emerald-800 flex items-center gap-2">
                         📸 Original Issue
@@ -199,7 +399,7 @@ const ActivityLog = () => {
                     </div>
                   )}
 
-                  {selectedReport.resolvedImageBase64 && (
+                 {selectedReport.resolvedImage&& (
                     <div>
                       <p className="font-semibold mb-3 text-emerald-700 flex items-center gap-2">
                         ✅ Resolution Proof
@@ -215,7 +415,7 @@ const ActivityLog = () => {
                     </div>
                   )}
 
-                  {selectedReport.unableImageBase64 && (
+                  { selectedReport.unableImage&& (
                     <div>
                       <p className="font-semibold mb-3 text-red-700 flex items-center gap-2">
                         ❌ Unable Proof
@@ -259,7 +459,7 @@ const ActivityLog = () => {
                       {selectedReport.assignedAt && (
                         <AnimatedTimelineItem 
                           title="Assigned to Junior Staff" 
-                          subtitle={selectedReport.assignedStaffName} 
+                          subtitle={selectedReport.assignedToName} 
                           time={selectedReport.assignedAt} 
                           color="blue" 
                           delay={0.3}
