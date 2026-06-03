@@ -56,7 +56,11 @@ Built with the **MERN Stack**.
 ## 📸 Screens
 
 <p align="center">
-  <img src="./client/src/assets/signup.png" width="900" />
+ 
+  <br/><br/>
+  <img src="./client/src/assets/hero.png" width="900" />
+  <br/><br/>
+  <img src="./client/src/assets/dashboard2.png" width="900" />
   <br/><br/>
   <img src="./client/src/assets/dashboard.png" width="1000" />
 </p>
