@@ -10,7 +10,7 @@ A smart platform where citizens can report local issues, and authorities can tra
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/akshay-mern/assets/main/mern-animated.gif" width="650" />
+  <img src="https://raw.githubusercontent.com/akshay-mern/assets/main/mern-animated.gif" width="650"/>
 </p>
 
 <p align="center">
