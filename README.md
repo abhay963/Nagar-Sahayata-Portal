@@ -1,4 +1,9 @@
-<h1 align="center">🚀 Nagar-Sahayata-Portal (MERN)</h1>
+<h1 align="center">
+  🚀 Nagar-Sahayata-Portal
+  <a href="https://nagar-sahayata-portal.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo">
+  </a>
+</h1>
 
 <p align="center">
 A smart platform where citizens can report local issues, and authorities can track, manage, and resolve complaints efficiently.
