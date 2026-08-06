@@ -1,169 +1,248 @@
-<h1 align="center">
-  🚀 Nagar-Sahayata-Portal
-  <a href="https://nagar-sahayata-portal.vercel.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel" alt="Live Demo">
-  </a>
-</h1>
+<div align="center">
 
-<p align="center">
-A smart platform where citizens can report local issues, and authorities can track, manage, and resolve complaints efficiently.
-</p>
+# 🏙️ Nagar-Sahayata-Portal
+### Smart Civic Complaint Management System
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/akshay-mern/assets/main/mern-animated.gif" width="650"/>
-</p>
+A modern full-stack platform that empowers citizens to report local civic issues and enables authorities to efficiently track, assign, and resolve complaints.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/MERN-Stack-green" />
-  <img src="https://img.shields.io/badge/Role--Based%20Access-Enabled-blue" />
-  <img src="https://img.shields.io/badge/Project-Nagar--Sahayata--Portal-orange" />
-  <img src="https://img.shields.io/badge/Status-Active-success" />
-</p>
+[![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Framework-Express-000000?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-orange?style=for-the-badge)](https://jwt.io/)
+[![TailwindCSS](https://img.shields.io/badge/UI-TailwindCSS-38BDF8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)]()
 
----
+## 🌐 Live Demo
 
-## 🏙️ Overview
+**Frontend (Vercel):** [https://nagar-sahayata-portal.vercel.app/](https://nagar-sahayata-portal.vercel.app/)
 
-**Nagar-Sahayata-Portal** helps citizens raise complaints about social and civic issues.  
-Authorities manage them using **role-based dashboards**:
-
-- 👤 **User** — submit complaints  
-- 🛠️ **Staff / Junior Staff** — manage assigned complaints  
-- 🧑‍💼 **Admin** — monitor, assign & control  
-
-Built with the **MERN Stack**.
+</div>
 
 ---
 
-## ✨ Features
+## 📖 Project Overview
 
-- 📢 Complaint submission with images  
-- 🧭 Role-based dashboards  
-- 📍 Area-wise complaint tracking  
-- 🔐 Secure JWT authentication  
-- 📧 Email notifications  
-- 📊 Status flow: **Pending → In-Progress → Resolved**
+**Nagar-Sahayata-Portal** is a full-stack civic engagement platform designed to bridge the gap between citizens and local authorities. Citizens can easily report issues such as road damage, water leakage, garbage, street lights, and other civic problems with photos and location details.
+
+Authorities manage the entire complaint lifecycle through **role-based dashboards**:
+
+- 👤 **Citizen (User)** — Submit complaints with images & location  
+- 🛠️ **Staff / Junior Staff** — View, accept, update progress & resolve assigned complaints  
+- 🧑‍💼 **Admin / Department Head** — Monitor all reports, assign tasks, and oversee operations  
+
+Built with the **MERN Stack**, the platform features secure JWT authentication, real-time status tracking, email notifications, and a modern responsive UI.
+
+---
+
+## ✨ Key Features
+
+### 🔐 Authentication & Authorization
+- Secure JWT-based authentication
+- Role-Based Access Control (User, Staff, Junior Staff, Admin)
+- Protected routes and role-specific dashboards
+
+### 📢 Complaint Management
+- Submit complaints with description, category, priority & images
+- Location-based reporting
+- Status flow: **Pending → Staff Assigned → In-Progress → Resolved**
+- Image upload support
+
+### 🛠️ Staff & Junior Staff Features
+- View department-wise pending reports
+- Assign tasks to junior staff
+- Accept / update task progress
+- Upload work proof
+- Real-time status updates
+
+### 📊 Dashboards & Analytics
+- Modern role-based dashboards
+- Interactive charts & statistics
+- Map view of complaints
+- Quick overview of assigned / pending / completed tasks
+
+### 📧 Notifications
+- Email notifications via Nodemailer
+- Status update alerts
+
+### 🎨 User Experience
+- Clean, modern & responsive UI (Tailwind CSS)
+- Smooth animations & interactive components
+- Toast notifications
+- Mobile-friendly design
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Tech |
-|------|------|
-| Frontend | React |
-| Backend | Node.js + Express |
-| Database | MongoDB Atlas |
-| Auth | JWT |
-| Email | Nodemailer |
+| Category          | Technologies                                      |
+|-------------------|---------------------------------------------------|
+| **Frontend**      | React.js, Tailwind CSS, Lucide React, React Router, Axios, React Toastify |
+| **Backend**       | Node.js, Express.js                               |
+| **Database**      | MongoDB Atlas, Mongoose                           |
+| **Authentication**| JWT, bcrypt                                       |
+| **Email**         | Nodemailer + Gmail SMTP                           |
+| **Maps**          | Map integration for location tracking             |
+| **Deployment**    | Vercel (Frontend), MongoDB Atlas                  |
+| **Version Control**| Git & GitHub                                     |
 
 ---
 
-## 📸 Screens
+## 🏗️ System Architecture
 
-<p align="center">
- 
-  <br/><br/>
-  <img src="./client/src/assets/hero.png" width="900" />
-  <br/><br/>
-  <img src="./client/src/assets/dashboard2.png" width="900" />
-  <br/><br/>
-  <img src="./client/src/assets/dashboard.png" width="1000" />
-</p>
+```text
+┌──────────────────────────────┐
+│       React Frontend         │
+│   (Tailwind CSS + Role UI)   │
+└──────────────┬───────────────┘
+               │ REST API
+               ▼
+┌──────────────────────────────┐
+│      Express.js Backend      │
+│  JWT • RBAC • Controllers    │
+└──────────────┬───────────────┘
+               │
+               ▼
+        MongoDB Atlas
+     (Users + Reports DBs)
 
----
+📂 Project Structure
+textNagar-Sahayata-Portal
+│
+├── client/                  # React Frontend
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+│
+├── server/                  # Node.js Backend
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── utils/
+│   ├── .env
+│   └── package.json
+│
+├── README.md
+└── .gitignore
 
-## 🚀 Getting Started
+🚀 Getting Started
+📋 Prerequisites
 
-### 1️⃣ Clone the repo
-```bash
-git clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
+Node.js (v18 or later)
+npm
+Git
+MongoDB Atlas account
+Gmail account (for App Password)
+
+
+1️⃣ Clone the Repository
+Bashgit clone https://github.com/abhay963/Nagar-Sahayata-Portal.git
 cd Nagar-Sahayata-Portal
-2️⃣ Install dependencies
-bash
-Copy code
-# Frontend
-cd client && npm install
 
-# Backend
-cd ../server && npm install
-3️⃣ Create environment file
-Create a .env inside server:
-
-env
-Copy code
-MONGO_URI_AUTH=your_auth_db_connection_string
+2️⃣ Backend Setup
+Bashcd server
+npm install
+Create a .env file inside the server folder:
+envMONGO_URI_AUTH=your_auth_db_connection_string
 MONGO_URI_REPORTS=your_reports_db_connection_string
 JWT_SECRET=your_super_secret_key
 PORT=5000
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password_here
-💡 Tip: Keep .env private (add it to .gitignore).
+Start the backend:
+Bashnpm run dev
+Backend runs at: http://localhost:5000
 
-4️⃣ Run the project
-bash
-Copy code
-# Backend
-cd server
-npm run dev
+3️⃣ Frontend Setup
+Open a new terminal:
+Bashcd client
+npm install
+Start the frontend:
+Bashnpm start
+Frontend runs at: http://localhost:3000
 
-# Frontend
-cd ../client
-npm start
+📸 Application Screenshots
+
+  <img src="./client/src/assets/hero.png" width="900" alt="Hero Section">
+  
+
+
+  <img src="./client/src/assets/dashboard2.png" width="900" alt="Staff Dashboard">
+  
+
+
+  <img src="./client/src/assets/dashboard.png" width="1000" alt="Junior Staff Dashboard">
+
+
+👥 Contributors
+
+      
+        <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95">
+
+        Aditi Raj
+      
+    
+      
+        <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95">
+
+        Aditya Kumar
+      
+    
+      
+        <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95">
+
+        Akshat Shukla
+      
+    
+      
+        <img src="https://avatars.githubusercontent.com/Aashi008" width="95">
+
+        Aashi
+      
+    
+      
+        <img src="https://avatars.githubusercontent.com/amandubey923" width="95">
+
+        Aman Dubey
+      
+    
+      
+        <img src="https://avatars.githubusercontent.com/abhay963" width="95">
+
+        Abhay Kumar
+      
+    
+
+  Built with collaboration, dedication & teamwork 🚀
+
+
+📌 Future Improvements
+
+Real-time notifications using Socket.io
+Advanced filtering & search for complaints
+Mobile Progressive Web App (PWA)
+Admin analytics with export (PDF/Excel)
+Multi-language support
+Dark mode
+
+
+👨‍💻 Author & Maintainers
+Abhay Kumar and team
+GitHub: https://github.com/abhay963
+
+📄 License
+This project is developed for educational and community service purposes.
+
+
+  Made with ❤️ for smarter cities
+
+  Happy Coding! 💡
 
 ```
-## 👥 Contributors
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Aditi-Raj07">
-        <img src="https://avatars.githubusercontent.com/Aditi-Raj07" width="95" /><br/>
-        <sub><b>Aditi Raj</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/adityakumar5492">
-        <img src="https://avatars.githubusercontent.com/adityakumar5492" width="95" /><br/>
-        <sub><b>Aditya Kumar</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/Akshat-shukla18">
-        <img src="https://avatars.githubusercontent.com/Akshat-shukla18" width="95" /><br/>
-        <sub><b>Akshat Shukla</b></sub>
-      </a>
-    </td>
-  </tr>
-
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Aashi008">
-        <img src="https://avatars.githubusercontent.com/Aashi008" width="95" /><br/>
-        <sub><b>Aashi</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/amandubey923">
-        <img src="https://avatars.githubusercontent.com/amandubey923" width="95" /><br/>
-        <sub><b>Aman Dubey</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/abhay963">
-        <img src="https://avatars.githubusercontent.com/abhay963" width="95" /><br/>
-        <sub><b>Abhay Kumar</b></sub>
-      </a>
-    </td>
-  </tr>
-</table>
-
-<p align="center">
-  <em>Built with collaboration, dedication & teamwork 🚀</em>
-</p>
-
-
-
-
-<p align="center">
-  <marquee><b>Happy coding! 💡</b></marquee>
-</p>
