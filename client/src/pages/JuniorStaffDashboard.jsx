@@ -20,6 +20,8 @@ import JuniorStaffTasks from "../components/juniortask";
 import Footer from "../components/Footer";
 
 import { getDashboardStats } from "../services/dashboardService";
+import AnalyticsCharts from "@/components/AnalyticsCharts";
+import MapSection from "@/components/MapSection";
 
 const DashboardCards = ({ dashboardStats }) => {
   const stats = [
@@ -212,6 +214,11 @@ function JuniorStaffDashboard() {
 
       <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
 
+        <MapSection />
+
+      </div>
+      <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
+
         <JuniorStaffTasks />
 
       </div>
@@ -222,6 +229,11 @@ function JuniorStaffDashboard() {
 
       </div>
 
+      <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
+
+        <AnalyticsCharts />
+
+      </div>
       <div className="bg-white rounded-3xl shadow-md border border-gray-100 p-6">
 
         <Footer />
