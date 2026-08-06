@@ -1,100 +1,69 @@
 import Report from "../models/report.js";
 import User from "../models/User.js";
-import Notification from "../models/Notification.js";
+
 
 export const createReport = async (req, res) => {
-
   try {
-
     const report = await Report.create({
-
       // ================= REPORT ID =================
 
       reportId: `NS-${Date.now()}`,
 
-
       // ================= BASIC DETAILS =================
 
-      problemType:
-        req.body.problemType,
+      problemType: req.body.problemType,
 
-      description:
-        req.body.description,
+      description: req.body.description,
 
-      city:
-        req.body.city,
+      city: req.body.city,
 
-      department:
-        req.body.department,
+      department: req.body.department,
 
-      priority:
-        req.body.priority || "Normal",
-
+      priority: req.body.priority || "Normal",
 
       // ================= CITIZEN DETAILS =================
 
-      citizenName:
-        req.body.citizenName || "",
+      citizenName: req.body.citizenName || "",
 
-      citizenContact:
-        req.body.citizenContact || "",
-
+      citizenContact: req.body.citizenContact || "",
 
       // ================= ISSUE IMAGE =================
 
-      image:
-        req.file?.path || "",
-
+      image: req.file?.path || "",
 
       // ================= LOCATION =================
 
       location: {
+        latitude: req.body.latitude || 0,
 
-        latitude:
-          req.body.latitude || 0,
+        longitude: req.body.longitude || 0,
 
-        longitude:
-          req.body.longitude || 0,
-
-        locationName:
-          req.body.locationName || "",
+        locationName: req.body.locationName || "",
       },
-
 
       // ================= USER =================
 
-      userId:
-        req.user?._id || null,
+      userId: req.user?._id || null,
     });
 
     res.status(201).json({
-
       success: true,
 
       report,
     });
-
   } catch (error) {
-
-    console.error(
-      "❌ Create Report Error:",
-      error
-    );
+    console.error("❌ Create Report Error:", error);
 
     res.status(500).json({
-
       success: false,
 
-      message:
-        error.message,
+      message: error.message,
     });
   }
 };
 
 export const getReports = async (req, res) => {
-
   try {
-
     let query = {};
 
     // ======================================================
@@ -102,15 +71,10 @@ export const getReports = async (req, res) => {
     // ======================================================
 
     if (
-
       req.user.role === "Higher Authority" ||
-
       req.user.role === "Admin" ||
-
       req.user.role === "Super Admin"
-
     ) {
-
       query = {};
     }
 
@@ -118,29 +82,14 @@ export const getReports = async (req, res) => {
     // STAFF + JUNIOR STAFF
     // SAME CITY + SAME DEPARTMENT
     // ======================================================
-
-    else if (
-
-      req.user.role === "Staff" ||
-
-      req.user.role === "Junior Staff"
-
-    ) {
-
+    else if (req.user.role === "Staff" || req.user.role === "Junior Staff") {
       query = {
-
         city: {
-          $regex: new RegExp(
-            `^${req.user.city}$`,
-            "i"
-          ),
+          $regex: new RegExp(`^${req.user.city}$`, "i"),
         },
 
         department: {
-          $regex: new RegExp(
-            `^${req.user.department}$`,
-            "i"
-          ),
+          $regex: new RegExp(`^${req.user.department}$`, "i"),
         },
       };
     }
@@ -151,51 +100,30 @@ export const getReports = async (req, res) => {
 
     const reports = await Report.find(query)
 
-      .populate(
-        "assignedTo",
-        "name email department role city profileImage"
-      )
+      .populate("assignedTo", "name email department role city profileImage")
 
-      .populate(
-        "userId",
-        "name email"
-      )
+      .populate("userId", "name email")
 
-      .populate(
-        "assignedBy",
-        "name email role"
-      )
+      .populate("assignedBy", "name email role")
 
       .sort({
         createdAt: -1,
       });
 
-    console.log("USER:", req.user.role);
-
-    console.log("QUERY:", query);
-
-    console.log("REPORTS FOUND:", reports.length);
 
     // ======================================================
     // RESPONSE
     // ======================================================
 
     res.status(200).json({
-
       success: true,
 
       reports,
     });
-
   } catch (error) {
-
-    console.error(
-      "❌ Get Reports Error:",
-      error
-    );
+    console.error("❌ Get Reports Error:", error);
 
     res.status(500).json({
-
       success: false,
 
       message: error.message,
@@ -203,1357 +131,774 @@ export const getReports = async (req, res) => {
   }
 };
 
+export const getDepartmentReports = async (req, res) => {
+  try {
+    const department = decodeURIComponent(req.params.department);
 
-export const getDepartmentReports =
-  async (req, res) => {
+    const reports = await Report.find({
+      department,
 
-    try {
+      city: req.user.city,
+    })
 
-      const department =
-        decodeURIComponent(
-          req.params.department
-        );
+      .populate("assignedTo", "name email department role city profileImage")
 
-      const reports =
-        await Report.find({
+      .populate("userId", "name email")
 
-          department,
-
-          city:
-            req.user.city,
-        })
-
-        .populate(
-          "assignedTo",
-          "name email department role city profileImage"
-        )
-
-        .populate(
-          "userId",
-          "name email"
-        )
-
-        .sort({
-          createdAt: -1,
-        });
-
-      res.status(200).json({
-
-        success: true,
-
-        reports,
+      .sort({
+        createdAt: -1,
       });
 
-    } catch (error) {
-
-      console.error(
-        "❌ Department Reports Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-
-
-export const assignReport =
-  async (req, res) => {
-
-    try {
-
-      // ======================================================
-      // ================= ONLY STAFF CAN ASSIGN ==============
-      // ======================================================
-
-      if (
-        req.user.role !==
-        "Staff"
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Only Staff can assign reports",
-        });
-      }
-
-
-      const {
-        reportId,
-        assignedTo,
-      } = req.body;
-
-
-      // ======================================================
-      // ================= FIND REPORT ========================
-      // ======================================================
-
-      const report =
-        await Report.findById(
-          reportId
-        );
-
-      if (!report) {
-
-        return res.status(404)
-        .json({
-
-          success: false,
-
-          message:
-            "Report not found",
-        });
-      }
-
-
-      // ======================================================
-      // ================= ONLY PENDING =======================
-      // ======================================================
-
-      if (
-        report.status !==
-        "Pending"
-      ) {
-
-        return res.status(400)
-        .json({
-
-          success: false,
-
-          message:
-            "Only pending reports can be assigned",
-        });
-      }
-
-
-      // ======================================================
-      // ================= SAME CITY CHECK ====================
-      // ======================================================
-
-      if (
-        report.city !==
-        req.user.city
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Cannot assign reports outside your city",
-        });
-      }
-
-
-      // ======================================================
-      // ================= SAME DEPARTMENT CHECK ==============
-      // ======================================================
-
-      if (
-        report.department !==
-        req.user.department
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Cannot assign reports outside your department",
-        });
-      }
-
-
-      // ======================================================
-      // ================= FIND JUNIOR STAFF ==================
-      // ======================================================
-
-      const juniorStaff =
-        await User.findById(
-          assignedTo
-        );
-
-      if (!juniorStaff) {
-
-        return res.status(404)
-        .json({
-
-          success: false,
-
-          message:
-            "Junior staff not found",
-        });
-      }
-
-
-      // ======================================================
-      // ================= ONLY JUNIOR STAFF ==================
-      // ======================================================
-
-      if (
-        juniorStaff.role !==
-        "Junior Staff"
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Task can only be assigned to Junior Staff",
-        });
-      }
-
-
-      // ======================================================
-      // ================= SAME CITY + DEPARTMENT ============
-      // ======================================================
-
-      if (
-
-        juniorStaff.department !==
-        req.user.department ||
-
-        juniorStaff.city !==
-        req.user.city
-
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Cannot assign outside department or city",
-        });
-      }
-
-
-      // ======================================================
-      // ================= ASSIGN TASK ========================
-      // ======================================================
-
-      report.assignedTo =
-        juniorStaff._id;
-
-      report.assignedBy =
-        req.user._id;
-
-      report.assignedByName =
-        req.user.name;
-
-      report.assignedAt =
-        new Date();
-
-      report.assignedToName =
-        juniorStaff.name;
-
-      report.assignedToDepartment =
-        juniorStaff.department;
-
-      report.status =
-        "Staff Assigned";
-
-
-      // ======================================================
-      // ================= SAVE REPORT ========================
-      // ======================================================
-
-      await report.save();
-
-
-      // ======================================================
-      // ================= CREATE NOTIFICATION ================
-      // ======================================================
-
-      await Notification.create({
-
-        userId:
-          juniorStaff._id,
-
-        senderId:
-          req.user._id,
-
-        message:
-          `New task assigned: ${report.problemType}`,
-
-        type:
-          "assignment",
-
-        requiresAction:
-          true,
-
-        relatedReportId:
-          report._id,
-      });
-
-
-      // ======================================================
-      // ================= RESPONSE ===========================
-      // ======================================================
-
-      res.status(200).json({
-
-        success: true,
-
-        message:
-          "Task assigned successfully",
-
-        report,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Assign Report Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-
-
-
-
-
-export const getAssignedReports =
-  async (req, res) => {
-
-    try {
-
-      const reports =
-        await Report.find({
-
-          assignedTo:
-            req.user._id,
-        })
-
-        .populate(
-          "assignedTo",
-          "name email department role city profileImage"
-        )
-
-        .populate(
-          "userId",
-          "name email"
-        )
-
-        .sort({
-          createdAt: -1,
-        });
-
-      res.status(200).json({
-
-        success: true,
-
-        reports,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Assigned Reports Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-
-export const respondToTask =
-  async (req, res) => {
-
-    try {
-
-      const {
-        reportId,
-        action,
-      } = req.body;
-
-      // ================= VALIDATE ACTION =================
-
-      if (
-        action !== "accept" &&
-        action !== "decline"
-      ) {
-
-        return res.status(400)
-        .json({
-
-          success: false,
-
-          message:
-            "Invalid action",
-        });
-      }
-
-
-      // ================= FIND REPORT =================
-
-      const report =
-        await Report.findById(
-          reportId
-        );
-
-      if (!report) {
-
-        return res.status(404)
-        .json({
-
-          success: false,
-
-          message:
-            "Report not found",
-        });
-      }
-
-
-      // ================= VERIFY ASSIGNED USER =================
-
-      const assignedUserId =
-
-        report.assignedTo?._id
-
-          ? report.assignedTo._id.toString()
-
-          : report.assignedTo?.toString();
-
-      if (
-
-        assignedUserId !==
-        req.user._id.toString()
-
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Unauthorized action",
-        });
-      }
-
-
-      // ================= ACCEPT TASK =================
-
-      if (
-        action === "accept"
-      ) {
-
-        report.status =
-          "In Progress";
-
-        report.acceptedAt =
-          new Date();
-
-        report.declinedAt =
-          null;
-
-        report.declinedReason =
-          "";
-
-
-        // ================= NOTIFICATION =================
-
-        if (report.userId) {
-
-          await Notification.create({
-
-            userId:
-              report.userId,
-
-            senderId:
-              req.user._id,
-
-            message:
-              `${req.user.name} accepted the task: ${report.problemType}`,
-
-            type:
-              "accepted",
-
-            relatedReportId:
-              report._id,
-          });
-        }
-      }
-
-
-      // ================= DECLINE TASK =================
-
-      if (
-        action === "decline"
-      ) {
-
-        report.status =
-          "Pending";
-
-        report.assignedTo =
-          null;
-
-        report.assignedToName =
-          "";
-
-        report.assignedToDepartment =
-          "";
-
-        // ================= RESET ASSIGNMENT DETAILS =================
-
-        report.assignedBy =
-          null;
-
-        report.assignedByName =
-          "";
-
-        report.assignedAt =
-          null;
-
-        report.acceptedAt =
-          null;
-
-        report.declinedAt =
-          new Date();
-
-        report.declinedReason =
-          "Task declined by Junior Staff";
-
-
-        // ================= NOTIFICATION =================
-
-        if (report.userId) {
-
-          await Notification.create({
-
-            userId:
-              report.userId,
-
-            senderId:
-              req.user._id,
-
-            message:
-              `${req.user.name} declined the task: ${report.problemType}`,
-
-            type:
-              "declined",
-
-            relatedReportId:
-              report._id,
-          });
-        }
-      }
-
-
-      // ================= SAVE REPORT =================
-
-      await report.save();
-
-
-      // ================= RESPONSE =================
-
-      res.status(200).json({
-
-        success: true,
-
-        message:
-          `Task ${action}ed successfully`,
-
-        report,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Respond Task Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-export const getAssignedTasks =
-  async (req, res) => {
-
-    try {
-
-      const reports =
-        await Report.find({
-
-          assignedTo:
-            req.user._id,
-        })
-
-        .populate(
-          "assignedTo",
-          "name email department role city profileImage"
-        )
-
-        .populate(
-          "userId",
-          "name email"
-        )
-
-        .sort({
-          createdAt: -1,
-        });
-
-      res.status(200).json({
-
-        success: true,
-
-        reports,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Get Assigned Tasks Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-
-export const updateTaskProgress =
-  async (req, res) => {
-
-    try {
-
-      const {
-        reportId,
-        action,
-        description,
-      } = req.body;
-
-      const report =
-        await Report.findById(
-          reportId
-        );
-
-      if (!report) {
-
-        return res.status(404)
-        .json({
-
-          success: false,
-
-          message:
-            "Report not found",
-        });
-      }
-
-      const assignedUserId =
-
-        report.assignedTo?._id
-
-          ? report.assignedTo._id.toString()
-
-          : report.assignedTo?.toString();
-
-      if (
-
-        assignedUserId !==
-        req.user._id.toString()
-
-      ) {
-
-        return res.status(403)
-        .json({
-
-          success: false,
-
-          message:
-            "Unauthorized",
-        });
-      }
-
-      if (
-        report.status !==
-        "In Progress"
-      ) {
-
-        return res.status(400)
-        .json({
-
-          success: false,
-
-          message:
-            "Task is not in progress",
-        });
-      }
-
-      const resolvedImage =
-        req.files?.resolvedImage?.[0]?.path || "";
-
-      const unableImage =
-        req.files?.unableImage?.[0]?.path || "";
-
-      if (
-        action === "resolved"
-      ) {
-
-        report.status =
-          "Pending Approval";
-
-        report.resolvedDescription =
-          description;
-
-        report.resolvedImage =
-          resolvedImage;
-
-        report.submittedForApprovalAt =
-          new Date();
-      }
-
-      if (
-        action === "unable"
-      ) {
-
-        report.status =
-          "Unable To Complete";
-
-        report.unableReason =
-          description;
-
-        report.unableImage =
-          unableImage;
-
-        report.unableAt =
-          new Date();
-      }
-
-      await report.save();
-
-      if (report.assignedBy) {
-
-        await Notification.create({
-
-          userId:
-            report.assignedBy,
-
-          senderId:
-            req.user._id,
-
-          relatedReportId:
-            report._id,
-
-          type:
-            action === "resolved"
-              ? "resolved"
-              : "alert",
-
-          message:
-
-            action === "resolved"
-
-              ? `${req.user.name} submitted task for approval`
-
-              : `${req.user.name} marked task as unable to complete`,
-        });
-      }
-
-      res.status(200).json({
-
-        success: true,
-
-        message:
-          "Task updated successfully",
-
-        report,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Update Task Progress Error:",
-        error
-      );
-
-      res.status(500).json({
-
-        success: false,
-
-        message:
-          error.message,
-      });
-    }
-  };
-
-
-export const verifyTaskResolution =
-  async (req, res) => {
-
+    res.status(200).json({
+      success: true,
+
+      reports,
+    });
+  } catch (error) {
+    console.error("❌ Department Reports Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const assignReport = async (req, res) => {
+  try {
     // ======================================================
-    // ONLY STAFF CAN VERIFY
+    // ================= ONLY STAFF CAN ASSIGN ==============
     // ======================================================
 
     if (req.user.role !== "Staff") {
-
       return res.status(403).json({
-
         success: false,
 
-        message:
-          "Only Staff can verify tasks",
+        message: "Only Staff can assign reports",
       });
     }
 
-    try {
+    const { reportId, assignedTo } = req.body;
 
-      const {
-        reportId,
-        action,
-      } = req.body;
+    // ======================================================
+    // ================= FIND REPORT ========================
+    // ======================================================
 
-      // ======================================================
-      // FIND REPORT
-      // ======================================================
+    const report = await Report.findById(reportId);
 
-      const report =
-        await Report.findById(
-          reportId
-        );
-
-      if (!report) {
-
-        return res.status(404)
-        .json({
-
-          success: false,
-
-          message:
-            "Report not found",
-        });
-      }
-
-      // ======================================================
-      // APPROVE RESOLUTION
-      // ======================================================
-
-      if (
-        action === "approve"
-      ) {
-
-        report.status =
-          "Resolved";
-
-        report.resolvedAt =
-          new Date();
-
-        report.verifiedBy =
-          req.user._id;
-
-        report.verifiedAt =
-          new Date();
-      }
-
-      // ======================================================
-      // REJECT RESOLUTION
-      // ======================================================
-
-      if (
-        action === "reject"
-      ) {
-
-        report.status =
-          "In Progress";
-      }
-
-      // ======================================================
-      // REASSIGN SAME JUNIOR STAFF
-      // ======================================================
-
-      if (
-        action === "reassign"
-      ) {
-
-        report.status =
-          "Staff Assigned";
-
-        // clear unable data
-
-        report.unableAt =
-          null;
-
-        report.unableReason =
-          "";
-
-        report.unableImage =
-          "";
-
-        // reset accept/decline
-
-        report.acceptedAt =
-          null;
-
-        report.declinedAt =
-          null;
-
-        report.declinedReason =
-          "";
-      }
-
-      // ======================================================
-      // MOVE ISSUE BACK TO PENDING
-      // ======================================================
-
-      if (
-        action === "move-to-pending"
-      ) {
-
-        report.status =
-          "Pending";
-
-        // remove assignment
-
-        report.assignedTo =
-          null;
-
-        report.assignedToName =
-          "";
-
-        report.assignedToDepartment =
-          "";
-
-        report.assignedBy =
-          null;
-
-        report.assignedByName =
-          "";
-
-        report.assignedAt =
-          null;
-
-        report.acceptedAt =
-          null;
-
-        // clear unable data
-
-        report.unableAt =
-          null;
-
-        report.unableReason =
-          "";
-
-        report.unableImage =
-          "";
-
-        report.declinedAt =
-          null;
-
-        report.declinedReason =
-          "";
-      }
-
-      // ======================================================
-      // SAVE REPORT
-      // ======================================================
-
-      await report.save();
-
-      // ======================================================
-      // NOTIFICATIONS
-      // ======================================================
-
-      if (report.assignedTo) {
-
-        let notificationMessage =
-          "";
-
-        if (
-          action === "approve"
-        ) {
-
-          notificationMessage =
-            "Task resolution approved";
-        }
-
-        else if (
-          action === "reject"
-        ) {
-
-          notificationMessage =
-            "Task resolution rejected";
-        }
-
-        else if (
-          action === "reassign"
-        ) {
-
-          notificationMessage =
-            "Task has been reassigned to you";
-        }
-
-        await Notification.create({
-
-          userId:
-            report.assignedTo,
-
-          senderId:
-            req.user._id,
-
-          relatedReportId:
-            report._id,
-
-          type:
-            action === "approve"
-              ? "resolved"
-              : "alert",
-
-          message:
-            notificationMessage,
-        });
-      }
-
-      // ======================================================
-      // RESPONSE
-      // ======================================================
-
-      res.status(200).json({
-
-        success: true,
-
-        message:
-          `Task ${action} completed successfully`,
-
-        report,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Verify Resolution Error:",
-        error
-      );
-
-      res.status(500).json({
-
+    if (!report) {
+      return res.status(404).json({
         success: false,
 
-        message:
-          error.message,
+        message: "Report not found",
       });
     }
-  };
 
+    // ======================================================
+    // ================= ONLY PENDING =======================
+    // ======================================================
 
-export const getStaffAssignedTasks =
-  async (req, res) => {
-
-    try {
-
-      const reports =
-        await Report.find({
-
-          assignedBy:
-            req.user._id,
-        })
-
-        .populate(
-          "assignedTo",
-          "name email role department city profileImage"
-        )
-
-        .sort({
-          createdAt: -1,
-        });
-
-      res.status(200).json({
-
-        success: true,
-
-        reports,
-      });
-
-    } catch (error) {
-
-      console.error(
-        "❌ Get Staff Tasks Error:",
-        error
-      );
-
-      res.status(500).json({
-
+    if (report.status !== "Pending") {
+      return res.status(400).json({
         success: false,
 
-        message:
-          error.message,
+        message: "Only pending reports can be assigned",
       });
     }
-  };
 
+    // ======================================================
+    // ================= SAME CITY CHECK ====================
+    // ======================================================
 
+    if (report.city !== req.user.city) {
+      return res.status(403).json({
+        success: false,
 
-export const getAnalyticsData = async (req, res) => {
+        message: "Cannot assign reports outside your city",
+      });
+    }
+
+    // ======================================================
+    // ================= SAME DEPARTMENT CHECK ==============
+    // ======================================================
+
+    if (report.department !== req.user.department) {
+      return res.status(403).json({
+        success: false,
+
+        message: "Cannot assign reports outside your department",
+      });
+    }
+
+    // ======================================================
+    // ================= FIND JUNIOR STAFF ==================
+    // ======================================================
+
+    const juniorStaff = await User.findById(assignedTo);
+
+    if (!juniorStaff) {
+      return res.status(404).json({
+        success: false,
+
+        message: "Junior staff not found",
+      });
+    }
+
+    // ======================================================
+    // ================= ONLY JUNIOR STAFF ==================
+    // ======================================================
+
+    if (juniorStaff.role !== "Junior Staff") {
+      return res.status(403).json({
+        success: false,
+
+        message: "Task can only be assigned to Junior Staff",
+      });
+    }
+
+    // ======================================================
+    // ================= SAME CITY + DEPARTMENT ============
+    // ======================================================
+
+    if (
+      juniorStaff.department !== req.user.department ||
+      juniorStaff.city !== req.user.city
+    ) {
+      return res.status(403).json({
+        success: false,
+
+        message: "Cannot assign outside department or city",
+      });
+    }
+
+    // ======================================================
+    // ================= ASSIGN TASK ========================
+    // ======================================================
+
+    report.assignedTo = juniorStaff._id;
+
+    report.assignedBy = req.user._id;
+
+    report.assignedByName = req.user.name;
+
+    report.assignedAt = new Date();
+
+    report.assignedToName = juniorStaff.name;
+
+    report.assignedToDepartment = juniorStaff.department;
+
+    report.status = "Staff Assigned";
+
+    // ======================================================
+    // ================= SAVE REPORT ========================
+    // ======================================================
+
+    await report.save();
+
+    // ======================================================
+    // ================= RESPONSE ===========================
+    // ======================================================
+
+    res.status(200).json({
+      success: true,
+
+      message: "Task assigned successfully",
+
+      report,
+    });
+  } catch (error) {
+    console.error("❌ Assign Report Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const getAssignedReports = async (req, res) => {
+  try {
+    const reports = await Report.find({
+      assignedTo: req.user._id,
+    })
+
+      .populate("assignedTo", "name email department role city profileImage")
+
+      .populate("userId", "name email")
+
+      .sort({
+        createdAt: -1,
+      });
+
+    res.status(200).json({
+      success: true,
+
+      reports,
+    });
+  } catch (error) {
+    console.error("❌ Assigned Reports Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const respondToTask = async (req, res) => {
+  try {
+    const { reportId, action } = req.body;
+
+    // ================= VALIDATE ACTION =================
+
+    if (action !== "accept" && action !== "decline") {
+      return res.status(400).json({
+        success: false,
+
+        message: "Invalid action",
+      });
+    }
+
+    // ================= FIND REPORT =================
+
+    const report = await Report.findById(reportId);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+
+        message: "Report not found",
+      });
+    }
+
+    // ================= VERIFY ASSIGNED USER =================
+
+    const assignedUserId = report.assignedTo?._id
+      ? report.assignedTo._id.toString()
+      : report.assignedTo?.toString();
+
+    if (assignedUserId !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+
+        message: "Unauthorized action",
+      });
+    }
+
+    // ================= ACCEPT TASK =================
+
+    if (action === "accept") {
+      report.status = "In Progress";
+
+      report.acceptedAt = new Date();
+
+      report.declinedAt = null;
+
+      report.declinedReason = "";
+    }
+
+    // ================= DECLINE TASK =================
+
+    if (action === "decline") {
+      report.status = "Pending";
+
+      report.assignedTo = null;
+
+      report.assignedToName = "";
+
+      report.assignedToDepartment = "";
+
+      // ================= RESET ASSIGNMENT DETAILS =================
+
+      report.assignedBy = null;
+
+      report.assignedByName = "";
+
+      report.assignedAt = null;
+
+      report.acceptedAt = null;
+
+      report.declinedAt = new Date();
+
+      report.declinedReason = "Task declined by Junior Staff";
+    }
+
+    // ================= SAVE REPORT =================
+
+    await report.save();
+
+    // ================= RESPONSE =================
+
+    res.status(200).json({
+      success: true,
+
+      message: `Task ${action}ed successfully`,
+
+      report,
+    });
+  } catch (error) {
+    console.error("❌ Respond Task Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const getAssignedTasks = async (req, res) => {
+  try {
+    const reports = await Report.find({
+      assignedTo: req.user._id,
+    })
+
+      .populate("assignedTo", "name email department role city profileImage")
+
+      .populate("userId", "name email")
+
+      .sort({
+        createdAt: -1,
+      });
+
+    res.status(200).json({
+      success: true,
+
+      reports,
+    });
+  } catch (error) {
+    console.error("❌ Get Assigned Tasks Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const updateTaskProgress = async (req, res) => {
+  try {
+    const { reportId, action, description } = req.body;
+
+    const report = await Report.findById(reportId);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+
+        message: "Report not found",
+      });
+    }
+
+    const assignedUserId = report.assignedTo?._id
+      ? report.assignedTo._id.toString()
+      : report.assignedTo?.toString();
+
+    if (assignedUserId !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+
+        message: "Unauthorized",
+      });
+    }
+
+    if (report.status !== "In Progress") {
+      return res.status(400).json({
+        success: false,
+
+        message: "Task is not in progress",
+      });
+    }
+
+    const resolvedImage = req.files?.resolvedImage?.[0]?.path || "";
+
+    const unableImage = req.files?.unableImage?.[0]?.path || "";
+
+    if (action === "resolved") {
+      report.status = "Pending Approval";
+
+      report.resolvedDescription = description;
+
+      report.resolvedImage = resolvedImage;
+
+      report.submittedForApprovalAt = new Date();
+    }
+
+    if (action === "unable") {
+      report.status = "Unable To Complete";
+
+      report.unableReason = description;
+
+      report.unableImage = unableImage;
+
+      report.unableAt = new Date();
+    }
+
+    await report.save();
+
+    res.status(200).json({
+      success: true,
+
+      message: "Task updated successfully",
+
+      report,
+    });
+  } catch (error) {
+    console.error("❌ Update Task Progress Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const verifyTaskResolution = async (req, res) => {
+  // ======================================================
+  // ONLY STAFF CAN VERIFY
+  // ======================================================
+
+  if (req.user.role !== "Staff") {
+    return res.status(403).json({
+      success: false,
+
+      message: "Only Staff can verify tasks",
+    });
+  }
 
   try {
+    const { reportId, action } = req.body;
 
+    // ======================================================
+    // FIND REPORT
+    // ======================================================
+
+    const report = await Report.findById(reportId);
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+
+        message: "Report not found",
+      });
+    }
+
+    // ======================================================
+    // APPROVE RESOLUTION
+    // ======================================================
+
+    if (action === "approve") {
+      report.status = "Resolved";
+
+      report.resolvedAt = new Date();
+
+      report.verifiedBy = req.user._id;
+
+      report.verifiedAt = new Date();
+    }
+
+    // ======================================================
+    // REJECT RESOLUTION
+    // ======================================================
+
+    if (action === "reject") {
+      report.status = "In Progress";
+    }
+
+    // ======================================================
+    // REASSIGN SAME JUNIOR STAFF
+    // ======================================================
+
+    if (action === "reassign") {
+      report.status = "Staff Assigned";
+
+      // clear unable data
+
+      report.unableAt = null;
+
+      report.unableReason = "";
+
+      report.unableImage = "";
+
+      // reset accept/decline
+
+      report.acceptedAt = null;
+
+      report.declinedAt = null;
+
+      report.declinedReason = "";
+    }
+
+    // ======================================================
+    // MOVE ISSUE BACK TO PENDING
+    // ======================================================
+
+    if (action === "move-to-pending") {
+      report.status = "Pending";
+
+      // remove assignment
+
+      report.assignedTo = null;
+
+      report.assignedToName = "";
+
+      report.assignedToDepartment = "";
+
+      report.assignedBy = null;
+
+      report.assignedByName = "";
+
+      report.assignedAt = null;
+
+      report.acceptedAt = null;
+
+      // clear unable data
+
+      report.unableAt = null;
+
+      report.unableReason = "";
+
+      report.unableImage = "";
+
+      report.declinedAt = null;
+
+      report.declinedReason = "";
+    }
+
+    // ======================================================
+    // SAVE REPORT
+    // ======================================================
+
+    await report.save();
+
+    // ======================================================
+    // RESPONSE
+    // ======================================================
+
+    res.status(200).json({
+      success: true,
+
+      message: `Task ${action} completed successfully`,
+
+      report,
+    });
+  } catch (error) {
+    console.error("❌ Verify Resolution Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const getStaffAssignedTasks = async (req, res) => {
+  try {
+    const reports = await Report.find({
+      assignedBy: req.user._id,
+    })
+
+      .populate("assignedTo", "name email role department city profileImage")
+
+      .sort({
+        createdAt: -1,
+      });
+
+    res.status(200).json({
+      success: true,
+
+      reports,
+    });
+  } catch (error) {
+    console.error("❌ Get Staff Tasks Error:", error);
+
+    res.status(500).json({
+      success: false,
+
+      message: error.message,
+    });
+  }
+};
+
+export const getAnalyticsData = async (req, res) => {
+  try {
     // ======================================================
     // TOTAL REPORTS
     // ======================================================
 
-    const totalReports =
-      await Report.countDocuments();
+    const totalReports = await Report.countDocuments();
 
     // ======================================================
     // RESOLVED REPORTS
     // ======================================================
 
-    const resolvedReports =
-      await Report.countDocuments({
-
-        status: "Resolved",
-      });
+    const resolvedReports = await Report.countDocuments({
+      status: "Resolved",
+    });
 
     // ======================================================
     // PENDING REPORTS
     // ======================================================
 
-    const pendingReports =
-      await Report.countDocuments({
-
-        status: {
-          $in: [
-            "Pending",
-            "Staff Assigned",
-            "In Progress",
-            "Pending Approval",
-          ],
-        },
-      });
+    const pendingReports = await Report.countDocuments({
+      status: {
+        $in: ["Pending", "Staff Assigned", "In Progress", "Pending Approval"],
+      },
+    });
 
     // ======================================================
     // HIGH PRIORITY
     // ======================================================
 
-    const highPriority =
-      await Report.countDocuments({
-
-        priority: "High",
-      });
+    const highPriority = await Report.countDocuments({
+      priority: "High",
+    });
 
     // ======================================================
     // STATUS DISTRIBUTION
     // ======================================================
 
-    const issueStatusData =
-      await Report.aggregate([
+    const issueStatusData = await Report.aggregate([
+      {
+        $group: {
+          _id: "$status",
 
-        {
-          $group: {
-
-            _id: "$status",
-
-            value: {
-              $sum: 1,
-            },
+          value: {
+            $sum: 1,
           },
         },
+      },
 
-        {
-          $project: {
+      {
+        $project: {
+          _id: 0,
 
-            _id: 0,
+          name: "$_id",
 
-            name: "$_id",
-
-            value: 1,
-          },
+          value: 1,
         },
-      ]);
+      },
+    ]);
 
     // ======================================================
     // DEPARTMENT ANALYTICS
     // ======================================================
 
-    const departmentData =
-      await Report.aggregate([
+    const departmentData = await Report.aggregate([
+      {
+        $group: {
+          _id: "$department",
 
-        {
-          $group: {
+          Resolved: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$status", "Resolved"],
+                },
 
-            _id: "$department",
+                1,
 
-            Resolved: {
-
-              $sum: {
-
-                $cond: [
-
-                  {
-                    $eq: [
-                      "$status",
-                      "Resolved",
-                    ],
-                  },
-
-                  1,
-
-                  0,
-                ],
-              },
+                0,
+              ],
             },
+          },
 
-            Pending: {
+          Pending: {
+            $sum: {
+              $cond: [
+                {
+                  $in: [
+                    "$status",
 
-              $sum: {
+                    ["Pending", "Staff Assigned", "Pending Approval"],
+                  ],
+                },
 
-                $cond: [
+                1,
 
-                  {
-                    $in: [
-
-                      "$status",
-
-                      [
-                        "Pending",
-                        "Staff Assigned",
-                        "Pending Approval",
-                      ],
-                    ],
-                  },
-
-                  1,
-
-                  0,
-                ],
-              },
+                0,
+              ],
             },
+          },
 
-            InProgress: {
+          InProgress: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$status", "In Progress"],
+                },
 
-              $sum: {
+                1,
 
-                $cond: [
-
-                  {
-                    $eq: [
-                      "$status",
-                      "In Progress",
-                    ],
-                  },
-
-                  1,
-
-                  0,
-                ],
-              },
+                0,
+              ],
             },
           },
         },
+      },
 
-        {
-          $project: {
+      {
+        $project: {
+          _id: 0,
 
-            _id: 0,
+          department: "$_id",
 
-            department: "$_id",
+          Resolved: 1,
 
-            Resolved: 1,
+          Pending: 1,
 
-            Pending: 1,
-
-            InProgress: 1,
-          },
+          InProgress: 1,
         },
-      ]);
+      },
+    ]);
 
     // ======================================================
     // MONTHLY REPORT TREND
     // ======================================================
 
-    const monthlyReports =
-      await Report.aggregate([
-
-        {
-          $group: {
-
-            _id: {
-
-              month: {
-                $month: "$createdAt",
-              },
+    const monthlyReports = await Report.aggregate([
+      {
+        $group: {
+          _id: {
+            month: {
+              $month: "$createdAt",
             },
+          },
 
-            reports: {
-              $sum: 1,
-            },
+          reports: {
+            $sum: 1,
+          },
 
-            high: {
+          high: {
+            $sum: {
+              $cond: [
+                {
+                  $eq: ["$priority", "High"],
+                },
 
-              $sum: {
+                1,
 
-                $cond: [
-
-                  {
-                    $eq: [
-                      "$priority",
-                      "High",
-                    ],
-                  },
-
-                  1,
-
-                  0,
-                ],
-              },
+                0,
+              ],
             },
           },
         },
+      },
 
-        {
-          $sort: {
-            "_id.month": 1,
-          },
+      {
+        $sort: {
+          "_id.month": 1,
         },
-      ]);
+      },
+    ]);
 
     const monthNames = [
-
       "",
 
       "Jan",
@@ -1570,31 +915,22 @@ export const getAnalyticsData = async (req, res) => {
       "Dec",
     ];
 
-    const issueTrendData =
-      monthlyReports.map((item) => ({
+    const issueTrendData = monthlyReports.map((item) => ({
+      month: monthNames[item._id.month],
 
-        month:
-          monthNames[
-            item._id.month
-          ],
+      reports: item.reports,
 
-        reports:
-          item.reports,
-
-        high:
-          item.high,
-      }));
+      high: item.high,
+    }));
 
     // ======================================================
     // FINAL RESPONSE
     // ======================================================
 
     res.status(200).json({
-
       success: true,
 
       analytics: {
-
         totalReports,
 
         resolvedReports,
@@ -1610,25 +946,19 @@ export const getAnalyticsData = async (req, res) => {
         issueTrendData,
       },
     });
-
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
-
       success: false,
 
-      message:
-        "Failed to fetch analytics",
+      message: "Failed to fetch analytics",
     });
   }
 };
 
 export const getDashboardStats = async (req, res) => {
-
   try {
-
     const user = req.user;
 
     let filter = {};
@@ -1637,85 +967,57 @@ export const getDashboardStats = async (req, res) => {
     // HIGHER AUTHORITY
     // =====================================
 
-    if (
-      user.role === "Higher Authority"
-    ) {
-
+    if (user.role === "Higher Authority") {
       filter = {};
     }
 
     // =====================================
     // STAFF / JUNIOR STAFF
     // =====================================
-
     else {
-
       filter = {
-
         city: user.city,
 
-        department:
-          user.department,
+        department: user.department,
       };
     }
 
     // =====================================
     // COUNTS
     // =====================================
-const totalDepartments =
-  await User.distinct(
-    "department"
-  );
-    const totalIssues =
-      await Report.countDocuments(
-        filter
-      );
+    const totalDepartments = await User.distinct("department");
+    const totalIssues = await Report.countDocuments(filter);
 
-    const resolved =
-      await Report.countDocuments({
+    const resolved = await Report.countDocuments({
+      ...filter,
 
-        ...filter,
+      status: "Resolved",
+    });
 
-        status: "Resolved",
-      });
+    const pending = await Report.countDocuments({
+      ...filter,
 
-    const pending =
-      await Report.countDocuments({
+      status: {
+        $ne: "Resolved",
+      },
+    });
 
-        ...filter,
-
-        status: {
-          $ne: "Resolved",
-        },
-      });
-
-    const departments =
-      await Report.distinct(
-        "department",
-        filter
-      );
+    const departments = await Report.distinct("department", filter);
 
     res.status(200).json({
-
       totalIssues,
 
       resolved,
 
       pending,
 
-      departments:
-        totalDepartments.length,
+      departments: totalDepartments.length,
     });
-
   } catch (error) {
-
     console.error(error);
 
     res.status(500).json({
-
-      message:
-        "Failed to fetch dashboard stats",
+      message: "Failed to fetch dashboard stats",
     });
   }
 };
-

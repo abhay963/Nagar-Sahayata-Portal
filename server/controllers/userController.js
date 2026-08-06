@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import { validationResult } from "express-validator";
 import Report from "../models/report.js";
+
 export const getJuniorStaff = async (req, res) => {
 
   try {

@@ -1,11 +1,8 @@
 import React, {
-  useState,
-  useEffect,
   useContext,
 } from "react";
 
 import {
-  Bell,
   User,
   Menu,
   Info,
@@ -17,15 +14,10 @@ import {
 
 import GoogleTranslate from "./GoogleTranslate";
 
-import axios from "../api/axios";
-
-import NotificationsPanel from "./NotificationsPanel";
-
 import AuthContext from "../context/AuthContext";
 
 import {
   motion,
-  AnimatePresence,
 } from "framer-motion";
 
 
@@ -40,93 +32,7 @@ const Navbar = ({
     user: currentUser,
   } = useContext(AuthContext);
 
-  const [
-    notificationCount,
-    setNotificationCount,
-  ] = useState(0);
 
-  const [
-    showNotifications,
-    setShowNotifications,
-  ] = useState(false);
-
-
-  // ============================================
-  // FETCH NOTIFICATIONS
-  // ============================================
-
-  useEffect(() => {
-
-    const fetchNotificationCount =
-      async () => {
-
-        if (!currentUser) return;
-
-        try {
-
-          // ============================================
-          // JUNIOR STAFF
-          // ============================================
-
-          if (
-            currentUser.role ===
-            "Junior Staff"
-          ) {
-
-            const res =
-              await axios.get(
-                "/api/reports/assigned"
-              );
-
-            setNotificationCount(
-              res.data.length || 0
-            );
-          }
-
-          // ============================================
-          // STAFF
-          // ============================================
-
-          else if (
-            currentUser.role ===
-            "Staff"
-          ) {
-
-            const res =
-              await axios.get(
-                "/api/notifications/unread-count"
-              );
-
-            setNotificationCount(
-              res.data.count || 0
-            );
-          }
-
-        } catch (error) {
-
-          console.error(
-            "Failed to fetch notification count",
-            error
-          );
-        }
-      };
-
-    fetchNotificationCount();
-
-  }, [currentUser]);
-
-
-  // ============================================
-  // TOGGLE NOTIFICATIONS
-  // ============================================
-
-  const toggleNotifications =
-    () => {
-
-      setShowNotifications(
-        (prev) => !prev
-      );
-    };
 
 
   return (
@@ -293,98 +199,6 @@ const Navbar = ({
           <div className="flex items-center gap-2">
 
 
-            {/* ============================================ */}
-            {/* NOTIFICATIONS ONLY FOR STAFF + JUNIOR STAFF */}
-            {/* ============================================ */}
-
-            {currentUser?.role !==
-              "Higher Authority" && (
-
-              <motion.button
-
-                whileHover={{
-                  scale: 1.1,
-                }}
-
-                whileTap={{
-                  scale: 0.95,
-                }}
-
-                onClick={
-                  toggleNotifications
-                }
-
-                className="
-                  relative
-                  p-3
-                  rounded-2xl
-                  hover:bg-white/10
-                  active:bg-white/20
-                  transition-all
-                  duration-200
-                  text-white
-                  cursor-pointer
-                "
-              >
-
-                <Bell className="w-6 h-6" />
-
-                {notificationCount >
-                  0 && (
-
-                  <motion.span
-
-                    initial={{
-                      scale: 0,
-                    }}
-
-                    animate={{
-                      scale: [
-                        1,
-                        1.2,
-                        1,
-                      ],
-                    }}
-
-                    transition={{
-                      repeat:
-                        Infinity,
-
-                      duration:
-                        1.5,
-                    }}
-
-                    className="
-                      absolute
-                      -top-1
-                      -right-1
-                      bg-red-500
-                      text-white
-                      text-xs
-                      font-bold
-                      w-5
-                      h-5
-                      flex
-                      items-center
-                      justify-center
-                      rounded-full
-                      ring-2
-                      ring-white
-                      shadow
-                    "
-                  >
-
-                    {
-                      notificationCount
-                    }
-
-                  </motion.span>
-                )}
-
-              </motion.button>
-            )}
-
-
             {/* PROFILE */}
 
             <motion.button
@@ -464,51 +278,6 @@ const Navbar = ({
         </div>
 
       </div>
-
-
-      {/* ============================================ */}
-      {/* NOTIFICATION PANEL */}
-      {/* ============================================ */}
-
-      <AnimatePresence>
-
-        {showNotifications && (
-
-          <motion.div
-
-            initial={{
-              opacity: 0,
-              y: -20,
-            }}
-
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-
-            exit={{
-              opacity: 0,
-              y: -20,
-            }}
-
-            className="
-              absolute
-              top-16
-              right-6
-              z-50
-            "
-          >
-
-            <NotificationsPanel
-              onClose={() =>
-                setShowNotifications(false)
-              }
-            />
-
-          </motion.div>
-        )}
-
-      </AnimatePresence>
 
     </nav>
   );
