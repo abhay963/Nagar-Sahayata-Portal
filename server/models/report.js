@@ -34,20 +34,17 @@ const reportSchema = new mongoose.Schema(
 
     priority: {
       type: String,
-
       enum: [
         "Normal",
         "Medium",
         "High",
         "Critical",
       ],
-
       default: "Normal",
     },
 
     status: {
       type: String,
-
       enum: [
         "Pending",
         "Staff Assigned",
@@ -56,7 +53,6 @@ const reportSchema = new mongoose.Schema(
         "Unable To Complete",
         "Resolved",
       ],
-
       default: "Pending",
     },
 
@@ -193,7 +189,6 @@ const reportSchema = new mongoose.Schema(
       default: null,
     },
   },
-
   {
     timestamps: true,
   }

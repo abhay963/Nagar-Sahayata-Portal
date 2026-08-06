@@ -6,7 +6,7 @@ import { protect } from "../middleware/authMiddleware.js";
 
 import { body } from "express-validator";
 
-import upload from "../middleware/upload.js";
+import handleProfileImageUpload from "../middleware/profileUpload.js";
 
 import {
 
@@ -78,7 +78,7 @@ router.put(
 
   protect,
 
-  upload.single("profileImage"),
+  handleProfileImageUpload,
 
   validateProfileUpdate,
 

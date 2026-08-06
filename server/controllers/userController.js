@@ -117,54 +117,37 @@ export const getJuniorStaffByDepartment =
 
 
 export const updateProfile = async (req, res) => {
-
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-
     return res.status(400).json({
-
       success: false,
-
       message: errors.array()[0].msg,
-
       errors: errors.array(),
     });
   }
 
   try {
-
     const user = await User.findById(req.user._id);
 
     if (!user) {
-
       return res.status(404).json({
-
         success: false,
-
         message: "User not found",
       });
     }
-
-    // ======================================================
-    // ================= DUPLICATE EMAIL CHECK ==============
-    // ======================================================
 
     if (
       req.body.email &&
       req.body.email !== user.email
     ) {
-
       const emailExists = await User.findOne({
         email: req.body.email,
       });
 
       if (emailExists) {
-
         return res.status(400).json({
-
           success: false,
-
           message: "Email already exists",
         });
       }
@@ -172,25 +155,17 @@ export const updateProfile = async (req, res) => {
       user.email = req.body.email;
     }
 
-    // ======================================================
-    // ================= DUPLICATE EMP ID CHECK =============
-    // ======================================================
-
     if (
       req.body.empId &&
       req.body.empId !== user.empId
     ) {
-
       const empExists = await User.findOne({
         empId: req.body.empId,
       });
 
       if (empExists) {
-
         return res.status(400).json({
-
           success: false,
-
           message: "Employee ID already exists",
         });
       }
@@ -198,94 +173,43 @@ export const updateProfile = async (req, res) => {
       user.empId = req.body.empId;
     }
 
-    // ======================================================
-    // ================= UPDATE OTHER FIELDS ================
-    // ======================================================
+    const fields = [
+      "name",
+      "city",
+      "contact",
+      "address",
+    ];
 
-    user.name = req.body.name || user.name;
+    fields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        user[field] = req.body[field];
+      }
+    });
 
-    user.city = req.body.city || user.city;
-
-    user.contact = req.body.contact || user.contact;
-
-    user.address = req.body.address || user.address;
-
-    // ======================================================
-    // ===== HIGHER AUTHORITY CANNOT CHANGE DEPARTMENT ======
-    // ======================================================
-
-    if (req.user.role !== "Higher Authority") {
-
-      user.department =
-        req.body.department || user.department;
+    if (
+      req.user.role !== "Higher Authority" &&
+      req.body.department
+    ) {
+      user.department = req.body.department;
     }
 
-    // ======================================================
-    // ================= PROFILE IMAGE ======================
-    // ======================================================
-
     if (req.file) {
-
       user.profileImage = req.file.path;
     }
 
-    // ======================================================
-    // ================= SAVE USER ==========================
-    // ======================================================
-
-    const updatedUser = await user.save();
-
-    // ======================================================
-    // ================= RESPONSE ===========================
-    // ======================================================
+    await user.save();
 
     res.status(200).json({
-
       success: true,
-
       message: "Profile updated successfully",
-
-      updatedUser: {
-
-        _id: updatedUser._id,
-
-        name: updatedUser.name,
-
-        email: updatedUser.email,
-
-        role: updatedUser.role,
-
-        department: updatedUser.department,
-
-        city: updatedUser.city,
-
-        contact: updatedUser.contact,
-
-        empId: updatedUser.empId,
-
-        address: updatedUser.address,
-
-        profileImage: updatedUser.profileImage,
-
-        joiningDate: updatedUser.joiningDate,
-
-        isApproved: updatedUser.isApproved,
-
-        accountStatus: updatedUser.accountStatus,
-      },
+      updatedUser: user,
     });
-
   } catch (error) {
+    console.error(error);
 
-    console.error("❌ Update Profile Error:", error);
-
-    // Mongo duplicate key error
     if (error.code === 11000) {
-
       return res.status(400).json({
-
         success: false,
-
         message:
           Object.keys(error.keyPattern)[0] +
           " already exists",
@@ -293,10 +217,8 @@ export const updateProfile = async (req, res) => {
     }
 
     res.status(500).json({
-
       success: false,
-
-      message: "Server error updating profile",
+      message: error.message,
     });
   }
 };

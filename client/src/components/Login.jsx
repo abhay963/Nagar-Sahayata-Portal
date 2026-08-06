@@ -34,13 +34,28 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const result = await login(email, password);
+     const result = await login(email, password);
 
-      console.log("✅ Login Success:", result);
+console.log("✅ Login Success:", result);
 
-      toast.success("Login successful");
+toast.success("Login successful");
 
-      navigate("/");
+switch (result.role) {
+  case "HigherAuthority":
+    navigate("/admin-dashboard", { replace: true });
+    break;
+
+  case "Staff":
+    navigate("/staff-dashboard", { replace: true });
+    break;
+
+  case "JuniorStaff":
+    navigate("/junior-dashboard", { replace: true });
+    break;
+
+  default:
+    navigate("/", { replace: true });
+}
     } catch (error) {
       console.log("❌ FULL ERROR:", error);
 

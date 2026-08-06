@@ -1,8 +1,4 @@
-// ================= IMPORTS =================
-
 import express from "express";
-
-import upload from "../middleware/upload.js";
 
 import {
   signup,
@@ -17,78 +13,38 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 
-
-// ================= ROUTER =================
+import handleProfileImageUpload from "../middleware/profileUpload.js";
 
 const router = express.Router();
 
+router.post("/signup", signup);
 
-// ================= AUTH ROUTES =================
-
-// User signup
 router.post(
-  "/signup",
-  signup
-);
-
-
-// Complete signup with profile image upload
-router.post(
-
   "/complete-signup",
-
-  upload.single("profileImage"),
-
+  handleProfileImageUpload,
   completeSignup
 );
 
+router.post("/login", login);
 
-// Login
-router.post(
-  "/login",
-  login
-);
-
-
-// Get current logged-in user
 router.get(
-
   "/me",
-
   protect,
-
   getMe
 );
 
+router.post("/send-otp", sendOtp);
 
-// Send OTP
-router.post(
-  "/send-otp",
-  sendOtp
-);
+router.post("/verify-otp", verifyOtp);
 
-
-// Verify OTP
-router.post(
-  "/verify-otp",
-  verifyOtp
-);
-
-
-// Forgot password
 router.post(
   "/forgot-password",
   forgotPassword
 );
 
-
-// Reset password
 router.post(
   "/reset-password",
   resetPassword
 );
-
-
-// ================= EXPORT =================
 
 export default router;

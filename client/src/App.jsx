@@ -12,42 +12,30 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 
-
 // ======================================================
 // ===================== PAGES ==========================
 // ======================================================
 
 import About from "./pages/About";
-
-import Dashboard from "./pages/Dashboard";
-
+import HigherAuthorityDashboard from "./pages/HigherAuthorityDashbaord";
+import StaffDashboard from "./pages/StaffDashboard";
+import JuniorStaffDashboard from "./pages/JuniorStaffDashboard";
 import Profile from "./pages/Profile";
-
 import LandingPage from "./pages/LandingPage";
-
 
 // ======================================================
 // =================== COMPONENTS =======================
 // ======================================================
 
 import Navbar from "./components/Navbar";
-
 import Sidebar from "./components/Sidebar";
-
 import ReportsTable from "./components/ReportsTable";
-
 import Departments from "./components/Departments";
-
 import AnalyticsCharts from "./components/AnalyticsCharts";
-
 import Login from "./components/Login";
-
 import Signup from "./components/Signup";
-
 import PasswordReset from "./components/PasswordReset";
-
-import ProtectedRoute from "./components/ProtectedRoute";
-
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 // ======================================================
 // ==================== CONTEXT =========================
@@ -58,7 +46,22 @@ import {
   useAuth,
 } from "./context/AuthContext";
 
+// ======================================================
+// ==================== HELPERS =========================
+// ======================================================
 
+const getDashboardRoute = (user) => {
+  switch (user?.role) {
+    case "Higher Authority":
+      return "/admin-dashboard";
+    case "Staff":
+      return "/staff-dashboard";
+    case "Junior Staff":
+      return "/junior-dashboard";
+    default:
+      return "/";
+  }
+};
 
 // ======================================================
 // ====================== LAYOUT ========================
@@ -70,12 +73,7 @@ const Layout = ({
   closeSidebar,
   openSidebar,
 }) => {
-
   const location = useLocation();
-
-  // ======================================================
-  // ================= PUBLIC ROUTES ======================
-  // ======================================================
 
   const publicRoutes = [
     "/",
@@ -89,7 +87,6 @@ const Layout = ({
     publicRoutes.includes(location.pathname);
 
   return (
-
     <div className="
       min-h-screen
       bg-white
@@ -97,67 +94,42 @@ const Layout = ({
       transition-colors
       duration-300
     ">
+      {!isPublicPage && (
+        <Sidebar
+          isOpen={isSidebarOpen}
+          closeSidebar={closeSidebar}
+        />
+      )}
 
-      {/* ====================================================== */}
-      {/* =============== SHOW ONLY AFTER LOGIN ================= */}
-      {/* ====================================================== */}
-
-      {
-        !isPublicPage && (
-          <Sidebar
-            isOpen={isSidebarOpen}
-            closeSidebar={closeSidebar}
-          />
-        )
-      }
-
-      {
-        !isPublicPage && (
-          <Navbar
-            onHoverSidebar={openSidebar}
-          />
-        )
-      }
-
-      {/* ====================================================== */}
-      {/* ================= MAIN CONTENT ======================= */}
-      {/* ====================================================== */}
+      {!isPublicPage && (
+        <Navbar
+          onHoverSidebar={openSidebar}
+        />
+      )}
 
       <div className={
         !isPublicPage
           ? "pt-20 p-6"
           : ""
       }>
-
         {children}
-
       </div>
-
     </div>
   );
 };
-
-
 
 // ======================================================
 // ===================== ROUTES =========================
 // ======================================================
 
 const AppRoutes = () => {
-
   const {
     user,
     loading
   } = useAuth();
 
-  // ======================================================
-  // =================== LOADING ==========================
-  // ======================================================
-
   if (loading) {
-
     return (
-
       <div className="
         flex
         items-center
@@ -166,38 +138,26 @@ const AppRoutes = () => {
         text-xl
         font-semibold
       ">
-
         Loading...
-
       </div>
     );
   }
 
+  const userDashboardRoute = getDashboardRoute(user);
+
   return (
-
     <Routes>
-
-      {/* ====================================================== */}
-      {/* ================= LANDING PAGE ======================= */}
-      {/* ====================================================== */}
-
       <Route
         path="/"
         element={<LandingPage />}
       />
-
-
-
-      {/* ====================================================== */}
-      {/* ================= PUBLIC ROUTES ====================== */}
-      {/* ====================================================== */}
 
       <Route
         path="/login"
         element={
           !user
             ? <Login />
-            : <Navigate to="/dashboard" replace />
+            : <Navigate to={userDashboardRoute} replace />
         }
       />
 
@@ -206,7 +166,7 @@ const AppRoutes = () => {
         element={
           !user
             ? <Signup />
-            : <Navigate to="/dashboard" replace />
+            : <Navigate to={userDashboardRoute} replace />
         }
       />
 
@@ -215,7 +175,7 @@ const AppRoutes = () => {
         element={
           !user
             ? <PasswordReset />
-            : <Navigate to="/dashboard" replace />
+            : <Navigate to={userDashboardRoute} replace />
         }
       />
 
@@ -224,26 +184,32 @@ const AppRoutes = () => {
         element={<About />}
       />
 
-
-
-      {/* ====================================================== */}
-      {/* ================= DASHBOARD ========================== */}
-      {/* ====================================================== */}
-
       <Route
-        path="/dashboard"
+        path="/admin-dashboard"
         element={
-          <ProtectedRoute>
-            <Dashboard />
+          <ProtectedRoute allowedRoles={["Higher Authority"]}>
+            <HigherAuthorityDashboard />
           </ProtectedRoute>
         }
       />
 
+      <Route
+        path="/staff-dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["Staff"]}>
+            <StaffDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-
-      {/* ====================================================== */}
-      {/* ================= PROFILE ============================ */}
-      {/* ====================================================== */}
+      <Route
+        path="/junior-dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["Junior Staff"]}>
+            <JuniorStaffDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/profile"
@@ -254,12 +220,6 @@ const AppRoutes = () => {
         }
       />
 
-
-
-      {/* ====================================================== */}
-      {/* ================= REPORTS ============================ */}
-      {/* ====================================================== */}
-
       <Route
         path="/reports"
         element={
@@ -268,12 +228,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
-
-
-      {/* ====================================================== */}
-      {/* ================= DEPARTMENTS ======================== */}
-      {/* ====================================================== */}
 
       <Route
         path="/departments"
@@ -284,12 +238,6 @@ const AppRoutes = () => {
         }
       />
 
-
-
-      {/* ====================================================== */}
-      {/* ================= ANALYTICS ========================== */}
-      {/* ====================================================== */}
-
       <Route
         path="/analytics"
         element={
@@ -299,56 +247,32 @@ const AppRoutes = () => {
         }
       />
 
-
-
-      {/* ====================================================== */}
-      {/* ================== INVALID ROUTES ==================== */}
-      {/* ====================================================== */}
-
       <Route
         path="*"
         element={
           <Navigate to="/" replace />
         }
       />
-
     </Routes>
   );
 };
-
-
 
 // ======================================================
 // ======================= APP ==========================
 // ======================================================
 
 function App() {
-
-  // ======================================================
-  // ================= SIDEBAR STATE ======================
-  // ======================================================
-
   const [
     isSidebarOpen,
     setIsSidebarOpen
   ] = useState(false);
 
-
-
-  // ======================================================
-  // ================== DARK MODE =========================
-  // ======================================================
-
   const [darkMode, setDarkMode] =
     useState(() => {
-
       return (
-
         localStorage.getItem("theme") === "dark" ||
-
         (
           !localStorage.getItem("theme") &&
-
           window.matchMedia(
             "(prefers-color-scheme: dark)"
           ).matches
@@ -356,43 +280,24 @@ function App() {
       );
     });
 
-
-
-  // ======================================================
-  // ================= APPLY THEME ========================
-  // ======================================================
-
   useEffect(() => {
-
     const root =
       document.documentElement;
 
     if (darkMode) {
-
       root.classList.add("dark");
-
       localStorage.setItem(
         "theme",
         "dark"
       );
-
     } else {
-
       root.classList.remove("dark");
-
       localStorage.setItem(
         "theme",
         "light"
       );
     }
-
   }, [darkMode]);
-
-
-
-  // ======================================================
-  // ================= SIDEBAR FUNCTIONS ==================
-  // ======================================================
 
   const openSidebar = () => {
     setIsSidebarOpen(true);
@@ -402,36 +307,19 @@ function App() {
     setIsSidebarOpen(false);
   };
 
-
-
-  // ======================================================
-  // ======================= UI ===========================
-  // ======================================================
-
   return (
-
     <AuthProvider>
-
       <Router>
-
         <Layout
           isSidebarOpen={isSidebarOpen}
           closeSidebar={closeSidebar}
           openSidebar={openSidebar}
         >
-
           <AppRoutes />
-
         </Layout>
-
       </Router>
 
-      {/* ====================================================== */}
-      {/* ================= TOAST NOTIFICATIONS ================ */}
-      {/* ====================================================== */}
-
       <ToastContainer />
-
     </AuthProvider>
   );
 }

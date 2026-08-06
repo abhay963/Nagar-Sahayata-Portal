@@ -1,172 +1,218 @@
-import React, {
+import {
   createContext,
   useContext,
+  useEffect,
+  useMemo,
   useState,
-  useEffect
 } from "react";
 
-import axios from "../api/axios";
+import api from "../api/axios";
 
-const AuthContext = createContext();
+import {
+  login,
+  signup,
+  completeSignup,
+  sendOtp,
+  verifyOtp,
+  forgotPassword,
+  resetPassword,
+  getMe,
+} from "../services/authService";
+
+const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  // ======================================================
+  // STATE
+  // ======================================================
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ======================================================
+  // TOKEN HELPER
+  // ======================================================
+
+  const setAuthToken = (token) => {
+    if (token) {
+      localStorage.setItem("token", token);
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    } else {
+      localStorage.removeItem("token");
+      delete api.defaults.headers.common.Authorization;
+    }
+  };
+
+  // ======================================================
+  // FETCH CURRENT USER
+  // ======================================================
+
   const fetchUser = async () => {
     try {
-      const res = await axios.get("/api/auth/me");
-setUser(res.data.user);
+      const response = await getMe();
+
+      setUser(response.data.user);
     } catch (error) {
-      localStorage.removeItem("token");
-      delete axios.defaults.headers.common["Authorization"];
+      setAuthToken(null);
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
+  // ======================================================
+  // INITIAL LOAD
+  // ======================================================
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      fetchUser();
-    } else {
+    if (!token) {
       setLoading(false);
+      return;
     }
+
+    setAuthToken(token);
+    fetchUser();
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post("/api/auth/login", { email, password });
+  // ======================================================
+  // LOGIN
+  // ======================================================
+const loginUser = async (email, password) => {
+  const response = await login({
+    email,
+    password,
+  });
 
-      const { token, redirectUrl, ...userData } = res.data;
+  console.log("LOGIN RESPONSE DATA:", response.data);
 
-      localStorage.setItem("token", token);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(userData);
+  const { token, ...userData } = response.data;
 
-      return { ...userData, redirectUrl };
-    } catch (error) {
-      throw error;
-    }
-  };
+  setAuthToken(token);
+  setUser(userData);
 
-  const signup = async (email) => {
-    try {
-      const res = await axios.post("/api/auth/signup", { email });
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
-  };
-
- const completeSignup = async (formData) => {
-
-  try {
-
-    const res = await axios.post(
-
-      "/api/auth/complete-signup",
-
-      formData
-    );
-
-    const {
-      token,
-      redirectUrl,
-      ...userData
-    } = res.data;
-
-    localStorage.setItem(
-      "token",
-      token
-    );
-
-    axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${token}`;
-
-    setUser(userData);
-
-    return {
-      ...userData,
-      redirectUrl,
-    };
-
-  } catch (error) {
-
-    throw error;
-  }
+  return userData;
 };
 
-  const sendOtp = async (email, type) => {
-    try {
-      const res = await axios.post("/api/auth/send-otp", { email, type });
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
+  // ======================================================
+  // SIGNUP
+  // ======================================================
+
+  const signupUser = async (email) => {
+    return await signup({
+      email,
+    });
   };
 
-  const verifyOtp = async (email, otp, type) => {
-    try {
-      const res = await axios.post("/api/auth/verify-otp", { email, otp, type });
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
+  // ======================================================
+  // COMPLETE SIGNUP
+  // ======================================================
+
+  const register = async (formData) => {
+    const response = await completeSignup(formData);
+
+    const { token, user } = response.data;
+
+    setAuthToken(token);
+    setUser(user);
+
+    return user;
   };
 
-  const forgotPassword = async (email) => {
-    try {
-      const res = await axios.post("/api/auth/forgot-password", { email });
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
+  // ======================================================
+  // SEND OTP
+  // ======================================================
+
+  const sendOtpCode = async (email, type) => {
+    return await sendOtp({
+      email,
+      type,
+    });
   };
 
-  const resetPassword = async (email, otp, newPassword) => {
-    try {
-      const res = await axios.post("/api/auth/reset-password", {
-        email,
-        otp,
-        newPassword,
-      });
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
+  // ======================================================
+  // VERIFY OTP
+  // ======================================================
+
+  const verifyOtpCode = async (email, otp, type) => {
+    return await verifyOtp({
+      email,
+      otp,
+      type,
+    });
   };
+
+  // ======================================================
+  // FORGOT PASSWORD
+  // ======================================================
+
+  const sendResetOtp = async (email) => {
+    return await forgotPassword({
+      email,
+    });
+  };
+
+  // ======================================================
+  // RESET PASSWORD
+  // ======================================================
+
+  const updatePassword = async (
+    email,
+    otp,
+    newPassword
+  ) => {
+    return await resetPassword({
+      email,
+      otp,
+      newPassword,
+    });
+  };
+
+  // ======================================================
+  // LOGOUT
+  // ======================================================
 
   const logout = () => {
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
+    setAuthToken(null);
     setUser(null);
     setLoading(false);
   };
 
+  // ======================================================
+  // CONTEXT VALUE
+  // ======================================================
+
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+
+      login: loginUser,
+      signup: signupUser,
+      completeSignup: register,
+
+      sendOtp: sendOtpCode,
+      verifyOtp: verifyOtpCode,
+
+      forgotPassword: sendResetOtp,
+      resetPassword: updatePassword,
+
+      logout,
+      fetchUser,
+      setUser,
+    }),
+    [user, loading]
+  );
+
+  // ======================================================
+  // PROVIDER
+  // ======================================================
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        signup,
-        completeSignup,
-        sendOtp,
-        verifyOtp,
-        forgotPassword,
-        resetPassword,
-        logout,
-        setUser,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -1,19 +1,15 @@
 import multer from "multer";
-
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 import cloudinary from "../config/cloudinary.js";
 
-
-// ================= CLOUDINARY STORAGE =================
-
 const storage = new CloudinaryStorage({
-
   cloudinary,
 
-  params: async (req, file) => ({
-
+  params: async () => ({
     folder: "nagar-sahayata/profile-images",
+
+    resource_type: "image",
 
     allowed_formats: [
       "jpg",
@@ -22,15 +18,11 @@ const storage = new CloudinaryStorage({
       "webp",
     ],
 
-    public_id: `upload-${Date.now()}`,
+    public_id: `profile-${Date.now()}`,
   }),
 });
 
-
-// ================= FILE FILTER =================
-
 const fileFilter = (req, file, cb) => {
-
   const allowed = [
     "image/png",
     "image/jpeg",
@@ -39,24 +31,17 @@ const fileFilter = (req, file, cb) => {
   ];
 
   if (allowed.includes(file.mimetype)) {
-
     cb(null, true);
-
   } else {
-
     cb(
       new Error(
-        "Only PNG, JPEG, JPG, WEBP files are allowed"
+        "Only PNG, JPEG, JPG and WEBP images are allowed."
       )
     );
   }
 };
 
-
-// ================= MULTER =================
-
 const upload = multer({
-
   storage,
 
   fileFilter,

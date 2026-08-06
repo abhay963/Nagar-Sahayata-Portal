@@ -1,71 +1,44 @@
-import "./config/env.js";
-
 import express from "express";
 import cors from "cors";
-import path from "path";
-
+import dotenv from "dotenv";
+dotenv.config();
 import { connectAuthDB } from "./config/db.js";
 
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/userRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
-const app = express();
-const PORT = process.env.PORT || 5000;
 
-// ======================
-// Middleware
-// ======================
+
+const app = express();
+
+const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://nagar-sahayata-portal.vercel.app",
-    ],
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json());
+
 app.use(
   express.urlencoded({
     extended: true,
-    limit: "50mb",
   })
 );
-
-// ======================
-// Static Files
-// ======================
-
-app.use(
-  "/uploads/profile-images",
-  express.static(path.join(process.cwd(), "uploads/profile-images"))
-);
-
-// ======================
-// API Routes
-// ======================
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reports", reportRoutes);
 
-// ======================
-// Health Check
-// ======================
-
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Nagar Sahayata Backend Running Successfully 🚀",
+    message: "Nagar Sahayata Backend Running...",
   });
 });
-
-// ======================
-// 404 Handler
-// ======================
 
 app.use((req, res) => {
   res.status(404).json({
@@ -74,12 +47,8 @@ app.use((req, res) => {
   });
 });
 
-// ======================
-// Global Error Handler
-// ======================
-
 app.use((err, req, res, next) => {
-  console.error("❌ Server Error:", err);
+  console.error(err);
 
   res.status(err.status || 500).json({
     success: false,
@@ -87,20 +56,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ======================
-// Start Server
-// ======================
-
 const startServer = async () => {
   try {
     await connectAuthDB();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`🌐 http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error("❌ Failed to start server:", error);
+    console.error(error);
     process.exit(1);
   }
 };

@@ -183,10 +183,11 @@ const jharkhandCities = [
       setPreviewImage(null);
       toast.success("Profile updated successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error(
+    console.log("Response:", err.response?.data);
+console.log("Errors:", err.response?.data?.errors);
+
+toast.error(
   err.response?.data?.message ||
-  err.response?.data?.errors?.[0]?.msg ||
   "Failed to update profile"
 );
     } finally {
