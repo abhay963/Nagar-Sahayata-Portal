@@ -207,6 +207,7 @@ const DashboardCards = ({
   );
 };
 
+
 const WelcomeBanner = ({
   user,
   dashboardStats,
@@ -593,33 +594,24 @@ const HigherAuthorityDashboard = () => {
       departments: 0,
     });
 
-  useEffect(() => {
+ useEffect(() => {
+  const fetchDashboardStats = async () => {
+    try {
+      const response = await getDashboardStats();
 
-    const fetchDashboardStats =
-      async () => {
 
-        try {
+      setDashboardStats(response.data);
+    } catch (error) {
+      console.error("Dashboard Stats Error:", error);
+    }
+  };
 
-          const data =
-            await getDashboardStats();
+  fetchDashboardStats();
+}, [user]);
 
-          setDashboardStats(
-            data
-          );
-
-        } catch (error) {
-
-          console.error(
-            "Dashboard Stats Error:",
-            error
-          );
-        }
-      };
-
-    fetchDashboardStats();
-
-  }, [user]);
-
+useEffect(() => {
+ 
+}, [dashboardStats]);
   return (
 
     <div className="flex flex-col space-y-8">

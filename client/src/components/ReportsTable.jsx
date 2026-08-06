@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useDebounce } from "use-debounce";
 import axios from "../api/axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const ReportsTable = ({ role, department }) => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [categoryFilter, setCategoryFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [selectedReport, setSelectedReport] = useState(null);
   const [fullscreenImage, setFullscreenImage] = useState(null);
@@ -16,90 +16,39 @@ const ReportsTable = ({ role, department }) => {
 
   const [debouncedSearch] = useDebounce(searchTerm, 300);
 
-  // ============================================
-// ROLE CHECKS
-// ============================================
-// ============================================
-// ROLE CHECKS
-// ============================================
+  // Role checks
+  const isHigherAuthority =
+    role === "Higher Authority" ||
+    role === "Admin" ||
+    role === "Super Admin";
 
-const isHigherAuthority =
-  role === "Higher Authority" ||
-  role === "Admin" ||
-  role === "Super Admin";
-
-const isStaff =
-  role === "Staff";
-
-const isJuniorStaff =
-  role === "Junior Staff";
-
-
-
-// ============================================
-// FETCH REPORTS
-// ============================================
-
-// ============================================
-// FETCH REPORTS
-// ============================================
-
-useEffect(() => {
-
-  const fetchReports = async () => {
-
+  // Fetch reports
+  const fetchReports = useCallback(async (isRefresh = false) => {
     try {
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
 
-      setLoading(true);
+      const res = await axios.get("/api/reports");
+      const reportsData = res.data.reports || [];
 
-      const res = await axios.get(
-        "/api/reports"
-      );
-
-      let reportsData =
-        res.data.reports || [];
-
-      console.log("ROLE:", role);
-
-      console.log("REPORTS:", reportsData);
-
-      // ============================================
-      // PROCESS REPORTS
-      // ============================================
-
-      const processedReports =
-        reportsData.map((report) => ({
-
-          ...report,
-
-          locationName:
-            report.location?.locationName ||
-
-            report.address ||
-
-            "N/A",
-
-        }));
+      const processedReports = reportsData.map((report) => ({
+        ...report,
+        locationName:
+          report.location?.locationName || report.address || "N/A",
+      }));
 
       setReports(processedReports);
-
     } catch (error) {
-
-      console.error(
-        "❌ Error fetching reports:",
-        error
-      );
-
+      console.error("❌ Error fetching reports:", error);
     } finally {
-
       setLoading(false);
-
+      setRefreshing(false);
     }
-  };
+  }, []);
 
-  fetchReports();
-
-}, [role]);
+  useEffect(() => {
+    fetchReports();
+  }, [role, fetchReports]);
 
   // Sorting
   const sortedReports = useMemo(() => {
@@ -108,10 +57,8 @@ useEffect(() => {
       sortable.sort((a, b) => {
         let aVal = a[sortConfig.key] || "";
         let bVal = b[sortConfig.key] || "";
-
         if (typeof aVal === "string") aVal = aVal.toLowerCase();
         if (typeof bVal === "string") bVal = bVal.toLowerCase();
-
         if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
         if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
@@ -128,13 +75,14 @@ useEffect(() => {
         report.description?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         report.locationName?.toLowerCase().includes(debouncedSearch.toLowerCase());
 
-      const matchesStatus = statusFilter === "All" || report.status === statusFilter;
-      const matchesCategory = categoryFilter === "All" || report.problemType === categoryFilter;
-      const matchesPriority = priorityFilter === "All" || report.priority === priorityFilter;
+      const matchesStatus =
+        statusFilter === "All" || report.status === statusFilter;
+      const matchesPriority =
+        priorityFilter === "All" || report.priority === priorityFilter;
 
-      return matchesSearch && matchesStatus && matchesCategory && matchesPriority;
+      return matchesSearch && matchesStatus && matchesPriority;
     });
-  }, [sortedReports, debouncedSearch, statusFilter, categoryFilter, priorityFilter]);
+  }, [sortedReports, debouncedSearch, statusFilter, priorityFilter]);
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -144,9 +92,42 @@ useEffect(() => {
     setSortConfig({ key, direction });
   };
 
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "Critical":
+        return "bg-red-200 text-red-800";
+      case "High":
+        return "bg-red-100 text-red-700";
+      case "Medium":
+        return "bg-amber-100 text-amber-700";
+      case "Normal":
+        return "bg-emerald-100 text-emerald-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Resolved":
+        return "bg-emerald-100 text-emerald-700";
+      case "Pending Approval":
+        return "bg-amber-100 text-amber-700";
+      case "Declined":
+      case "Unable To Complete":
+        return "bg-red-100 text-red-700";
+      case "In Progress":
+        return "bg-blue-100 text-blue-700";
+      case "Pending":
+        return "bg-orange-100 text-orange-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center justify-center py-20">
         <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin mb-4"></div>
         <p className="text-emerald-700 font-medium">Loading reports...</p>
       </div>
@@ -154,89 +135,117 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Reports Management</h2>
-            <p className="text-emerald-600 mt-1">
-              {isHigherAuthority ? "All Departments" : `Department: ${department}`}
-            </p>
-          </div>
+    <div className="w-full">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+            Reports Management
+          </h2>
+          <p className="text-emerald-600 mt-1 text-sm">
+            {isHigherAuthority
+              ? "All Departments"
+              : `Department: ${department || "N/A"}`}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
           <div className="text-sm bg-emerald-100 text-emerald-700 px-4 py-2 rounded-2xl font-medium">
             {filteredReports.length} Reports
           </div>
+
+          <button
+            onClick={() => fetchReports(true)}
+            disabled={refreshing}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white px-4 py-2 rounded-2xl font-medium transition-all text-sm shadow-sm"
+          >
+            <span className={refreshing ? "animate-spin inline-block" : ""}>
+              {refreshing ? "⟳" : "🔄"}
+            </span>
+            {refreshing ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-emerald-50/60 rounded-2xl p-4 mb-5 border border-emerald-100 grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="md:col-span-2 relative">
+          <input
+            type="text"
+            placeholder="Search by problem, description or location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-white border border-emerald-100 focus:border-emerald-400 rounded-xl px-5 py-3 outline-none text-gray-700 text-sm"
+          />
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-400 text-sm">
+            🔍
+          </span>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-emerald-100 p-6 mb-8 border border-emerald-100 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="md:col-span-2 relative">
-            <input
-              type="text"
-              placeholder="Search by problem, description or location..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-emerald-50 border border-emerald-100 focus:border-emerald-400 rounded-2xl px-6 py-4 outline-none text-gray-700"
-            />
-            <span className="absolute right-6 top-1/2 -translate-y-1/2 text-emerald-400">🔍</span>
-          </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-white border border-emerald-100 focus:border-emerald-400 rounded-xl px-4 py-3 outline-none cursor-pointer text-sm"
+        >
+          <option value="All">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Pending Approval">Pending Approval</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Declined">Declined</option>
+          <option value="Unable To Complete">Unable To Complete</option>
+        </select>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-emerald-50 border border-emerald-100 focus:border-emerald-400 rounded-2xl px-6 py-4 outline-none cursor-pointer"
-          >
-            <option value="All">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Pending Approval">Pending Approval</option>
-            <option value="Resolved">Resolved</option>
-            <option value="Declined">Declined</option>
-          <option value="Unable To Complete">
-  Unable To Complete
-</option>
-          </select>
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+          className="bg-white border border-emerald-100 focus:border-emerald-400 rounded-xl px-4 py-3 outline-none cursor-pointer text-sm"
+        >
+          <option value="All">All Priority</option>
+          <option value="Critical">Critical</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Normal">Normal</option>
+        </select>
+      </div>
 
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="bg-emerald-50 border border-emerald-100 focus:border-emerald-400 rounded-2xl px-6 py-4 outline-none cursor-pointer"
-          >
-            <option value="All">All Priority</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-           <option value="Normal">Normal</option>
-
-<option value="Critical">Critical</option>
-          </select>
-        </div>
-
-        {/* Table */}
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-emerald-100">
+      {/* ===================== SCROLLABLE TABLE CONTAINER ===================== */}
+      <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
+        {/* Fixed header */}
+        <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
                 <th
-                  className="p-5 text-left cursor-pointer hover:bg-emerald-700 transition"
+                  className="p-4 text-left text-sm font-semibold cursor-pointer hover:bg-emerald-700/80 transition"
                   onClick={() => handleSort("problemType")}
                 >
-                  Problem {sortConfig.key === "problemType" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  Problem{" "}
+                  {sortConfig.key === "problemType" &&
+                    (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="p-5 text-left">Location</th>
+                <th className="p-4 text-left text-sm font-semibold">Location</th>
                 <th
-                  className="p-5 text-left cursor-pointer hover:bg-emerald-700 transition"
+                  className="p-4 text-left text-sm font-semibold cursor-pointer hover:bg-emerald-700/80 transition"
                   onClick={() => handleSort("priority")}
                 >
-                  Priority {sortConfig.key === "priority" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                  Priority{" "}
+                  {sortConfig.key === "priority" &&
+                    (sortConfig.direction === "asc" ? "↑" : "↓")}
                 </th>
-                <th className="p-5 text-left">Status</th>
+                <th className="p-4 text-left text-sm font-semibold">Status</th>
               </tr>
             </thead>
+          </table>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="max-h-[420px] overflow-y-auto">
+          <table className="w-full">
             <tbody>
               {filteredReports.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-20 text-gray-500">
+                  <td colSpan="4" className="text-center py-16 text-gray-500">
                     No reports found
                   </td>
                 </tr>
@@ -244,40 +253,32 @@ useEffect(() => {
                 filteredReports.map((report, index) => (
                   <motion.tr
                     key={report._id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
+                    transition={{ delay: index * 0.02 }}
                     onClick={() => setSelectedReport(report)}
-                    className="border-b border-emerald-100 hover:bg-emerald-50 cursor-pointer transition-all group"
+                    className="border-b border-emerald-50 hover:bg-emerald-50/70 cursor-pointer transition-colors group"
                   >
-                    <td className="p-5 font-medium text-gray-900 group-hover:text-emerald-700">
+                    <td className="p-4 font-medium text-gray-900 group-hover:text-emerald-700 text-sm">
                       {report.problemType}
                     </td>
-                    <td className="p-5 text-gray-600">{report.locationName}</td>
-                    <td className="p-5">
+                    <td className="p-4 text-gray-600 text-sm">
+                      {report.locationName}
+                    </td>
+                    <td className="p-4">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-sm font-medium ${
-                          report.priority === "High"
-                            ? "bg-red-100 text-red-700"
-                            : report.priority === "Medium"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-emerald-100 text-emerald-700"
-                        }`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(
+                          report.priority
+                        )}`}
                       >
                         {report.priority}
                       </span>
                     </td>
-                    <td className="p-5">
+                    <td className="p-4">
                       <span
-                        className={`inline-block px-5 py-1.5 rounded-full text-sm font-medium ${
-                          report.status === "Resolved"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : report.status === "Pending Approval"
-                            ? "bg-amber-100 text-amber-700"
-                            : report.status === "Declined" || report.status === "Unable"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-blue-100 text-blue-700"
-                        }`}
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          report.status
+                        )}`}
                       >
                         {report.status}
                       </span>
@@ -290,472 +291,203 @@ useEffect(() => {
         </div>
       </div>
 
-  
-  {/* Detail Modal */}
-<AnimatePresence>
+      {/* ===================== DETAIL MODAL ===================== */}
+      <AnimatePresence>
+        {selectedReport && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            >
+              {/* Sticky Header */}
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 relative flex-shrink-0">
+                <button
+                  onClick={() => setSelectedReport(null)}
+                  className="absolute top-5 right-5 text-3xl hover:scale-110 transition leading-none"
+                >
+                  ×
+                </button>
+                <h2 className="text-2xl md:text-3xl font-bold pr-10">
+                  {selectedReport.problemType}
+                </h2>
+                <p className="text-emerald-100 mt-1 text-sm">
+                  Status: {selectedReport.status}
+                </p>
+              </div>
 
-  {selectedReport && (
+              {/* Scrollable Content */}
+              <div className="overflow-y-auto flex-1 p-6 md:p-8 space-y-8 text-gray-700">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+                  <div>
+                    <strong>Problem Type:</strong> {selectedReport.problemType}
+                  </div>
+                  <div>
+                    <strong>Department:</strong>{" "}
+                    {selectedReport.department || "N/A"}
+                  </div>
+                  <div>
+                    <strong>City:</strong> {selectedReport.city || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Location:</strong> {selectedReport.locationName}
+                  </div>
+                  <div>
+                    <strong>Priority:</strong>{" "}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${getPriorityColor(
+                        selectedReport.priority
+                      )}`}
+                    >
+                      {selectedReport.priority}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${getStatusColor(
+                        selectedReport.status
+                      )}`}
+                    >
+                      {selectedReport.status}
+                    </span>
+                  </div>
+                  <div>
+                    <strong>Citizen Name:</strong>{" "}
+                    {selectedReport.citizenName || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Citizen Contact:</strong>{" "}
+                    {selectedReport.citizenContact || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Assigned To:</strong>{" "}
+                    {selectedReport.assignedToName || "Not Assigned"}
+                  </div>
+                  <div>
+                    <strong>Assigned By:</strong>{" "}
+                    {selectedReport.assignedByName || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Assigned Department:</strong>{" "}
+                    {selectedReport.assignedToDepartment || "N/A"}
+                  </div>
+                  <div>
+                    <strong>Created At:</strong>{" "}
+                    {selectedReport.createdAt
+                      ? new Date(selectedReport.createdAt).toLocaleString()
+                      : "N/A"}
+                  </div>
+                  <div>
+                    <strong>Assigned At:</strong>{" "}
+                    {selectedReport.assignedAt
+                      ? new Date(selectedReport.assignedAt).toLocaleString()
+                      : "N/A"}
+                  </div>
+                  <div>
+                    <strong>Accepted At:</strong>{" "}
+                    {selectedReport.acceptedAt
+                      ? new Date(selectedReport.acceptedAt).toLocaleString()
+                      : "N/A"}
+                  </div>
+                  <div>
+                    <strong>Resolved At:</strong>{" "}
+                    {selectedReport.resolvedAt
+                      ? new Date(selectedReport.resolvedAt).toLocaleString()
+                      : "N/A"}
+                  </div>
+                </div>
 
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-lg z-50 flex items-center justify-center p-4">
+                {/* Description */}
+                <div>
+                  <strong className="block mb-2 text-base">Description</strong>
+                  <p className="leading-relaxed bg-emerald-50 p-4 rounded-2xl text-sm">
+                    {selectedReport.description || "No description provided"}
+                  </p>
+                </div>
 
-      <motion.div
+                {/* Images */}
+                <div className="space-y-5">
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    🖼 Report Attachments
+                  </h3>
 
-        initial={{
-          opacity: 0,
-          scale: 0.9,
-        }}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {selectedReport.image && (
+                      <div className="bg-white border border-emerald-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="px-4 py-3 bg-emerald-50 border-b border-emerald-100">
+                          <h4 className="font-semibold text-emerald-700 text-sm">
+                            📸 Original Issue Image
+                          </h4>
+                        </div>
+                        <div className="p-3">
+                          <img
+                            src={selectedReport.image}
+                            alt="Original"
+                            onClick={() =>
+                              setFullscreenImage(selectedReport.image)
+                            }
+                            className="w-full h-56 object-cover rounded-xl cursor-pointer hover:scale-[1.02] transition-transform"
+                          />
+                        </div>
+                      </div>
+                    )}
 
-        animate={{
-          opacity: 1,
-          scale: 1,
-        }}
+                    {selectedReport.resolvedImage && (
+                      <div className="bg-white border border-green-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="px-4 py-3 bg-green-50 border-b border-green-100">
+                          <h4 className="font-semibold text-green-700 text-sm">
+                            ✅ Resolution Proof
+                          </h4>
+                        </div>
+                        <div className="p-3">
+                          <img
+                            src={selectedReport.resolvedImage}
+                            alt="Resolved"
+                            onClick={() =>
+                              setFullscreenImage(selectedReport.resolvedImage)
+                            }
+                            className="w-full h-56 object-cover rounded-xl cursor-pointer hover:scale-[1.02] transition-transform"
+                          />
+                        </div>
+                      </div>
+                    )}
 
-        exit={{
-          opacity: 0,
-          scale: 0.9,
-        }}
+                    {selectedReport.unableImage && (
+                      <div className="bg-white border border-red-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="px-4 py-3 bg-red-50 border-b border-red-100">
+                          <h4 className="font-semibold text-red-700 text-sm">
+                            ❌ Unable Completion Proof
+                          </h4>
+                        </div>
+                        <div className="p-3">
+                          <img
+                            src={selectedReport.unableImage}
+                            alt="Unable"
+                            onClick={() =>
+                              setFullscreenImage(selectedReport.unableImage)
+                            }
+                            className="w-full h-56 object-cover rounded-xl cursor-pointer hover:scale-[1.02] transition-transform"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
-        className="
-          bg-white
-          rounded-3xl
-          shadow-2xl
-          max-w-4xl
-          w-full
-          overflow-hidden
-          max-h-[90vh]
-          overflow-y-auto
-        "
-      >
-
-        {/* HEADER */}
-
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8 relative">
-
-          <button
-            onClick={() =>
-              setSelectedReport(null)
-            }
-
-            className="
-              absolute
-              top-6
-              right-6
-              text-4xl
-              hover:scale-110
-              transition
-            "
-          >
-            ×
-          </button>
-
-          <h2 className="text-3xl font-bold">
-            {selectedReport.problemType}
-          </h2>
-
-          <p className="text-emerald-100 mt-2">
-            #{selectedReport.status}
-          </p>
-
-        </div>
-
-        {/* CONTENT */}
-
-        <div className="p-8 space-y-8 text-gray-700">
-
-          {/* REPORT DETAILS */}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-            
-
-            <div>
-              <strong>Problem Type:</strong>{" "}
-              {selectedReport.problemType}
-            </div>
-
-            <div>
-              <strong>Department:</strong>{" "}
-              {selectedReport.department}
-            </div>
-
-            <div>
-              <strong>City:</strong>{" "}
-              {selectedReport.city}
-            </div>
-
-            <div>
-              <strong>Location:</strong>{" "}
-              {selectedReport.locationName}
-            </div>
-
-            <div>
-              <strong>Priority:</strong>{" "}
-              {selectedReport.priority}
-            </div>
-
-            <div>
-              <strong>Status:</strong>{" "}
-              {selectedReport.status}
-            </div>
-
-            <div>
-              <strong>Citizen Name:</strong>{" "}
-              {selectedReport.citizenName || "N/A"}
-            </div>
-
-            <div>
-              <strong>Citizen Contact:</strong>{" "}
-              {selectedReport.citizenContact || "N/A"}
-            </div>
-
-            <div>
-              <strong>Assigned To:</strong>{" "}
-              {selectedReport.assignedToName || "Not Assigned"}
-            </div>
-
-            <div>
-              <strong>Assigned By:</strong>{" "}
-              {selectedReport.assignedByName || "N/A"}
-            </div>
-
-            <div>
-              <strong>Assigned Department:</strong>{" "}
-              {selectedReport.assignedToDepartment || "N/A"}
-            </div>
-
-            <div>
-              <strong>Created At:</strong>{" "}
-              {new Date(
-                selectedReport.createdAt
-              ).toLocaleString()}
-            </div>
-
-            <div>
-              <strong>Assigned At:</strong>{" "}
-
-              {selectedReport.assignedAt
-
-                ? new Date(
-                    selectedReport.assignedAt
-                  ).toLocaleString()
-
-                : "N/A"}
-            </div>
-
-            <div>
-              <strong>Accepted At:</strong>{" "}
-
-              {selectedReport.acceptedAt
-
-                ? new Date(
-                    selectedReport.acceptedAt
-                  ).toLocaleString()
-
-                : "N/A"}
-            </div>
-
-            <div>
-              <strong>Resolved At:</strong>{" "}
-
-              {selectedReport.resolvedAt
-
-                ? new Date(
-                    selectedReport.resolvedAt
-                  ).toLocaleString()
-
-                : "N/A"}
-            </div>
-
+                  {!selectedReport.image &&
+                    !selectedReport.resolvedImage &&
+                    !selectedReport.unableImage && (
+                      <p className="text-gray-500 italic text-sm">
+                        No attachments available
+                      </p>
+                    )}
+                </div>
+              </div>
+            </motion.div>
           </div>
-
-          {/* DESCRIPTION */}
-
-          <div>
-
-            <strong className="block mb-2 text-lg">
-              Description
-            </strong>
-
-            <p className="leading-relaxed bg-emerald-50 p-4 rounded-2xl">
-              {selectedReport.description}
-            </p>
-
-          </div>
-
-          {/* IMAGE */}
-
-        {/* ====================================================== */}
-{/* ================= REPORT IMAGES ====================== */}
-{/* ====================================================== */}
-
-<div className="space-y-8">
-
-  <h3 className="
-    text-2xl
-    font-bold
-    text-gray-900
-    flex
-    items-center
-    gap-3
-  ">
-    🖼 Report Attachments
-  </h3>
-
-
-  <div className="
-    grid
-    grid-cols-1
-    md:grid-cols-2
-    gap-8
-  ">
-
-    {/* ORIGINAL IMAGE */}
-
-    {
-      selectedReport.image && (
-
-        <motion.div
-
-          whileHover={{
-            y: -5,
-          }}
-
-          className="
-            bg-white
-            border
-            border-emerald-100
-            rounded-3xl
-            overflow-hidden
-            shadow-lg
-            hover:shadow-2xl
-            transition-all
-          "
-        >
-
-          <div className="
-            px-6
-            py-4
-            bg-emerald-50
-            border-b
-            border-emerald-100
-          ">
-
-            <h4 className="
-              text-lg
-              font-bold
-              text-emerald-700
-              flex
-              items-center
-              gap-2
-            ">
-              📸 Original Issue Image
-            </h4>
-
-          </div>
-
-
-          <div className="p-4">
-
-            <img
-
-              src={selectedReport.image}
-
-              alt="Original Report"
-
-              onClick={() =>
-                setFullscreenImage(
-                  selectedReport.image
-                )
-              }
-
-              className="
-                w-full
-                h-[320px]
-                object-cover
-                rounded-2xl
-                cursor-pointer
-                hover:scale-[1.03]
-                transition-transform
-                duration-500
-              "
-            />
-
-          </div>
-
-        </motion.div>
-      )
-    }
-
-
-
-    {/* RESOLUTION PROOF */}
-
-    {
-      selectedReport.resolvedImage && (
-
-        <motion.div
-
-          whileHover={{
-            y: -5,
-          }}
-
-          className="
-            bg-white
-            border
-            border-green-100
-            rounded-3xl
-            overflow-hidden
-            shadow-lg
-            hover:shadow-2xl
-            transition-all
-          "
-        >
-
-          <div className="
-            px-6
-            py-4
-            bg-green-50
-            border-b
-            border-green-100
-          ">
-
-            <h4 className="
-              text-lg
-              font-bold
-              text-green-700
-              flex
-              items-center
-              gap-2
-            ">
-              ✅ Resolution Proof
-            </h4>
-
-          </div>
-
-
-          <div className="p-4">
-
-            <img
-
-              src={selectedReport.resolvedImage}
-
-              alt="Resolution Proof"
-
-              onClick={() =>
-                setFullscreenImage(
-                  selectedReport.resolvedImage
-                )
-              }
-
-              className="
-                w-full
-                h-[320px]
-                object-cover
-                rounded-2xl
-                cursor-pointer
-                hover:scale-[1.03]
-                transition-transform
-                duration-500
-              "
-            />
-
-          </div>
-
-        </motion.div>
-      )
-    }
-
-
-
-    {/* UNABLE IMAGE */}
-
-    {
-      selectedReport.unableImage && (
-
-        <motion.div
-
-          whileHover={{
-            y: -5,
-          }}
-
-          className="
-            bg-white
-            border
-            border-red-100
-            rounded-3xl
-            overflow-hidden
-            shadow-lg
-            hover:shadow-2xl
-            transition-all
-          "
-        >
-
-          <div className="
-            px-6
-            py-4
-            bg-red-50
-            border-b
-            border-red-100
-          ">
-
-            <h4 className="
-              text-lg
-              font-bold
-              text-red-700
-              flex
-              items-center
-              gap-2
-            ">
-              ❌ Unable Completion Proof
-            </h4>
-
-          </div>
-
-
-          <div className="p-4">
-
-            <img
-
-              src={selectedReport.unableImage}
-
-              alt="Unable Proof"
-
-              onClick={() =>
-                setFullscreenImage(
-                  selectedReport.unableImage
-                )
-              }
-
-              className="
-                w-full
-                h-[320px]
-                object-cover
-                rounded-2xl
-                cursor-pointer
-                hover:scale-[1.03]
-                transition-transform
-                duration-500
-              "
-            />
-
-          </div>
-
-        </motion.div>
-      )
-    }
-
-  </div>
-
-</div>
-
-        </div>
-
-      </motion.div>
-
-    </div>
-  )}
-
-</AnimatePresence>
+        )}
+      </AnimatePresence>
 
       {/* Fullscreen Image */}
       <AnimatePresence>
@@ -765,11 +497,12 @@ useEffect(() => {
             onClick={() => setFullscreenImage(null)}
           >
             <motion.img
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
               src={fullscreenImage}
               alt="Fullscreen"
-              className="max-h-[95%] max-w-[95%] rounded-2xl"
+              className="max-h-[95%] max-w-[95%] rounded-2xl object-contain"
             />
           </div>
         )}
