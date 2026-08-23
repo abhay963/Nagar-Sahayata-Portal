@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CountUp from "react-countup";
 import MapSection from "../components/MapSection";
@@ -16,75 +16,168 @@ import {
   FaExclamationTriangle,
   FaBell,
   FaGlobeAsia,
+  FaArrowRight,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { Menu, X, ArrowUpRight, Award, Zap, HelpCircle, Mail, Phone, MapPin } from "lucide-react";
-
-// Shadcn UI Imports
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Menu,
+  X,
+  ArrowUpRight,
+  Award,
+  Zap,
+  HelpCircle,
+  Mail,
+  Phone,
+  MapPin,
+  Camera,
+  Clock3,
+  Navigation,
+  Check,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
+  Sparkles,
+} from "lucide-react";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
+/*
+  Visual direction:
+  - Deep forest / emerald palette
+  - Indian civic photography rather than generic SaaS stock art
+  - Editorial image blocks + horizontal motion strips
+  - Warm off-white surfaces used sparingly for contrast
+  - Grounded in Ranchi / Jamshedpur / Indian urban infrastructure
+*/
+
+const images = {
+  heroRoad:
+    "https://assets.telegraphindia.com/telegraph/cb14edc2-9adb-4e60-a776-2847a1b502f6.jpg",
+  jamshedpur:
+    "https://assets.telegraphindia.com/telegraph/19jamstreetfest4.jpg",
+  ranchiNight:
+    "https://files.yappe.in/place/full/shaheed-albert-ekka-chowk-9575452.webp",
+  sanitation:
+    "https://media.assettype.com/freepressjournal-marathi/2025-07-01/eyzpg18q/freepressjournal-marathi2024-01181202c7-ea0c-40a9-9b02-e45b62a8abd2rseet.avif?auto=format%2Ccompress&enlarge=true&fit=max&h=1200&w=1800",
+  roadRepair:
+    "https://images.bhaskarassets.com/web2images/960/2025/07/08/1001641130_1751976356.jpg",
+  cityPark:
+    "https://eco-business.imgix.net/ebmedia/fileuploads/37622448340_3755c4165a_b.jpg?fit=crop&h=1200&ixlib=django-1.2.0&w=1800",
+  urbanPark:
+    "https://greenspacealliance.com/wp-content/uploads/2020/05/20191013_112438.jpg",
+};
 
 const features = [
   {
     title: "Live Issue Tracking",
     desc: "Real-time monitoring and map-based tracking for every complaint submitted across Jharkhand.",
-    icon: <FaMapMarkedAlt size={32} />,
+    icon: <FaMapMarkedAlt size={30} />,
+    tag: "Visibility",
   },
   {
     title: "Smart Analytics",
-    desc: "Provides useful insights to help local departments resolve recurring civic issues faster.",
-    icon: <FaChartLine size={32} />,
+    desc: "Useful insights help departments identify recurring civic issues and improve turnaround time.",
+    icon: <FaChartLine size={30} />,
+    tag: "Decision support",
   },
   {
     title: "Easy Citizen Reporting",
-    desc: "Simple, mobile-friendly forms to report issues with photos and precise locations.",
-    icon: <FaUsers size={32} />,
+    desc: "A simple mobile-first flow for reporting civic problems with photos and precise locations.",
+    icon: <FaUsers size={30} />,
+    tag: "Citizen first",
   },
   {
     title: "Department Dashboard",
-    desc: "A centralized dashboard for all municipal corporations in Jharkhand to manage tasks.",
-    icon: <FaCity size={32} />,
+    desc: "One operational view for urban local bodies to receive, assign and monitor field work.",
+    icon: <FaCity size={30} />,
+    tag: "Operations",
   },
   {
     title: "Transparent Updates",
-    desc: "Clear status updates for citizens from the moment an issue is assigned to urban local bodies.",
-    icon: <FaShieldAlt size={32} />,
+    desc: "Citizens can follow the journey from submitted complaint to assignment, action and closure.",
+    icon: <FaShieldAlt size={30} />,
+    tag: "Trust",
   },
   {
     title: "Eco Initiatives",
-    desc: "Track local waste management efficiency and green city goals for a cleaner state.",
-    icon: <FaLeaf size={32} />,
+    desc: "Track sanitation, green spaces, lighting and other public infrastructure improvements.",
+    icon: <FaLeaf size={30} />,
+    tag: "Sustainability",
   },
 ];
 
 const departments = [
-  { name: "Road Maintenance", icon: <FaRoad size={42} />, desc: "Potholes, broken footpaths, and street repairs." },
-  { name: "Water Supply", icon: <FaWater size={42} />, desc: "Leakages, low water pressure, and urban supply issues." },
-  { name: "Garbage & Cleaning", icon: <FaExclamationTriangle size={42} />, desc: "Waste collection, public bins, and market sweeping." },
-  { name: "Street Lighting", icon: <FaLightbulb size={42} />, desc: "Broken streetlights and dark spot management." },
-  { name: "Public Parks", icon: <FaLeaf size={42} />, desc: "Maintenance of green spaces and community parks." },
-  { name: "Public Safety", icon: <FaShieldAlt size={42} />, desc: "Reporting hazards, structural safety, and public obstructions." },
+  {
+    name: "Road Maintenance",
+    icon: <FaRoad size={36} />,
+    desc: "Potholes, damaged roads, broken footpaths and repair requests.",
+    image: images.heroRoad,
+  },
+  {
+    name: "Water Supply",
+    icon: <FaWater size={36} />,
+    desc: "Leakages, low pressure, supply interruptions and public water issues.",
+    image: images.cityPark,
+  },
+  {
+    name: "Garbage & Cleaning",
+    icon: <FaExclamationTriangle size={36} />,
+    desc: "Waste collection, overflowing bins, public cleaning and sanitation.",
+    image: images.sanitation,
+  },
+  {
+    name: "Street Lighting",
+    icon: <FaLightbulb size={36} />,
+    desc: "Broken lights, dark stretches and public lighting maintenance.",
+    image: images.ranchiNight,
+  },
+  {
+    name: "Public Parks",
+    icon: <FaLeaf size={36} />,
+    desc: "Maintenance of green spaces, parks, walking paths and public areas.",
+    image: images.urbanPark,
+  },
+  {
+    name: "Public Safety",
+    icon: <FaShieldAlt size={36} />,
+    desc: "Hazards, structural concerns, obstructions and civic safety reports.",
+    image: images.jamshedpur,
+  },
 ];
 
 const testimonials = [
   {
     name: "Rahul Sharma",
     role: "Resident, Ranchi",
-    feedback: "The portal is straightforward to use. The broken streetlight on our lane in Kanke Road was fixed within two days of filing the report.",
+    feedback:
+      "The portal is straightforward to use. Clear location details make it easier to understand where a civic issue actually needs attention.",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
     name: "Priya Verma",
-    role: "Municipal Official, Jamshedpur",
-    feedback: "Nagar Sahayata helps our ground team track complaints systematically, improving our turnaround time significantly.",
+    role: "Municipal Operations",
+    feedback:
+      "A single workflow for complaints, assignment and field updates makes day-to-day municipal coordination much easier to follow.",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
     name: "Amit Kumar",
-    role: "Field Supervisor, Dhanbad",
-    feedback: "Getting clear location links and images directly on our app makes finding and fixing municipal problems very easy.",
+    role: "Field Supervisor",
+    feedback:
+      "Getting the location and supporting image together reduces unnecessary back-and-forth when a field team receives a new issue.",
     avatar: "https://randomuser.me/api/portraits/men/45.jpg",
   },
 ];
@@ -92,131 +185,268 @@ const testimonials = [
 const faqData = [
   {
     q: "How does the portal forward complaints to the right department?",
-    a: "When you submit a complaint with a category and photo, our system automatically tags your location and forwards it to the nearest urban local body (ULB) or municipal corporation in Jharkhand responsible for that area.",
+    a: "A submitted complaint can include a category, description, image and location. The platform uses that information to route the issue toward the relevant urban local body or municipal workflow.",
   },
   {
     q: "Can I check the progress of my reported issue?",
-    a: "Yes. You will receive progress notifications whenever the municipal department reviews your issue, assigns a field team, and marks it fixed.",
+    a: "Yes. The workflow is designed around visible status changes so citizens can follow an issue from submission through assignment, field action and resolution.",
   },
   {
     q: "Is this platform available for all cities in Jharkhand?",
-    a: "We are expanding city by city across the state. You can view our live tracking map to see if your local municipal corporation or Nagar Parishad is currently active on the platform.",
+    a: "The landing experience is designed for a state-wide civic platform. Actual city availability depends on which urban local bodies are connected to the deployed system.",
+  },
+  {
+    q: "What should I include when reporting an issue?",
+    a: "Add a clear description, the most relevant category, a useful photo when possible, and an accurate location. Better input generally means faster triage for the receiving team.",
   },
 ];
 
-const StatCard = ({ end, suffix, label, delay }) => (
+const gallery = [
+  {
+    image: images.heroRoad,
+    eyebrow: "RANCHI",
+    title: "Roads that work for everyday movement",
+    text: "Designed around the real rhythm of Indian streets — commuters, shops, two-wheelers, pedestrians and public infrastructure.",
+  },
+  {
+    image: images.jamshedpur,
+    eyebrow: "JAMSHEDPUR",
+    title: "A city is more than a map",
+    text: "Every junction, market road and public space creates a different operational context for civic teams.",
+  },
+  {
+    image: images.sanitation,
+    eyebrow: "SANITATION",
+    title: "The people behind cleaner streets",
+    text: "Digital reporting should strengthen field work, not replace the people doing it.",
+  },
+  {
+    image: images.roadRepair,
+    eyebrow: "FIELD WORK",
+    title: "From complaint to visible action",
+    text: "Attach the right context to a problem so field teams can spend less time searching and more time fixing.",
+  },
+  {
+    image: images.ranchiNight,
+    eyebrow: "PUBLIC SAFETY",
+    title: "Safer streets after sunset",
+    text: "Street lighting and road conditions are everyday quality-of-life issues that deserve clear accountability.",
+  },
+];
+
+const jharkhandHubs = {
+  ranchi: {
+    title: "Ranchi Zone",
+    tickets: "242 Active Issues",
+    resolution: "94.2% Solved",
+    speed: "4.2 hrs avg",
+  },
+  jamshedpur: {
+    title: "Jamshedpur Region",
+    tickets: "312 Active Issues",
+    resolution: "95.8% Solved",
+    speed: "3.8 hrs avg",
+  },
+  dhanbad: {
+    title: "Dhanbad Hub",
+    tickets: "189 Active Issues",
+    resolution: "91.5% Solved",
+    speed: "5.5 hrs avg",
+  },
+  bokaro: {
+    title: "Bokaro Steel City",
+    tickets: "125 Active Issues",
+    resolution: "93.0% Solved",
+    speed: "4.1 hrs avg",
+  },
+};
+
+const StatCard = ({ end, suffix, label, delay, icon }) => (
   <motion.div
-    initial={{ opacity: 0, y: 40 }}
+    initial={{ opacity: 0, y: 35 }}
     whileInView={{ opacity: 1, y: 0 }}
-    transition={{ delay }}
-    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 text-center shadow-2xl hover:shadow-emerald-900/20 hover:border-emerald-500/40 transition-all cursor-pointer group text-white"
+    viewport={{ once: true, amount: 0.25 }}
+    transition={{ delay, duration: 0.55 }}
+    className="group relative overflow-hidden rounded-[1.75rem] border border-white/[0.10] bg-white/[0.045] p-6 shadow-2xl backdrop-blur-xl"
   >
-    <h3 className="text-5xl font-bold text-emerald-400 mb-2 group-hover:text-emerald-300 transition-colors">
+    <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-emerald-400/10 blur-3xl transition-all duration-500 group-hover:bg-emerald-400/20" />
+    <div className="relative z-10 mb-5 flex items-center justify-between">
+      <span className="rounded-xl border border-emerald-400/15 bg-emerald-400/10 p-2.5 text-emerald-300">
+        {icon}
+      </span>
+      <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/30">
+        live index
+      </span>
+    </div>
+    <h3 className="relative z-10 text-4xl font-black tracking-tight text-white sm:text-5xl">
       <CountUp end={end} suffix={suffix} enableScrollSpy />
     </h3>
-    <p className="text-emerald-200/60 text-sm tracking-wider font-medium uppercase">{label}</p>
+    <p className="relative z-10 mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200/50">
+      {label}
+    </p>
   </motion.div>
+);
+
+const ImageCard = ({ item, index }) => (
+  <motion.article
+    initial={{ opacity: 0, y: 35 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.15 }}
+    transition={{ delay: index * 0.08, duration: 0.6 }}
+    whileHover={{ y: -8 }}
+    className="group relative min-w-[285px] overflow-hidden rounded-[1.8rem] border border-white/[0.10] bg-white/[0.045] shadow-2xl sm:min-w-[340px]"
+  >
+    <div className="relative h-[390px] overflow-hidden">
+      <img
+        src={item.image}
+        alt={item.title}
+        loading="lazy"
+        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#03140e] via-[#03140e]/25 to-transparent" />
+      <div className="absolute left-5 top-5 rounded-full border border-white/[0.20] bg-black/20 px-3 py-1.5 text-[9px] font-black tracking-[0.2em] text-white backdrop-blur-md">
+        {item.eyebrow}
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <h3 className="max-w-xs text-2xl font-black leading-tight text-white">
+          {item.title}
+        </h3>
+        <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65">
+          {item.text}
+        </p>
+      </div>
+    </div>
+  </motion.article>
 );
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeGallery, setActiveGallery] = useState(0);
 
-  const jharkhandHubs = {
-    "ranchi": { title: "Ranchi Zone", tickets: "242 Active Issues", resolution: "94.2% Solved", speed: "4.2 hrs avg" },
-    "jamshedpur": { title: "Jamshedpur Region", tickets: "312 Active Issues", resolution: "95.8% Solved", speed: "3.8 hrs avg" },
-    "dhanbad": { title: "Dhanbad Hub", tickets: "189 Active Issues", resolution: "91.5% Solved", speed: "5.5 hrs avg" },
-    "bokaro": { title: "Bokaro Steel City", tickets: "125 Active Issues", resolution: "93.0% Solved", speed: "4.1 hrs avg" },
+  const galleryLoop = useMemo(() => [...gallery, ...gallery], []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveGallery((current) => (current + 1) % gallery.length);
+    }, 5200);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div className="bg-[#062419] text-white overflow-x-hidden font-sans selection:bg-emerald-500 selection:text-white">
-      
+    <div className="min-h-screen overflow-x-hidden bg-[#061b13] font-sans text-white selection:bg-emerald-400 selection:text-[#032016]">
+      {/* Ambient background */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute left-[-18%] top-[5%] h-[520px] w-[520px] rounded-full bg-emerald-500/10 blur-[120px]" />
+        <div className="absolute right-[-15%] top-[35%] h-[600px] w-[600px] rounded-full bg-teal-500/10 blur-[140px]" />
+        <div className="absolute bottom-[-10%] left-[30%] h-[500px] w-[500px] rounded-full bg-green-500/10 blur-[130px]" />
+      </div>
+
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 pt-4">
-        <div className="max-w-7xl mx-auto bg-gradient-to-r from-emerald-900/90 via-green-800/90 to-teal-900/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl transition-all duration-300">
-          <div className="px-6 py-4 flex items-center justify-between">
-            
-            {/* Logo */}
-            <div className="flex items-center gap-3 cursor-pointer group">
-              <motion.div 
-                whileHover={{ rotate: 8, scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-md p-2 rounded-xl border border-white/20 shadow-inner"
+      <nav className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6">
+        <div className="mx-auto max-w-7xl rounded-2xl border border-white/[0.10] bg-[#06261a]/85 shadow-2xl backdrop-blur-2xl">
+          <div className="flex items-center justify-between px-5 py-3.5 sm:px-6">
+            <Link to="/" className="group flex items-center gap-3">
+              <motion.div
+                whileHover={{ rotate: 6, scale: 1.04 }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.15] bg-white/10 p-1.5 shadow-inner"
               >
                 <img
                   src="/government-of-jharkhand.png"
                   alt="Government of Jharkhand"
-                  className="w-9 h-9 object-contain"
+                  className="h-full w-full object-contain"
                 />
               </motion.div>
               <div>
-                <div className="font-extrabold text-2xl tracking-tight text-white group-hover:text-emerald-200 transition-colors">
+                <div className="text-xl font-black tracking-tight text-white transition-colors group-hover:text-emerald-300 sm:text-2xl">
                   Nagar Sahayata
                 </div>
-                <div className="text-[10px] text-emerald-300 font-light tracking-widest uppercase">
-                  Government of Jharkhand
+                <div className="text-[9px] font-semibold uppercase tracking-[0.22em] text-emerald-300/70">
+                  Civic grievance platform
                 </div>
               </div>
+            </Link>
+
+            <div className="hidden items-center gap-7 text-sm font-semibold md:flex">
+              {["Features", "How it Works", "Departments", "Live Map", "FAQ"].map(
+                (item) => (
+                  <a
+                    key={item}
+                    href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                    className="group relative py-2 text-white/60 transition hover:text-white"
+                  >
+                    {item}
+                    <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-emerald-400 transition-all duration-300 group-hover:w-full" />
+                  </a>
+                )
+              )}
             </div>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide">
-              {["Features", "How it Works", "Departments", "Live Map", "FAQ"].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="text-emerald-100/80 hover:text-white transition-colors cursor-pointer relative group py-1"
-                >
-                  {item}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300" />
-                </a>
-              ))}
-            </div>
-
-            {/* Buttons */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link to="/login" className="px-5 py-2.5 rounded-xl text-sm font-medium text-emerald-100 hover:bg-white/10 transition-all border border-transparent hover:border-white/10 cursor-pointer">
+            <div className="hidden items-center gap-2 md:flex">
+              <Link
+                to="/login"
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white/70 transition hover:bg-white/5 hover:text-white"
+              >
                 Sign In
               </Link>
-              <Link to="/signup" className="cursor-pointer">
+              <Link to="/signup">
                 <motion.button
-                  whileHover={{ scale: 1.03, boxShadow: "0 10px 20px -10px rgba(16,185,129,0.4)" }}
+                  whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-bold text-sm tracking-wide shadow-lg cursor-pointer border border-emerald-400/20"
+                  className="rounded-xl border border-emerald-300/20 bg-emerald-500 px-5 py-2.5 text-sm font-extrabold text-[#032016] shadow-lg shadow-emerald-900/30"
                 >
-                  Register 
+                  Register
                 </motion.button>
               </Link>
             </div>
 
-            {/* Mobile Button */}
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-emerald-400 cursor-pointer">
-              {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+            <button
+              onClick={() => setIsMenuOpen((v) => !v)}
+              className="rounded-xl border border-white/[0.10] bg-white/5 p-2 text-emerald-300 md:hidden"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="md:hidden mt-2 bg-emerald-950/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 shadow-2xl"
+              exit={{ opacity: 0, y: -12 }}
+              className="mx-auto mt-2 max-w-7xl rounded-2xl border border-white/[0.10] bg-[#06261a]/95 p-5 shadow-2xl backdrop-blur-2xl md:hidden"
             >
-              <div className="flex flex-col gap-4 font-medium text-emerald-100">
-                <a href="#features" onClick={() => setIsMenuOpen(false)} className="text-lg py-2 cursor-pointer hover:text-white">Features</a>
-                <a href="#how-it-works" onClick={() => setIsMenuOpen(false)} className="text-lg py-2 cursor-pointer hover:text-white">How it Works</a>
-                <a href="#departments" onClick={() => setIsMenuOpen(false)} className="text-lg py-2 cursor-pointer hover:text-white">Departments</a>
-                <a href="#live-map" onClick={() => setIsMenuOpen(false)} className="text-lg py-2 cursor-pointer hover:text-white">Live Map</a>
-                <a href="#faq" onClick={() => setIsMenuOpen(false)} className="text-lg py-2 cursor-pointer hover:text-white">FAQ</a>
-
-                <div className="h-px bg-white/10 my-2" />
-                <Link to="/login" className="w-full text-center py-3 rounded-xl bg-white/5 font-semibold cursor-pointer text-white">Sign In</Link>
-                <Link to="/signup" className="w-full cursor-pointer">
-                  <button className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold cursor-pointer">
-                    Register as City
-                  </button>
+              <div className="flex flex-col gap-1">
+                {["Features", "How it Works", "Departments", "Live Map", "FAQ"].map(
+                  (item) => (
+                    <a
+                      key={item}
+                      href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="rounded-xl px-3 py-3 text-base font-semibold text-white/70 hover:bg-white/5 hover:text-white"
+                    >
+                      {item}
+                    </a>
+                  )
+                )}
+                <div className="my-2 h-px bg-white/10" />
+                <Link
+                  to="/login"
+                  className="rounded-xl bg-white/5 px-3 py-3 text-center font-bold"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/signup"
+                  className="rounded-xl bg-emerald-500 px-3 py-3 text-center font-black text-[#032016]"
+                >
+                  Register as City
                 </Link>
               </div>
             </motion.div>
@@ -224,208 +454,295 @@ const LandingPage = () => {
         </AnimatePresence>
       </nav>
 
-      {/* HERO SECTION */}
-      <section className="min-h-screen pt-32 pb-16 relative flex items-center overflow-hidden bg-gradient-to-b from-emerald-950/40 via-transparent to-transparent">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,#10b981_0%,transparent_50%)] opacity-15 pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center relative z-10 w-full">
+      {/* HERO */}
+      <section className="relative z-10 flex min-h-screen items-center overflow-hidden px-6 pb-20 pt-32">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(16,185,129,0.18),transparent_36%)]" />
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="relative z-10"
+          >
           
-          {/* LEFT CONTENT */}
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold text-xs tracking-wider uppercase">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-              Jharkhand Civic Grievance System
-            </div>
 
-            <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight text-white">
-              Better Amenities.<br />
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-green-400 bg-clip-text text-transparent">
-                Faster Resolutions.
+            <h1 className="max-w-3xl text-5xl font-black leading-[0.98] tracking-[-0.04em] text-white sm:text-6xl lg:text-[5.4rem]">
+              Better streets.
+              <br />
+              <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-lime-300 bg-clip-text text-transparent">
+                Better response.
               </span>
             </h1>
 
-            <p className="text-lg text-emerald-100/70 max-w-lg leading-relaxed">
-              A reliable and simple digital portal for citizens across Jharkhand to report municipal issues directly to local authorities.
+            <p className="mt-7 max-w-xl text-base leading-8 text-white/60 sm:text-lg">
+              A citizen-first digital layer for reporting roads, water, sanitation,
+              lighting and public-space issues — with the operational context local
+              teams actually need.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <Link to="/signup" className="cursor-pointer">
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link to="/signup">
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  className="px-8 py-4 bg-white text-emerald-950 hover:bg-emerald-50 rounded-2xl font-bold text-lg flex items-center gap-2 shadow-xl cursor-pointer"
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  className="flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-[#052118] shadow-2xl shadow-black/20"
                 >
-                  File a Complaint <ArrowUpRight size={20} />
+                  File a Complaint
+                  <ArrowUpRight size={18} />
                 </motion.button>
               </Link>
-              <a href="#live-map" className="px-8 py-4 border border-white/20 hover:border-emerald-500/60 rounded-2xl font-semibold text-lg transition-all bg-white/5 backdrop-blur-md shadow-sm text-white cursor-pointer">
-                View Active Issues
+              <a
+                href="#live-map"
+                className="flex items-center gap-2 rounded-2xl border border-white/[0.15] bg-white/5 px-6 py-4 font-bold text-white/80 backdrop-blur-md transition hover:border-emerald-400/40 hover:bg-white/10 hover:text-white"
+              >
+                <Navigation size={18} />
+                Explore live map
               </a>
             </div>
 
-            <div className="flex items-center gap-6 text-xs text-emerald-300/60 font-semibold uppercase tracking-wider pt-4">
-              <div className="flex items-center gap-2"><Award size={16} className="text-emerald-400" /> State Verified Portal</div>
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-800" />
-              <div className="flex items-center gap-2"><Zap size={16} className="text-teal-400" /> Real-time Updates</div>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
+              <span className="flex items-center gap-2">
+                <Award size={15} className="text-emerald-400" />
+                State-focused
+              </span>
+              <span className="flex items-center gap-2">
+                <Zap size={15} className="text-teal-400" />
+                Real-time workflow
+              </span>
+              <span className="flex items-center gap-2">
+                <ShieldAltIcon />
+                Transparent status
+              </span>
             </div>
-          </div>
-
-          {/* RIGHT CONTENT - SHADCN TABS FOR REGIONAL METRICS */}
-         <div className="relative h-[560px] flex items-center justify-center">
-  <Card className="w-full h-full bg-gradient-to-br from-white/5 to-emerald-950/30 border-white/10 rounded-[2.5rem] p-8 shadow-2xl relative flex flex-col justify-between overflow-hidden backdrop-blur-md text-white group/card">
-    {/* Animated background accent */}
-    <div className="absolute -right-10 -top-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover/card:bg-emerald-500/20 transition-all duration-700" />
-    <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none" />
-
-    {/* Top Indicator Header */}
-    <div className="relative z-10 bg-white/5 border border-white/10 rounded-2xl p-5 shadow-inner w-full backdrop-blur-xl flex justify-between items-center">
-      <div>
-        <p className="text-emerald-400 text-xs tracking-widest font-bold uppercase flex items-center gap-2">
-          <FaGlobeAsia className="animate-spin-slow text-teal-400" /> LIVE STATE ACTIVITY
-        </p>
-        <h2 className="text-5xl font-black mt-1 text-white tracking-tight drop-shadow-[0_4px_12px_rgba(16,185,129,0.2)]">885</h2>
-      </div>
-      <div className="text-right max-w-[180px]">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-400 mb-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          SYSTEM LIVE
-        </div>
-        <p className="text-[11px] font-medium text-emerald-200/50 leading-tight">
-          Active issues handled across Jharkhand ULBs
-        </p>
-      </div>
-    </div>
-
-    {/* Shadcn Tabs Architecture */}
-    <Tabs defaultValue="ranchi" className="w-full z-10 mt-4 flex flex-col flex-1 justify-end">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 bg-emerald-950/80 border border-emerald-800/40 p-1.5 rounded-xl h-auto gap-1 shadow-inner">
-        {Object.keys(jharkhandHubs).map((key) => (
-          <motion.div key={key} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full">
-            <TabsTrigger
-              value={key}
-              className="w-full text-xs font-bold py-2.5 px-2 text-emerald-200/50 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500/20 data-[state=active]:to-teal-500/20 data-[state=active]:text-emerald-300 data-[state=active]:border-emerald-500/30 border border-transparent rounded-lg transition-all duration-300 cursor-pointer"
-            >
-              {jharkhandHubs[key].title.split(" ")[0]}
-            </TabsTrigger>
           </motion.div>
-        ))}
-      </TabsList>
 
-      {Object.keys(jharkhandHubs).map((key) => {
-        // Parsing raw metric string for the custom progress bar metrics visualizer
-        const numericResolution = parseFloat(jharkhandHubs[key].resolution) || 90;
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, x: 30 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.9, delay: 0.1 }}
+            className="relative h-[590px]"
+          >
+            <div className="absolute inset-0 rounded-[3rem] bg-emerald-500/10 blur-3xl" />
 
-        return (
-          <TabsContent key={key} value={key} className="mt-5 focus-visible:outline-none focus-visible:ring-0">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="bg-gradient-to-b from-emerald-950/90 to-emerald-950/60 border-emerald-900/60 rounded-2xl p-5 font-sans text-emerald-200 shadow-xl relative overflow-hidden backdrop-blur-xl">
-                
-                {/* Header elements inside card */}
-                <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-sm font-bold text-white flex items-center gap-2 tracking-wide">
-                    <span className="text-emerald-400">📍</span> {jharkhandHubs[key].title}
-                  </CardTitle>
-                  <Badge className="bg-gradient-to-r from-teal-500/20 to-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono tracking-tight font-bold text-xs px-2.5 py-0.5">
-                    {jharkhandHubs[key].resolution}
-                  </Badge>
-                </CardHeader>
-
-                {/* Main analytical elements inside card */}
-                <CardContent className="p-0 space-y-4">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-400/60 mb-0.5">Current Workload</p>
-                      <span className="text-white text-lg font-extrabold tracking-tight font-mono">{jharkhandHubs[key].tickets}</span>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-emerald-400/60 mb-0.5">Turnaround</p>
-                      <span className="text-teal-400 text-sm font-bold font-mono bg-teal-500/5 px-2 py-1 rounded-md border border-teal-500/10">{jharkhandHubs[key].speed}</span>
-                    </div>
-                  </div>
-
-                  {/* Micro Visual Analytics Bar */}
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex justify-between text-[10px] text-emerald-100/40 font-bold uppercase tracking-wider">
-                      <span>Resolution Velocity</span>
-                      <span className="text-emerald-400 font-mono">{numericResolution}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-emerald-950 rounded-full border border-white/5 overflow-hidden p-[1px]">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${numericResolution}%` }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-
-              </Card>
-            </motion.div>
-          </TabsContent>
-        );
-      })}
-    </Tabs>
-  </Card>
-</div>
-
-        </div>
-      </section>
-
-      {/* RECENT MUNICIPAL UPDATES TICKER */}
-      <section className="bg-emerald-950 border-y border-emerald-900/60 py-4 overflow-hidden">
-        <div className="flex whitespace-nowrap items-center gap-10 animate-[marquee_25s_linear_infinite]">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="flex gap-12 text-sm font-semibold tracking-wider text-emerald-200/70 uppercase">
-              <span className="flex items-center gap-2 text-emerald-400"><FaBell /> Ranchi Ward 5: Garbage cleaning completed</span>
-              <span>•</span>
-              <span className="flex items-center gap-2 text-teal-400"><FaCheckCircle /> Jamshedpur East: 42 streetlights repaired this week</span>
-              <span>•</span>
-              <span className="flex items-center gap-2 text-yellow-400"><FaExclamationTriangle /> Dhanbad Hub: Water pipeline leak maintenance completed</span>
-              <span>•</span>
-              <span className="flex items-center gap-2 text-green-400"><FaLeaf /> Bokaro Sector 4: Public park green space updated</span>
-              <span>•</span>
+            <div className="absolute left-0 top-6 h-[390px] w-[72%] overflow-hidden rounded-[2.5rem] border border-white/[0.15] shadow-2xl shadow-black/40">
+              <img
+                src={images.heroRoad}
+                alt="Ranchi urban road"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#03140e] via-transparent to-black/10" />
+              <div className="absolute bottom-6 left-6">
+                <div className="mb-2 text-[9px] font-black uppercase tracking-[0.22em] text-emerald-300">
+                  Ranchi · Urban movement
+                </div>
+                <div className="text-2xl font-black">Everyday infrastructure, visible.</div>
+              </div>
             </div>
-          ))}
+
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute bottom-0 right-0 h-[280px] w-[52%] overflow-hidden rounded-[2.2rem] border border-white/[0.15] bg-[#09291d] p-2 shadow-2xl"
+            >
+              <img
+                src={images.ranchiNight}
+                alt="Ranchi city junction at night"
+                className="h-full w-full rounded-[1.8rem] object-cover"
+              />
+              <div className="absolute inset-2 rounded-[1.8rem] bg-gradient-to-t from-[#03140e]/90 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="text-[9px] font-black uppercase tracking-[0.22em] text-amber-300">
+                  After dark
+                </div>
+                <div className="mt-1 text-lg font-black">Lighting. Safety. Accountability.</div>
+              </div>
+            </motion.div>
+
+            <div className="absolute right-[5%] top-[2%] rounded-2xl border border-white/[0.15] bg-[#06261a]/85 p-4 shadow-xl backdrop-blur-xl">
+              <div className="flex items-center gap-3">
+              
+                <div>
+                  <div className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-300">
+                    live
+                  </div>
+                  <div className="text-xs font-bold text-white/60">24/7 workflow</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute bottom-[16%] left-[7%] rounded-2xl border border-white/[0.10] bg-black/30 p-4 shadow-xl backdrop-blur-xl">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300">
+                  <Check size={18} />
+                </div>
+                <div>
+                  <div className="text-lg font-black">94.2%</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">
+                    sample resolution index
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
+
+   
 
       {/* STATS */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          <StatCard end={12000} suffix="+" label="Registered Citizens" delay={0.1} />
-          <StatCard end={4500} suffix="+" label="Resolved Complaints" delay={0.2} />
-          <StatCard end={94} suffix="%" label="User Satisfaction" delay={0.3} />
-          <StatCard end={18} suffix="" label="Active Urban Bodies" delay={0.4} />
+      <section className="relative z-10 px-6 py-20">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 md:grid-cols-4">
+          <StatCard
+            end={12000}
+            suffix="+"
+            label="Registered Citizens"
+            delay={0.05}
+            icon={<FaUsers />}
+          />
+          <StatCard
+            end={4500}
+            suffix="+"
+            label="Resolved Complaints"
+            delay={0.1}
+            icon={<FaCheckCircle />}
+          />
+          <StatCard
+            end={94}
+            suffix="%"
+            label="User Satisfaction"
+            delay={0.15}
+            icon={<FaChartLine />}
+          />
+          <StatCard
+            end={18}
+            suffix=""
+            label="Active Urban Bodies"
+            delay={0.2}
+            icon={<FaCity />}
+          />
         </div>
       </section>
 
-      {/* CORE FEATURES */}
-      <section id="features" className="py-28 px-6 relative bg-emerald-950/20 border-y border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <div className="uppercase tracking-[3px] text-emerald-400 text-xs font-bold">Portal Features</div>
-            <h2 className="text-4xl md:text-5xl font-black mt-3 tracking-tight text-white">Designed for Clear Communication</h2>
+      {/* INDIAN CITY STORY */}
+      <section className="relative z-10 border-y border-white/[0.05] bg-[#071f16] px-6 py-24">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <div className="mb-4 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+              Designed around real streets
+            </div>
+            <h2 className="max-w-xl text-4xl font-black leading-tight tracking-tight sm:text-5xl">
+              Indian cities are layered.
+              <span className="text-emerald-300"> So is the workflow.</span>
+            </h2>
+            <p className="mt-6 max-w-xl text-base leading-8 text-white/55">
+              A civic platform should feel familiar to the people using it. The
+              visual language here uses roads, markets, junctions, field crews and
+              public spaces rather than abstract corporate stock imagery.
+            </p>
+
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              {[
+                ["01", "Citizen report"],
+                ["02", "Location context"],
+                ["03", "Department triage"],
+                ["04", "Field resolution"],
+              ].map(([num, label]) => (
+                <div
+                  key={num}
+                  className="rounded-2xl border border-white/[0.10] bg-white/[0.035] p-4"
+                >
+                  <div className="text-[9px] font-black tracking-[0.2em] text-emerald-400">
+                    {num}
+                  </div>
+                  <div className="mt-2 text-sm font-bold text-white/75">{label}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-3 pt-10">
+              <div className="h-[300px] overflow-hidden rounded-[2rem] border border-white/[0.10]">
+                <img
+                  src={images.jamshedpur}
+                  alt="Jamshedpur urban road"
+                  loading="lazy"
+                  className="h-full w-full object-cover transition duration-700 hover:scale-105"
+                />
+              </div>
+              <div className="rounded-[1.5rem] border border-emerald-400/15 bg-emerald-400/10 p-5">
+                <div className="text-2xl font-black text-emerald-300">01</div>
+                <div className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-white/45">
+                  City context
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="rounded-[1.5rem] border border-white/[0.10] bg-white/[0.04] p-5">
+                <Camera size={22} className="text-emerald-300" />
+                <div className="mt-3 text-sm font-black">Photo + location</div>
+                <div className="mt-1 text-xs leading-5 text-white/40">
+                  Give field teams the context they need.
+                </div>
+              </div>
+              <div className="h-[390px] overflow-hidden rounded-[2rem] border border-white/[0.10]">
+                <img
+                  src={images.sanitation}
+                  alt="Indian municipal sanitation workers"
+                  loading="lazy"
+                  className="h-full w-full object-cover transition duration-700 hover:scale-105"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section id="features" className="relative z-10 px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 max-w-3xl">
+            <div className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+              Portal capabilities
+            </div>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+              A cleaner interface for a messy real-world problem.
+            </h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/50">
+              Every component has a job: report, route, understand, assign, update
+              and close. The design stays visual without becoming decorative noise.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, i) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                whileHover={{ y: -8, borderColor: "rgba(16,185,129,0.3)", backgroundColor: "rgba(255,255,255,0.05)" }}
-                className="bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl transition-all cursor-pointer group backdrop-blur-md"
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ delay: i * 0.06 }}
+                whileHover={{ y: -7 }}
+                className="group relative overflow-hidden rounded-[1.8rem] border border-white/[0.10] bg-white/[0.04] p-7 shadow-xl backdrop-blur-md"
               >
-                <div className="text-emerald-400 mb-6 group-hover:scale-110 transition-transform inline-block">
-                  {feature.icon}
+                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-emerald-400/10 blur-3xl opacity-0 transition duration-500 group-hover:opacity-100" />
+                <div className="relative z-10 flex items-start justify-between">
+                  <div className="rounded-2xl border border-emerald-400/15 bg-emerald-400/10 p-3.5 text-emerald-300">
+                    {feature.icon}
+                  </div>
+                  <span className="rounded-full border border-white/[0.10] px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.18em] text-white/30">
+                    {feature.tag}
+                  </span>
                 </div>
-                <h3 className="text-2xl font-bold mb-3 tracking-tight text-white group-hover:text-emerald-400 transition-colors">{feature.title}</h3>
-                <p className="text-emerald-100/70 leading-relaxed text-sm font-medium">{feature.desc}</p>
+                <h3 className="relative z-10 mt-7 text-xl font-black text-white">
+                  {feature.title}
+                </h3>
+                <p className="relative z-10 mt-3 text-sm leading-6 text-white/50">
+                  {feature.desc}
+                </p>
+                <div className="relative z-10 mt-6 flex items-center gap-2 text-xs font-bold text-emerald-300 opacity-70 transition group-hover:opacity-100">
+                  Explore capability <FaArrowRight size={10} />
+                </div>
               </motion.div>
             ))}
           </div>
@@ -433,90 +750,358 @@ const LandingPage = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how-it-works" className="py-28 bg-transparent px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">How It Works</h2>
+      <section
+        id="how-it-works"
+        className="relative z-10 overflow-hidden border-y border-white/[0.05] bg-[#03140e] px-6 py-28"
+      >
+        <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[0.85fr_1.15fr]">
+          <div>
+            <div className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+              The journey
+            </div>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+              From a street-side observation to a tracked civic task.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-white/50">
+              Keep the citizen experience simple while giving operational teams
+              structured information they can actually act on.
+            </p>
+
+            <div className="mt-8 space-y-3">
+              {[
+                ["01", "Report issue", "Describe the problem and attach useful evidence."],
+                ["02", "Auto sorting", "Classify the request using category and location."],
+                ["03", "Team assignment", "Move the task to the appropriate operational team."],
+                ["04", "Resolution", "Update the citizen as work moves toward closure."],
+              ].map(([number, title, desc]) => (
+                <motion.div
+                  key={number}
+                  whileHover={{ x: 5 }}
+                  className="flex gap-4 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-xs font-black text-emerald-300">
+                    {number}
+                  </div>
+                  <div>
+                    <div className="font-black text-white">{title}</div>
+                    <div className="mt-1 text-xs leading-5 text-white/40">{desc}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {["Report Issue", "Auto Sorting", "Team Assignment", "Issue Resolved"].map((step, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl relative cursor-pointer hover:border-emerald-500/30 transition-all backdrop-blur-md">
-                <div className="text-emerald-400/10 font-mono text-7xl font-black absolute top-2 right-4 select-none">{index + 1}</div>
-                <h3 className="text-xl font-bold mb-2 pt-8 relative z-10 text-white">{step}</h3>
-                <p className="text-emerald-100/60 text-sm font-medium relative z-10">Submit photos and info to let your city's local team fix the issue quickly.</p>
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/[0.10]">
+            <img
+              src={images.roadRepair}
+              alt="Municipal road repair work in India"
+              loading="lazy"
+              className="h-[580px] w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#03140e] via-transparent to-black/10" />
+            <div className="absolute bottom-0 left-0 right-0 p-7">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.15] bg-black/20 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.18em] text-white backdrop-blur-md">
+                <Clock3 size={12} />
+                Field operations
               </div>
-            ))}
+              <div className="mt-3 max-w-md text-2xl font-black">
+                Good civic software ends where real-world work begins.
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* DEPARTMENTS */}
-      <section id="departments" className="py-28 px-6 bg-emerald-950/20 border-t border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Departments We Serve</h2>
+      <section id="departments" className="relative z-10 px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+                Service categories
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+                Built around the issues citizens actually notice.
+              </h2>
+            </div>
+            <div className="max-w-sm text-sm leading-6 text-white/40">
+              Roads, water, waste, lighting, parks and safety — organized into a
+              workflow that departments can understand quickly.
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {departments.map((dept, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.05)" }}
-                className="bg-white/5 border border-white/10 hover:border-emerald-500/40 p-8 rounded-3xl shadow-2xl transition-all cursor-pointer flex items-start gap-5 backdrop-blur-md"
+              <motion.article
+                key={dept.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ delay: i * 0.06 }}
+                whileHover={{ y: -6 }}
+                className="group relative h-[340px] overflow-hidden rounded-[2rem] border border-white/[0.10]"
               >
-                <div className="text-emerald-400 mt-1">{dept.icon}</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-1 tracking-tight text-white">{dept.name}</h3>
-                  <p className="text-emerald-100/60 text-sm font-medium">{dept.desc}</p>
+                <img
+                  src={dept.image}
+                  alt={dept.name}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#03140e] via-[#03140e]/65 to-[#03140e]/5" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="rounded-xl border border-emerald-300/15 bg-emerald-400/10 p-3 text-emerald-300 backdrop-blur-md">
+                      {dept.icon}
+                    </span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30">
+                      civic service
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-black">{dept.name}</h3>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-white/55">
+                    {dept.desc}
+                  </p>
                 </div>
-              </motion.div>
+              </motion.article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* LIVE MAP SECTION */}
-      <section id="live-map" className="py-28 px-6 bg-transparent border-t border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="uppercase text-emerald-400 text-xs font-bold tracking-widest mb-3">State Map Matrix</div>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Live Complaint Tracking Map</h2>
-            <p className="mt-4 text-emerald-100/70 text-md max-w-xl mx-auto font-medium">
-              View reported issues across regions in Jharkhand, follow current maintenance tasks, and check newly completed work.
+      {/* AUTO-SLIDING EDITORIAL GALLERY */}
+      <section className="relative z-10 overflow-hidden border-y border-white/[0.05] bg-[#071f16] py-28">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+                City in motion
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+                See the context behind every complaint.
+              </h2>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() =>
+                  setActiveGallery(
+                    (activeGallery - 1 + gallery.length) % gallery.length
+                  )
+                }
+                className="rounded-full border border-white/[0.10] bg-white/5 p-3 text-white/60 transition hover:bg-white/10 hover:text-white"
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={() =>
+                  setActiveGallery((activeGallery + 1) % gallery.length)
+                }
+                className="rounded-full border border-white/[0.10] bg-white/5 p-3 text-white/60 transition hover:bg-white/10 hover:text-white"
+                aria-label="Next image"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden">
+          <motion.div
+            animate={{ x: `${-activeGallery * 355}px` }}
+            transition={{ type: "spring", stiffness: 80, damping: 18 }}
+            className="flex gap-4 px-6"
+          >
+            {galleryLoop.map((item, index) => (
+              <ImageCard
+                key={`${item.title}-${index}`}
+                item={item}
+                index={index % gallery.length}
+              />
+            ))}
+          </motion.div>
+        </div>
+
+        <div className="mx-auto mt-8 flex max-w-7xl gap-2 px-6">
+          {gallery.map((item, index) => (
+            <button
+              key={item.title}
+              onClick={() => setActiveGallery(index)}
+              className={`h-1.5 rounded-full transition-all ${
+                activeGallery === index
+                  ? "w-10 bg-emerald-400"
+                  : "w-4 bg-white/15"
+              }`}
+              aria-label={`Show slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* LIVE MAP */}
+      <section id="live-map" className="relative z-10 px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-300">
+              <FaGlobeAsia />
+              State map matrix
+            </div>
+            <h2 className="mt-5 text-4xl font-black tracking-tight sm:text-5xl">
+              One view of the civic pulse.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/45">
+              Explore reported issues, operational activity and city-level context
+              through your existing map component.
             </p>
           </div>
 
-          <div className="rounded-[2.5rem] overflow-hidden border border-white/10 bg-emerald-950/40 shadow-2xl backdrop-blur-md">
-            <div className="h-[650px] w-full cursor-pointer">
+          <div className="overflow-hidden rounded-[2.5rem] border border-white/[0.10] bg-[#041a11] shadow-2xl">
+            <div className="h-[650px] w-full">
               <MapSection isGuest={true} />
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ SECTION WITH SHADCN ACCORDION */}
-      <section id="faq" className="py-28 px-6 border-t border-white/5 bg-emerald-950/20">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-widest mb-2">
-              <HelpCircle size={16} /> FAQ
+      {/* REGIONAL METRICS */}
+      <section className="relative z-10 border-y border-white/[0.05] bg-[#03140e] px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+                Regional operations
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight">
+                See where the workload is moving.
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-white/45">
+                Keep city-level workload, resolution rate and turnaround time visible
+                without turning the landing page into a dashboard.
+              </p>
             </div>
-            <h2 className="text-4xl font-black tracking-tight text-white">Frequently Asked Questions</h2>
+
+            <Card className="overflow-hidden rounded-[2rem] border-white/[0.10] bg-white/[0.035] text-white shadow-2xl">
+              <CardHeader className="border-b border-white/[0.05] bg-white/[0.025] p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-emerald-300">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                      Live state activity
+                    </div>
+                    <CardTitle className="mt-2 text-4xl font-black">885</CardTitle>
+                  </div>
+                  <div className="hidden text-right sm:block">
+                    <div className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30">
+                      active issues
+                    </div>
+                    <div className="mt-1 text-xs font-bold text-white/45">
+                      across connected urban bodies
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5">
+                <Tabs defaultValue="ranchi" className="w-full">
+                  <TabsList className="grid h-auto grid-cols-2 gap-1 rounded-2xl border border-white/[0.10] bg-[#03140e] p-1 sm:grid-cols-4">
+                    {Object.keys(jharkhandHubs).map((key) => (
+                      <TabsTrigger
+                        key={key}
+                        value={key}
+                        className="rounded-xl py-3 text-xs font-bold text-white/40 data-[state=active]:bg-emerald-400/10 data-[state=active]:text-emerald-300"
+                      >
+                        {jharkhandHubs[key].title.split(" ")[0]}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+
+                  {Object.keys(jharkhandHubs).map((key) => {
+                    const hub = jharkhandHubs[key];
+                    const numericResolution =
+                      parseFloat(hub.resolution) || 90;
+
+                    return (
+                      <TabsContent
+                        key={key}
+                        value={key}
+                        className="mt-4 focus-visible:outline-none"
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          <div className="rounded-2xl border border-white/[0.10] bg-[#06261a] p-5">
+                            <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+                              <div>
+                                <div className="flex items-center gap-2 text-lg font-black">
+                                  <MapPin size={17} className="text-emerald-400" />
+                                  {hub.title}
+                                </div>
+                                <div className="mt-4 flex flex-wrap gap-2">
+                                  <span className="rounded-lg border border-white/[0.08] bg-white/5 px-3 py-2 text-xs font-bold text-white/60">
+                                    {hub.tickets}
+                                  </span>
+                                  <span className="rounded-lg border border-white/[0.08] bg-white/5 px-3 py-2 text-xs font-bold text-teal-300">
+                                    {hub.speed}
+                                  </span>
+                                </div>
+                              </div>
+                              <Badge className="w-fit border border-emerald-400/15 bg-emerald-400/10 text-emerald-300">
+                                {hub.resolution}
+                              </Badge>
+                            </div>
+
+                            <div className="mt-7">
+                              <div className="mb-2 flex justify-between text-[9px] font-black uppercase tracking-[0.18em] text-white/30">
+                                <span>Resolution velocity</span>
+                                <span className="text-emerald-300">
+                                  {numericResolution}%
+                                </span>
+                              </div>
+                              <div className="h-2 overflow-hidden rounded-full bg-black/30">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${numericResolution}%` }}
+                                  transition={{ duration: 0.9 }}
+                                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-300"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </TabsContent>
+                    );
+                  })}
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="relative z-10 px-6 py-28">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-14 text-center">
+            <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
+              <HelpCircle size={15} />
+              Frequently asked
+            </div>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+              Clear answers. No bureaucratic fog.
+            </h2>
           </div>
 
-          {/* Shadcn Accordion Framework */}
-          <Accordion type="single" collapsible className="w-full space-y-4">
+          <Accordion type="single" collapsible className="space-y-3">
             {faqData.map((faq, index) => (
-              <AccordionItem 
-                value={`item-${index}`} 
-                key={index}
-                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-1 shadow-xl backdrop-blur-md border-b-0 data-[state=open]:border-emerald-500/30 transition-all duration-300"
+              <AccordionItem
+                key={faq.q}
+                value={`item-${index}`}
+                className="rounded-2xl border border-white/[0.10] bg-white/[0.035] px-5 shadow-xl"
               >
-                <AccordionTrigger className="font-bold text-lg text-white hover:text-emerald-300 hover:no-underline text-left py-4 tracking-wide group">
+                <AccordionTrigger className="py-5 text-left text-base font-black text-white hover:no-underline hover:text-emerald-300">
                   {faq.q}
                 </AccordionTrigger>
-                <AccordionContent className="text-emerald-100/70 text-sm leading-relaxed font-medium pb-5 pt-1">
+                <AccordionContent className="pb-5 text-sm leading-7 text-white/45">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>
@@ -526,122 +1111,266 @@ const LandingPage = () => {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="py-28 px-6 border-t border-white/5 bg-transparent">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-center text-4xl md:text-5xl font-black mb-20 tracking-tight text-white">What Jharkhand Citizens Say</h2>
+      <section className="relative z-10 overflow-hidden border-y border-white/[0.05] bg-[#071f16] px-6 py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-400">
+                Human feedback
+              </div>
+              <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+                Technology should feel human.
+              </h2>
+            </div>
+            <Quote className="hidden text-emerald-400/20 md:block" size={70} />
+          </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-3xl flex flex-col justify-between shadow-xl cursor-pointer hover:border-white/20 transition-all backdrop-blur-md">
-                <p className="text-emerald-100/80 font-medium text-md leading-relaxed mb-6">“{t.feedback}”</p>
-                <div className="flex items-center gap-4">
-                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-xl object-cover border border-white/10" />
+          <div className="grid gap-4 md:grid-cols-3">
+            {testimonials.map((testimonial, i) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ delay: i * 0.08 }}
+                className="rounded-[1.8rem] border border-white/[0.10] bg-white/[0.04] p-7 shadow-xl"
+              >
+                <Quote size={20} className="text-emerald-400/50" />
+                <p className="mt-6 text-sm leading-7 text-white/60">
+                  “{testimonial.feedback}”
+                </p>
+                <div className="mt-7 flex items-center gap-3 border-t border-white/[0.08] pt-5">
+                  <img
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    loading="lazy"
+                    className="h-11 w-11 rounded-xl object-cover ring-1 ring-white/10"
+                  />
                   <div>
-                    <div className="font-bold text-white text-sm tracking-wide">{t.name}</div>
-                    <div className="text-emerald-400 text-xs font-semibold">{t.role}</div>
+                    <div className="text-sm font-black">{testimonial.name}</div>
+                    <div className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-400/70">
+                      {testimonial.role}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className="py-32 px-6 relative overflow-hidden bg-gradient-to-b from-transparent to-emerald-950/30 border-t border-white/5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#10b981_0%,transparent_60%)] opacity-10 pointer-events-none" />
-        <div className="max-w-3xl mx-auto text-center relative z-10">
-          <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-white">Bring Nagar Sahayata<br />To Your Jharkhand Town</h2>
-          <p className="text-lg text-emerald-100/70 mb-10 max-w-xl mx-auto font-medium">Help your local administration handle complaints systematically with full transparency.</p>
-          <Link to="/signup" className="cursor-pointer">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              className="px-12 py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl text-xl font-extrabold shadow-2xl cursor-pointer border border-emerald-400/20"
-            >
-              Get Started — Register Now
-            </motion.button>
-          </Link>
+      {/* IMAGE CTA */}
+      <section className="relative z-10 px-6 py-28">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.8rem] border border-white/[0.10]">
+          <img
+            src={images.cityPark}
+            alt="Indian public urban space"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[#03140e]/80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#03140e] via-[#03140e]/65 to-transparent" />
+
+          <div className="relative z-10 min-h-[470px] p-8 sm:p-14 lg:p-20">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.15] bg-black/20 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white/70 backdrop-blur-md">
+                <Sparkles size={12} className="text-emerald-300" />
+                The next civic layer
+              </div>
+              <h2 className="mt-6 text-4xl font-black leading-tight tracking-tight sm:text-6xl">
+                Make the city easier to report, easier to understand and easier to improve.
+              </h2>
+              <p className="mt-5 max-w-xl text-sm leading-7 text-white/55 sm:text-base">
+                Give citizens a clear front door to municipal services and give
+                operational teams a structured path to action.
+              </p>
+              <Link to="/signup" className="mt-8 inline-flex">
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-6 py-4 font-black text-[#032016] shadow-2xl"
+                >
+                  Get Started
+                  <ArrowUpRight size={18} />
+                </motion.button>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ENHANCED STRUCTURAL FOOTER */}
-      <footer className="bg-[#03140e] border-t border-white/10 pt-20 pb-10 px-6 relative">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16 text-left">
-          
-          {/* Col 1: Brand Profile */}
-          <div className="space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-tr from-emerald-600 to-teal-500 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-emerald-950">न</div>
-              <span className="text-xl font-black tracking-tight text-white">Nagar Sahayata</span>
-            </div>
-            <p className="text-emerald-100/60 text-sm leading-relaxed font-medium">
-              Official municipal grievance engine dedicated to empowering citizens and optimizing public infrastructure workflows across the state of Jharkhand.
-            </p>
-          </div>
+      {/* FOOTER VISUAL BAND */}
+      <section className="relative z-10 overflow-hidden border-y border-white/[0.05] bg-[#03140e] py-7">
+        <motion.div
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className="flex w-max gap-4"
+        >
+          {[...Array(2)].flatMap((_, repeat) =>
+            [
+              images.heroRoad,
+              images.jamshedpur,
+              images.sanitation,
+              images.ranchiNight,
+              images.roadRepair,
+              images.urbanPark,
+            ].map((image, index) => (
+              <div
+                key={`${repeat}-${index}`}
+                className="h-24 w-44 overflow-hidden rounded-2xl border border-white/[0.10] opacity-60"
+              >
+                <img
+                  src={image}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))
+          )}
+        </motion.div>
+      </section>
 
-          {/* Col 2: Navigation Links */}
-          <div>
-            <h4 className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6">Platform Links</h4>
-            <ul className="space-y-3 text-sm font-medium">
-              {["Features", "How it Works", "Departments", "Live Map", "FAQ"].map((item) => (
-                <li key={item}>
-                  <a href={`#${item.toLowerCase().replace(/\s+/g, "-")}`} className="text-emerald-100/60 hover:text-white transition-colors">
-                    {item}
+      {/* FOOTER */}
+      <footer className="relative z-10 bg-[#020d09] px-6 pb-8 pt-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr_0.9fr_1fr]">
+            <div>
+              <Link to="/" className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/10">
+                  <img
+                    src="/government-of-jharkhand.png"
+                    alt="Government of Jharkhand"
+                    className="h-8 w-8 object-contain"
+                  />
+                </div>
+                <div>
+                  <div className="text-xl font-black">Nagar Sahayata</div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-400/60">
+                    Jharkhand civic platform
+                  </div>
+                </div>
+              </Link>
+
+              <p className="mt-6 max-w-md text-sm leading-7 text-white/35">
+                A digital civic grievance experience focused on better reporting,
+                clearer accountability and more connected field operations.
+              </p>
+
+              <div className="mt-7 flex flex-wrap gap-2">
+                {["Roads", "Water", "Sanitation", "Lighting", "Parks"].map(
+                  (item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-white/35"
+                    >
+                      {item}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
+                Platform
+              </h4>
+              <ul className="mt-5 space-y-3 text-sm font-semibold text-white/40">
+                {["Features", "How it Works", "Departments", "Live Map", "FAQ"].map(
+                  (item) => (
+                    <li key={item}>
+                      <a
+                        href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                        className="transition hover:text-white"
+                      >
+                        {item}
+                      </a>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
+                Operations
+              </h4>
+              <ul className="mt-5 space-y-3 text-sm font-semibold text-white/40">
+                <li>
+                  <Link to="/login" className="transition hover:text-white">
+                    ULB Dashboard Login
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/signup" className="transition hover:text-white">
+                    Urban Body Registration
+                  </Link>
+                </li>
+                <li>
+                  <a href="#live-map" className="transition hover:text-white">
+                    State Performance Index
                   </a>
                 </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Col 3: Key Operations */}
-          <div>
-            <h4 className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6">Government Systems</h4>
-            <ul className="space-y-3 text-sm font-medium">
-              <li>
-                <Link to="/login" className="text-emerald-100/60 hover:text-white transition-colors">ULB Dashboard Login</Link>
-              </li>
-              <li>
-                <Link to="/signup" className="text-emerald-100/60 hover:text-white transition-colors">Urban Body Registration</Link>
-              </li>
-              <li>
-                <a href="#live-map" className="text-emerald-100/60 hover:text-white transition-colors">State Performance Index</a>
-              </li>
-              <li>
-                <span className="text-emerald-100/40 cursor-not-allowed">State Circulars (Coming Soon)</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 4: Contact Matrix */}
-          <div className="space-y-4 text-sm font-medium text-emerald-100/70">
-            <h4 className="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-2">Support Portal</h4>
-            <div className="flex items-start gap-3">
-              <MapPin size={18} className="text-emerald-500 shrink-0 mt-0.5" />
-              <p className="leading-relaxed text-xs text-emerald-100/60">Urban Development & Housing Department, Project Building, Dhurwa, Ranchi, Jharkhand - 834004</p>
+                <li>
+                  <span className="text-white/20">State Circulars · Coming Soon</span>
+                </li>
+              </ul>
             </div>
-            <div className="flex items-center gap-3">
-              <Phone size={16} className="text-emerald-500 shrink-0" />
-              <p className="text-xs text-emerald-100/60">+91 (0651) 2400981</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Mail size={16} className="text-emerald-500 shrink-0" />
-              <p className="text-xs text-emerald-100/60">support.nagarsahayata@jharkhand.gov.in</p>
+
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">
+                Support
+              </h4>
+              <div className="mt-5 space-y-4 text-sm text-white/40">
+                <div className="flex items-start gap-3">
+                  <MapPin size={17} className="mt-0.5 shrink-0 text-emerald-400" />
+                  <span className="leading-6">
+                    Urban Development & Housing Department, Project Building,
+                    Dhurwa, Ranchi, Jharkhand
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone size={16} className="shrink-0 text-emerald-400" />
+                  <span>+91 (0651) 2400981</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail size={16} className="shrink-0 text-emerald-400" />
+                  <span className="break-all">
+                    support.nagarsahayata@jharkhand.gov.in
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Divider and Attributions */}
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left text-xs font-medium text-emerald-300/40">
-          <p>© 2026 Nagar Sahayata Portal, Govt. of Jharkhand. Developed for Municipal Operations.</p>
-          <div className="flex gap-6">
-            <a href="#privacy" className="hover:text-emerald-300 transition-colors">Privacy Charter</a>
-            <a href="#terms" className="hover:text-emerald-300 transition-colors">Terms of Use</a>
+          <div className="mt-16 flex flex-col justify-between gap-5 border-t border-white/[0.08] pt-7 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/25 sm:flex-row">
+            <p>© 2026 Nagar Sahayata Portal · Civic operations experience</p>
+            <div className="flex gap-5">
+              <a href="#privacy" className="transition hover:text-white/60">
+                Privacy
+              </a>
+              <a href="#terms" className="transition hover:text-white/60">
+                Terms
+              </a>
+              <button
+                onClick={scrollToTop}
+                className="transition hover:text-emerald-300"
+              >
+                Back to top ↑
+              </button>
+            </div>
           </div>
         </div>
       </footer>
-
     </div>
   );
 };
+
+/* Tiny icon wrapper keeps the hero markup readable. */
+const ShieldAltIcon = () => (
+  <span className="inline-flex text-emerald-400">
+    <FaShieldAlt size={15} />
+  </span>
+);
 
 export default LandingPage;

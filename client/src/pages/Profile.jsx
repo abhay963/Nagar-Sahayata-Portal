@@ -491,7 +491,7 @@ const EditableField = ({ label, name, value, isEditing, onChange, error, type = 
 const DisplayField = ({ label, value, className = "" }) => (
   <div>
     <p className="text-sm font-medium text-gray-500 mb-1.5">{label}</p>
-    <p className={`text-gray-800 font-semibold py-3 px-1 break-all ${className}`}>{value || "—"}</p>
+    <p className={`text-gray-700 font-semibold py-3 px-1 break-all ${className}`}>{value || "—"}</p>
   </div>
 );
 
