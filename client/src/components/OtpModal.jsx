@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  X,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 const OtpModal = ({
   isOpen,
@@ -14,6 +19,9 @@ const OtpModal = ({
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
 
+  // =========================
+  // SUBMIT OTP
+  // =========================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -25,12 +33,18 @@ const OtpModal = ({
 
     try {
       await onVerify(otp);
-      onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "OTP verification failed");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "OTP verification failed"
+      );
     }
   };
 
+  // =========================
+  // CLOSE
+  // =========================
   const handleClose = () => {
     setOtp("");
     setError("");
@@ -41,132 +55,497 @@ const OtpModal = ({
 
   return (
     <AnimatePresence>
+      {/* =========================
+          OTP OVERLAY
+      ========================= */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4"
+        className="
+          fixed
+          inset-0
+          z-[200]
+          flex
+          items-center
+          justify-center
+          bg-black/75
+          backdrop-blur-md
+          px-4
+          py-6
+          overflow-y-auto
+        "
       >
-        {/* Glow Background */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#10b98122_0%,transparent_45%)] pointer-events-none" />
+        {/* =========================
+            GLOW BACKGROUND
+        ========================= */}
+        <div
+          className="
+            absolute
+            inset-0
+            bg-[radial-gradient(circle_at_top,#10b98122_0%,transparent_45%)]
+            pointer-events-none
+          "
+        />
 
+        {/* =========================
+            OTP MODAL
+        ========================= */}
         <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.95 }}
-          transition={{ duration: 0.3 }}
-          className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-emerald-950/95 via-[#062419]/95 to-teal-950/95 shadow-[0_20px_80px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+          initial={{
+            opacity: 0,
+            y: 40,
+            scale: 0.95,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+            y: 20,
+            scale: 0.95,
+          }}
+          transition={{
+            duration: 0.3,
+          }}
+          className="
+            relative
+            z-[201]
+            w-full
+            max-w-md
+            max-h-[calc(100vh-3rem)]
+            overflow-hidden
+            rounded-[2rem]
+            border
+            border-white/10
+            bg-gradient-to-br
+            from-emerald-950/95
+            via-[#062419]/95
+            to-teal-950/95
+            shadow-[0_20px_80px_rgba(0,0,0,0.6)]
+            backdrop-blur-2xl
+            flex
+            flex-col
+          "
         >
-          {/* Decorative Blur */}
-          <div className="absolute -top-20 -right-20 h-52 w-52 rounded-full bg-emerald-500/10 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-52 w-52 rounded-full bg-teal-500/10 blur-3xl" />
+          {/* =========================
+              DECORATIVE BLUR
+          ========================= */}
+          <div
+            className="
+              absolute
+              -top-20
+              -right-20
+              h-52
+              w-52
+              rounded-full
+              bg-emerald-500/10
+              blur-3xl
+              pointer-events-none
+            "
+          />
 
-          {/* Header */}
-          <div className="relative flex items-center justify-between border-b border-white/10 px-6 py-5">
-            <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[2px] text-emerald-400">
+          <div
+            className="
+              absolute
+              -bottom-20
+              -left-20
+              h-52
+              w-52
+              rounded-full
+              bg-teal-500/10
+              blur-3xl
+              pointer-events-none
+            "
+          />
+
+          {/* =========================
+              HEADER
+          ========================= */}
+          <div
+            className="
+              relative
+              z-10
+              flex
+              items-center
+              justify-between
+              border-b
+              border-white/10
+              px-6
+              py-5
+              shrink-0
+            "
+          >
+            {/* TITLE */}
+            <div className="min-w-0">
+              <div
+                className="
+                  mb-2
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-full
+                  border
+                  border-emerald-500/20
+                  bg-emerald-500/10
+                  px-3
+                  py-1
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-[2px]
+                  text-emerald-400
+                "
+              >
                 <Sparkles size={12} />
+
                 Secure Verification
               </div>
 
-              <h2 className="text-2xl font-black tracking-tight text-white">
-                {title}
+              <h2
+                className="
+                  text-xl
+                  sm:text-2xl
+                  font-black
+                  tracking-tight
+                  text-white
+                "
+              >
+                {title || "Verify Your Email"}
               </h2>
             </div>
 
+            {/* =========================
+                CLOSE BUTTON
+            ========================= */}
             <button
+              type="button"
               onClick={handleClose}
-              className="rounded-xl border border-white/10 bg-white/5 p-2 text-emerald-200 transition-all hover:border-emerald-500/30 hover:bg-white/10 hover:text-white cursor-pointer"
+              aria-label="Close OTP modal"
+              className="
+                relative
+                z-[210]
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-white/10
+                bg-white/5
+                text-emerald-200
+                transition-all
+                hover:border-emerald-500/30
+                hover:bg-white/10
+                hover:text-white
+                cursor-pointer
+                ml-3
+              "
             >
-              <X size={22} />
+              <X
+                size={22}
+                strokeWidth={2.5}
+              />
             </button>
           </div>
 
-          {/* Body */}
-          <div className="relative px-6 py-7">
-            {/* Email Card */}
-            <div className="mb-6 flex items-center gap-4 rounded-2xl border border-emerald-500/20 bg-white/5 p-4 backdrop-blur-md">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg">
-                <Mail className="text-white" size={20} />
+          {/* =========================
+              SCROLLABLE BODY
+          ========================= */}
+          <div
+            className="
+              relative
+              z-10
+              px-6
+              py-7
+              overflow-y-auto
+              min-h-0
+            "
+          >
+            {/* =========================
+                EMAIL CARD
+            ========================= */}
+            <div
+              className="
+                mb-6
+                flex
+                items-center
+                gap-4
+                rounded-2xl
+                border
+                border-emerald-500/20
+                bg-white/5
+                p-4
+                backdrop-blur-md
+              "
+            >
+              {/* EMAIL ICON */}
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  bg-gradient-to-br
+                  from-emerald-500
+                  to-teal-500
+                  shadow-lg
+                "
+              >
+                <Mail
+                  className="text-white"
+                  size={20}
+                />
               </div>
 
-              <div className="overflow-hidden">
-                <p className="text-[11px] uppercase tracking-[2px] text-emerald-400 font-bold">
+              {/* EMAIL */}
+              <div className="overflow-hidden min-w-0">
+                <p
+                  className="
+                    text-[11px]
+                    uppercase
+                    tracking-[2px]
+                    text-emerald-400
+                    font-bold
+                  "
+                >
                   Verification Email
                 </p>
 
-                <p className="truncate text-sm text-emerald-100/80">
+                <p
+                  className="
+                    truncate
+                    text-sm
+                    text-emerald-100/80
+                  "
+                  title={email}
+                >
                   {email}
                 </p>
               </div>
             </div>
 
-            <p className="mb-6 text-sm leading-relaxed text-emerald-100/60">
-              {description}
+            {/* =========================
+                DESCRIPTION
+            ========================= */}
+            <p
+              className="
+                mb-6
+                text-sm
+                leading-relaxed
+                text-emerald-100/60
+              "
+            >
+              {description ||
+                "Please enter the OTP sent to your email address to complete registration."}
             </p>
 
-            {/* Form */}
+            {/* =========================
+                FORM
+            ========================= */}
             <form onSubmit={handleSubmit}>
+              {/* =========================
+                  OTP INPUT
+              ========================= */}
               <div className="mb-5">
-                <label className="mb-3 block text-xs font-bold uppercase tracking-[2px] text-emerald-400">
+                <label
+                  className="
+                    mb-3
+                    block
+                    text-xs
+                    font-bold
+                    uppercase
+                    tracking-[2px]
+                    text-emerald-400
+                  "
+                >
                   Enter OTP Code
                 </label>
 
                 <input
                   type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
                   value={otp}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
+                    const value =
+                      e.target.value.replace(
+                        /\D/g,
+                        ""
+                      );
+
                     if (value.length <= 6) {
                       setOtp(value);
+                      setError("");
                     }
                   }}
                   placeholder="000000"
-                  maxLength="6"
+                  maxLength={6}
                   required
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-center font-mono text-3xl tracking-[10px] text-white outline-none transition-all placeholder:text-emerald-100/20 focus:border-emerald-500/40 focus:bg-white/10 focus:ring-4 focus:ring-emerald-500/10"
+                  autoFocus
+                  className="
+                    w-full
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-white/5
+                    px-5
+                    py-4
+                    text-center
+                    font-mono
+                    text-3xl
+                    tracking-[10px]
+                    text-white
+                    outline-none
+                    transition-all
+                    placeholder:text-emerald-100/20
+                    focus:border-emerald-500/40
+                    focus:bg-white/10
+                    focus:ring-4
+                    focus:ring-emerald-500/10
+                  "
                 />
               </div>
 
-              {/* Error */}
+              {/* =========================
+                  ERROR
+              ========================= */}
               <AnimatePresence>
                 {error && (
                   <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm font-medium text-red-300"
+                    initial={{
+                      opacity: 0,
+                      y: -8,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                    }}
+                    className="
+                      mb-5
+                      rounded-2xl
+                      border
+                      border-red-500/20
+                      bg-red-500/10
+                      px-4
+                      py-3
+                      text-center
+                      text-sm
+                      font-medium
+                      text-red-300
+                    "
                   >
                     {error}
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Verify Button */}
+              {/* =========================
+                  VERIFY BUTTON
+              ========================= */}
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{
+                  scale: 1.02,
+                }}
+                whileTap={{
+                  scale: 0.98,
+                }}
                 type="submit"
-                disabled={isLoading}
-                className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 px-6 py-4 text-lg font-extrabold tracking-wide text-white shadow-[0_10px_30px_rgba(16,185,129,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                disabled={
+                  isLoading ||
+                  otp.length !== 6
+                }
+                className="
+                  group
+                  relative
+                  w-full
+                  overflow-hidden
+                  rounded-2xl
+                  bg-gradient-to-r
+                  from-emerald-500
+                  via-green-500
+                  to-teal-600
+                  px-6
+                  py-4
+                  text-lg
+                  font-extrabold
+                  tracking-wide
+                  text-white
+                  shadow-[0_10px_30px_rgba(16,185,129,0.3)]
+                  transition-all
+                  disabled:cursor-not-allowed
+                  disabled:opacity-50
+                  cursor-pointer
+                "
               >
-                <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                {/* Hover Overlay */}
+                <span
+                  className="
+                    absolute
+                    inset-0
+                    bg-white/10
+                    opacity-0
+                    transition-opacity
+                    duration-300
+                    group-hover:opacity-100
+                  "
+                />
 
-                <span className="relative flex items-center justify-center gap-2">
+                <span
+                  className="
+                    relative
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                  "
+                >
                   <ShieldCheck size={20} />
-                  {isLoading ? "Verifying..." : "Verify OTP"}
+
+                  {isLoading
+                    ? "Verifying..."
+                    : "Verify OTP"}
                 </span>
               </motion.button>
             </form>
 
-            {/* Footer */}
-            <div className="mt-6 rounded-2xl border border-white/5 bg-white/[0.03] p-4 text-center">
-              <p className="text-xs leading-relaxed text-emerald-100/40">
+            {/* =========================
+                FOOTER
+            ========================= */}
+            <div
+              className="
+                mt-6
+                rounded-2xl
+                border
+                border-white/5
+                bg-white/[0.03]
+                p-4
+                text-center
+              "
+            >
+              <p
+                className="
+                  text-xs
+                  leading-relaxed
+                  text-emerald-100/40
+                "
+              >
                 OTP expires in{" "}
                 <span className="font-bold text-emerald-400">
                   5 minutes
                 </span>
-                . Didn’t receive the code? Check your spam folder or try again.
+                . Didn’t receive the code? Check
+                your spam folder or try again.
               </p>
             </div>
           </div>

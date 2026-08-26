@@ -40,6 +40,9 @@ const Navbar = ({
       case "Junior Staff":
         return "/junior-dashboard";
 
+      case "Citizen":
+        return "/citizen-dashboard";
+
       default:
         return "/";
     }

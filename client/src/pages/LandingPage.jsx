@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import AuthModal from "../components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
 import CountUp from "react-countup";
 import MapSection from "../components/MapSection";
@@ -322,6 +323,13 @@ const ImageCard = ({ item, index }) => (
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeGallery, setActiveGallery] = useState(0);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalRole, setAuthModalRole] = useState("Citizen");
+
+  const openAuth = (selectedRole) => {
+    setAuthModalRole(selectedRole);
+    setIsAuthModalOpen(true);
+  };
 
   const galleryLoop = useMemo(() => [...gallery, ...gallery], []);
 
@@ -387,21 +395,18 @@ const LandingPage = () => {
             </div>
 
             <div className="hidden items-center gap-2 md:flex">
-              <Link
-                to="/login"
-                className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white/70 transition hover:bg-white/5 hover:text-white"
+              <button
+                onClick={() => openAuth("Citizen")}
+                className="rounded-xl px-4 py-2.5 text-sm font-bold text-emerald-300 hover:text-white transition cursor-pointer"
               >
-                Sign In
-              </Link>
-              <Link to="/signup">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="rounded-xl border border-emerald-300/20 bg-emerald-500 px-5 py-2.5 text-sm font-extrabold text-[#032016] shadow-lg shadow-emerald-900/30"
-                >
-                  Register
-                </motion.button>
-              </Link>
+                Citizen Portal
+              </button>
+              <button
+                onClick={() => openAuth("Employee")}
+                className="rounded-xl border border-emerald-300/20 bg-emerald-500 px-5 py-2.5 text-sm font-extrabold text-[#032016] shadow-lg hover:bg-emerald-400 transition cursor-pointer"
+              >
+                Employee Portal
+              </button>
             </div>
 
             <button
@@ -436,18 +441,24 @@ const LandingPage = () => {
                   )
                 )}
                 <div className="my-2 h-px bg-white/10" />
-                <Link
-                  to="/login"
-                  className="rounded-xl bg-white/5 px-3 py-3 text-center font-bold"
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    openAuth("Citizen");
+                  }}
+                  className="rounded-xl bg-white/5 px-3 py-3 text-center font-bold text-white hover:bg-white/10 transition cursor-pointer"
                 >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="rounded-xl bg-emerald-500 px-3 py-3 text-center font-black text-[#032016]"
+                  Citizen Portal
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    openAuth("Employee");
+                  }}
+                  className="rounded-xl bg-emerald-500 px-3 py-3 text-center font-black text-[#032016] hover:bg-emerald-400 transition cursor-pointer"
                 >
-                  Register as City
-                </Link>
+                  Employee Portal
+                </button>
               </div>
             </motion.div>
           )}
@@ -481,22 +492,22 @@ const LandingPage = () => {
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
-              <Link to="/signup">
-                <motion.button
-                  whileHover={{ y: -2, scale: 1.02 }}
-                  className="flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-[#052118] shadow-2xl shadow-black/20"
-                >
-                  File a Complaint
-                  <ArrowUpRight size={18} />
-                </motion.button>
-              </Link>
-              <a
-                href="#live-map"
-                className="flex items-center gap-2 rounded-2xl border border-white/[0.15] bg-white/5 px-6 py-4 font-bold text-white/80 backdrop-blur-md transition hover:border-emerald-400/40 hover:bg-white/10 hover:text-white"
+              <motion.button
+                whileHover={{ y: -2, scale: 1.02 }}
+                onClick={() => openAuth("Citizen")}
+                className="flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-[#052118] shadow-2xl shadow-black/20 cursor-pointer"
               >
-                <Navigation size={18} />
-                Explore live map
-              </a>
+                Register as Citizen
+                <ArrowUpRight size={18} />
+              </motion.button>
+              <motion.button
+                whileHover={{ y: -2, scale: 1.02 }}
+                onClick={() => openAuth("Employee")}
+                className="flex items-center gap-2 rounded-2xl border border-white/[0.15] bg-white/5 px-6 py-4 font-bold text-white hover:border-emerald-400/40 hover:bg-white/10 transition cursor-pointer"
+              >
+                Register as Employee
+                <ArrowUpRight size={18} />
+              </motion.button>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
@@ -1184,15 +1195,14 @@ const LandingPage = () => {
                 Give citizens a clear front door to municipal services and give
                 operational teams a structured path to action.
               </p>
-              <Link to="/signup" className="mt-8 inline-flex">
-                <motion.button
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-6 py-4 font-black text-[#032016] shadow-2xl"
-                >
-                  Get Started
-                  <ArrowUpRight size={18} />
-                </motion.button>
-              </Link>
+              <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                onClick={() => openAuth("Citizen")}
+                className="mt-8 flex items-center gap-2 rounded-2xl bg-emerald-400 px-6 py-4 font-black text-[#032016] shadow-2xl"
+              >
+                Get Started
+                <ArrowUpRight size={18} />
+              </motion.button>
             </div>
           </div>
         </div>
@@ -1302,9 +1312,13 @@ const LandingPage = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/signup" className="transition hover:text-white">
+                  <button
+                    type="button"
+                    onClick={() => openAuth("Employee")}
+                    className="transition hover:text-white text-left"
+                  >
                     Urban Body Registration
-                  </Link>
+                  </button>
                 </li>
                 <li>
                   <a href="#live-map" className="transition hover:text-white">
@@ -1362,6 +1376,11 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialRole={authModalRole}
+      />
     </div>
   );
 };

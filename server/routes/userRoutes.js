@@ -39,16 +39,19 @@ const validateProfileUpdate = [
     .isEmail()
     .withMessage("Valid email is required"),
 
-  body("empId")
-    .trim()
-    .notEmpty()
-    .withMessage("Employee ID is required"),
+  body("empId").custom((value, { req }) => {
+    if (req.user?.role !== "Citizen" && (!value || value.trim() === "")) {
+      throw new Error("Employee ID is required");
+    }
+    return true;
+  }),
 
-  // Department required only if NOT Higher Authority
+  // Department required only if NOT Higher Authority and NOT Citizen
   body("department").custom((value, { req }) => {
 
     if (
       req.user?.role !== "Higher Authority" &&
+      req.user?.role !== "Citizen" &&
       (!value || value.trim() === "")
     ) {
 

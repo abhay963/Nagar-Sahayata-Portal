@@ -127,6 +127,24 @@ const Sidebar = ({
         ];
 
       // ============================================
+      // CITIZEN
+      // ============================================
+
+      case "Citizen":
+        return [
+          {
+            name: "Dashboard",
+            icon: LayoutDashboard,
+            path: "/citizen-dashboard",
+          },
+          {
+            name: "About",
+            icon: Info,
+            path: "/about",
+          },
+        ];
+
+      // ============================================
       // DEFAULT
       // ============================================
 

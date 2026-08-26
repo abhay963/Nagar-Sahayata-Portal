@@ -105,9 +105,9 @@ export const completeSignup = async (req, res) => {
       !role ||
       !city ||
       !contact ||
-      !empId ||
+      (role !== "Citizen" && !empId) ||
       !otp ||
-      (role !== "Higher Authority" && !department)
+      (role !== "Higher Authority" && role !== "Citizen" && !department)
     ) {
       return res.status(400).json({
         success: false,
@@ -125,7 +125,7 @@ export const completeSignup = async (req, res) => {
       });
     }
 
-    if (!allowedEmpIds.includes(empId)) {
+    if (role !== "Citizen" && !allowedEmpIds.includes(empId)) {
       return res.status(400).json({
         success: false,
         message: "Invalid Employee ID",
@@ -166,15 +166,17 @@ export const completeSignup = async (req, res) => {
       });
     }
 
-    const empIdExists = await User.findOne({
-      empId,
-    });
-
-    if (empIdExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Employee ID already registered",
+    if (role !== "Citizen") {
+      const empIdExists = await User.findOne({
+        empId,
       });
+
+      if (empIdExists) {
+        return res.status(400).json({
+          success: false,
+          message: "Employee ID already registered",
+        });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -188,12 +190,12 @@ export const completeSignup = async (req, res) => {
       password: hashedPassword,
       role,
       department:
-        role === "Higher Authority"
+        (role === "Higher Authority" || role === "Citizen")
           ? ""
           : department,
       city,
       contact,
-      empId,
+      empId: role === "Citizen" ? undefined : empId,
       address,
       acceptedTerms:
         acceptedTerms === true ||
@@ -228,7 +230,7 @@ export const completeSignup = async (req, res) => {
       accountStatus: user.accountStatus,
 
       token,
-      redirectUrl: "/",
+      redirectUrl: role === "Citizen" ? "/citizen-dashboard" : "/",
     });
   } catch (error) {
     console.error(error);
@@ -275,6 +277,10 @@ export const login = async (req, res) => {
 
     if (user.role === "Junior Staff") {
       redirectUrl = "/junior-dashboard";
+    }
+
+    if (user.role === "Citizen") {
+      redirectUrl = "/citizen-dashboard";
     }
 
     res.status(200).json({

@@ -60,6 +60,10 @@ export const getReports = async (req, res) => {
           $regex: new RegExp(`^${req.user.department}$`, "i"),
         },
       };
+    } else if (req.user.role === "Citizen") {
+      filter = {
+        userId: req.user._id,
+      };
     }
 
     const reports = await Report.find(filter)

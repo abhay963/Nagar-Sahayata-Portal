@@ -38,9 +38,12 @@ export const AuthProvider = ({ children }) => {
   const setAuthToken = (token) => {
     if (token) {
       localStorage.setItem("token", token);
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      api.defaults.headers.common.Authorization =
+        `Bearer ${token}`;
     } else {
       localStorage.removeItem("token");
+
       delete api.defaults.headers.common.Authorization;
     }
   };
@@ -53,10 +56,21 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await getMe();
 
-      setUser(response.data.user);
+      const currentUser = response.data.user;
+
+      setUser(currentUser);
+
+      return currentUser;
     } catch (error) {
+      console.error(
+        "FETCH USER ERROR:",
+        error
+      );
+
       setAuthToken(null);
       setUser(null);
+
+      return null;
     } finally {
       setLoading(false);
     }
@@ -75,30 +89,68 @@ export const AuthProvider = ({ children }) => {
     }
 
     setAuthToken(token);
+
     fetchUser();
   }, []);
 
   // ======================================================
   // LOGIN
   // ======================================================
-const loginUser = async (email, password) => {
-  const response = await login({
+
+  const loginUser = async (
     email,
-    password,
-  });
+    password
+  ) => {
+    const response = await login({
+      email,
+      password,
+    });
 
-  console.log("LOGIN RESPONSE DATA:", response.data);
+    console.log(
+      "LOGIN RESPONSE DATA:",
+      response.data
+    );
 
-  const { token, ...userData } = response.data;
+    /*
+      Backend login response is:
 
-  setAuthToken(token);
-  setUser(userData);
+      {
+        success: true,
+        _id,
+        name,
+        email,
+        role,
+        department,
+        city,
+        ...
+        token
+      }
 
-  return userData;
-};
+      Therefore remove token and keep
+      everything else as userData.
+    */
+
+    const {
+      token,
+      ...userData
+    } = response.data;
+
+    // Save JWT
+    setAuthToken(token);
+
+    // Save authenticated user
+    setUser(userData);
+
+    console.log(
+      "LOGIN USER:",
+      userData
+    );
+
+    return userData;
+  };
 
   // ======================================================
-  // SIGNUP
+  // SIGNUP - SEND OTP
   // ======================================================
 
   const signupUser = async (email) => {
@@ -112,21 +164,77 @@ const loginUser = async (email, password) => {
   // ======================================================
 
   const register = async (formData) => {
-    const response = await completeSignup(formData);
+    const response =
+      await completeSignup(formData);
 
-    const { token, user } = response.data;
+    console.log(
+      "COMPLETE SIGNUP RESPONSE:",
+      response.data
+    );
+
+    /*
+      IMPORTANT:
+
+      Backend returns:
+
+      {
+        success: true,
+        _id: "...",
+        name: "...",
+        email: "...",
+        role: "...",
+        ...
+        token: "..."
+      }
+
+      It does NOT return:
+
+      {
+        token: "...",
+        user: {...}
+      }
+
+      So we must handle it exactly like login.
+    */
+
+    const {
+      token,
+      ...userData
+    } = response.data;
+
+    // ==================================================
+    // SAVE TOKEN
+    // ==================================================
 
     setAuthToken(token);
-    setUser(user);
 
-    return user;
+    // ==================================================
+    // SAVE USER
+    // ==================================================
+
+    setUser(userData);
+
+    console.log(
+      "REGISTERED USER:",
+      userData
+    );
+
+    console.log(
+      "REGISTERED ROLE:",
+      userData.role
+    );
+
+    return userData;
   };
 
   // ======================================================
   // SEND OTP
   // ======================================================
 
-  const sendOtpCode = async (email, type) => {
+  const sendOtpCode = async (
+    email,
+    type
+  ) => {
     return await sendOtp({
       email,
       type,
@@ -137,7 +245,11 @@ const loginUser = async (email, password) => {
   // VERIFY OTP
   // ======================================================
 
-  const verifyOtpCode = async (email, otp, type) => {
+  const verifyOtpCode = async (
+    email,
+    otp,
+    type
+  ) => {
     return await verifyOtp({
       email,
       otp,
@@ -177,7 +289,9 @@ const loginUser = async (email, password) => {
 
   const logout = () => {
     setAuthToken(null);
+
     setUser(null);
+
     setLoading(false);
   };
 
@@ -190,21 +304,30 @@ const loginUser = async (email, password) => {
       user,
       loading,
 
+      // Authentication
       login: loginUser,
       signup: signupUser,
       completeSignup: register,
 
+      // OTP
       sendOtp: sendOtpCode,
       verifyOtp: verifyOtpCode,
 
+      // Password
       forgotPassword: sendResetOtp,
       resetPassword: updatePassword,
 
+      // Logout
       logout,
+
+      // User
       fetchUser,
       setUser,
     }),
-    [user, loading]
+    [
+      user,
+      loading,
+    ]
   );
 
   // ======================================================

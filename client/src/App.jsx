@@ -15,7 +15,6 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 
-
 // ======================================================
 // ===================== PAGES ===========================
 // ======================================================
@@ -24,9 +23,9 @@ import About from "./pages/About";
 import HigherAuthorityDashboard from "./pages/HigherAuthorityDashbaord";
 import StaffDashboard from "./pages/StaffDashboard";
 import JuniorStaffDashboard from "./pages/JuniorStaffDashboard";
+import CitizenDashboard from "./pages/CitizenDashboard";
 import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage";
-
 
 // ======================================================
 // =================== COMPONENTS ========================
@@ -37,13 +36,10 @@ import Sidebar from "./components/Sidebar";
 import ReportsTable from "./components/ReportsTable";
 import Departments from "./components/Departments";
 import AnalyticsCharts from "./components/AnalyticsCharts";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
 import PasswordReset from "./components/PasswordReset";
 import NotFound from "./components/NotFound";
 
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
-
 
 // ======================================================
 // ==================== CONTEXT ==========================
@@ -53,7 +49,6 @@ import {
   AuthProvider,
   useAuth,
 } from "./context/AuthContext";
-
 
 // ======================================================
 // ==================== HELPERS ==========================
@@ -70,11 +65,13 @@ const getDashboardRoute = (user) => {
     case "Junior Staff":
       return "/junior-dashboard";
 
+    case "Citizen":
+      return "/citizen-dashboard";
+
     default:
       return "/";
   }
 };
-
 
 // ======================================================
 // ====================== LAYOUT =========================
@@ -88,24 +85,25 @@ const Layout = ({
 }) => {
   const location = useLocation();
 
+  // ====================================================
+  // PUBLIC ROUTES
+  // ====================================================
+  //
+  // Login and Signup have been completely removed.
+  //
+  // Authentication UI is now handled from LandingPage.
+  // ====================================================
 
-  // Pages where Navbar and Sidebar
-  // should NOT be displayed
   const publicRoutes = [
     "/",
-    "/login",
-    "/signup",
     "/forgot-password",
     "/about",
     "/404",
   ];
 
-
-  const isPublicPage =
-    publicRoutes.includes(
-      location.pathname
-    );
-
+  const isPublicPage = publicRoutes.includes(
+    location.pathname
+  );
 
   return (
     <div
@@ -127,7 +125,6 @@ const Layout = ({
         />
       )}
 
-
       {/* ================= NAVBAR ================= */}
 
       {!isPublicPage && (
@@ -135,7 +132,6 @@ const Layout = ({
           onHoverSidebar={openSidebar}
         />
       )}
-
 
       {/* ================= PAGE CONTENT ================= */}
 
@@ -153,18 +149,15 @@ const Layout = ({
   );
 };
 
-
 // ======================================================
 // ====================== ROUTES =========================
 // ======================================================
 
 const AppRoutes = () => {
-
   const {
     user,
     loading,
   } = useAuth();
-
 
   // ====================================================
   // AUTH LOADING
@@ -187,14 +180,12 @@ const AppRoutes = () => {
     );
   }
 
-
   // ====================================================
   // DASHBOARD ROUTE
   // ====================================================
 
   const userDashboardRoute =
     getDashboardRoute(user);
-
 
   return (
     <Routes>
@@ -209,45 +200,6 @@ const AppRoutes = () => {
           <LandingPage />
         }
       />
-
-
-      {/* ==================================================
-          LOGIN
-      ================================================== */}
-
-      <Route
-        path="/login"
-        element={
-          !user ? (
-            <Login />
-          ) : (
-            <Navigate
-              to={userDashboardRoute}
-              replace
-            />
-          )
-        }
-      />
-
-
-      {/* ==================================================
-          SIGNUP
-      ================================================== */}
-
-      <Route
-        path="/signup"
-        element={
-          !user ? (
-            <Signup />
-          ) : (
-            <Navigate
-              to={userDashboardRoute}
-              replace
-            />
-          )
-        }
-      />
-
 
       {/* ==================================================
           FORGOT PASSWORD
@@ -267,7 +219,6 @@ const AppRoutes = () => {
         }
       />
 
-
       {/* ==================================================
           ABOUT
       ================================================== */}
@@ -279,7 +230,6 @@ const AppRoutes = () => {
         }
       />
 
-
       {/* ==================================================
           404 PAGE
       ================================================== */}
@@ -290,7 +240,6 @@ const AppRoutes = () => {
           <NotFound />
         }
       />
-
 
       {/* ==================================================
           HIGHER AUTHORITY DASHBOARD
@@ -309,7 +258,6 @@ const AppRoutes = () => {
         }
       />
 
-
       {/* ==================================================
           STAFF DASHBOARD
       ================================================== */}
@@ -326,7 +274,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
 
       {/* ==================================================
           JUNIOR STAFF DASHBOARD
@@ -345,6 +292,22 @@ const AppRoutes = () => {
         }
       />
 
+      {/* ==================================================
+          CITIZEN DASHBOARD
+      ================================================== */}
+
+      <Route
+        path="/citizen-dashboard"
+        element={
+          <ProtectedRoute
+            allowedRoles={[
+              "Citizen",
+            ]}
+          >
+            <CitizenDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       {/* ==================================================
           PROFILE
@@ -359,7 +322,6 @@ const AppRoutes = () => {
         }
       />
 
-
       {/* ==================================================
           REPORTS
       ================================================== */}
@@ -372,7 +334,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
 
       {/* ==================================================
           DEPARTMENTS
@@ -387,7 +348,6 @@ const AppRoutes = () => {
         }
       />
 
-
       {/* ==================================================
           ANALYTICS
       ================================================== */}
@@ -400,7 +360,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
 
       {/* ==================================================
           UNKNOWN URL
@@ -420,7 +379,6 @@ const AppRoutes = () => {
   );
 };
 
-
 // ======================================================
 // ======================== APP ==========================
 // ======================================================
@@ -435,7 +393,6 @@ function App() {
     isSidebarOpen,
     setIsSidebarOpen,
   ] = useState(false);
-
 
   // ====================================================
   // DARK MODE STATE
@@ -463,7 +420,6 @@ function App() {
     );
   });
 
-
   // ====================================================
   // APPLY DARK MODE
   // ====================================================
@@ -472,7 +428,6 @@ function App() {
 
     const root =
       document.documentElement;
-
 
     if (darkMode) {
 
@@ -495,7 +450,6 @@ function App() {
 
   }, [darkMode]);
 
-
   // ====================================================
   // OPEN SIDEBAR
   // ====================================================
@@ -504,7 +458,6 @@ function App() {
     setIsSidebarOpen(true);
   };
 
-
   // ====================================================
   // CLOSE SIDEBAR
   // ====================================================
@@ -512,7 +465,6 @@ function App() {
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
-
 
   // ====================================================
   // RENDER APP
@@ -541,7 +493,6 @@ function App() {
 
       </Router>
 
-
       {/* Toast Notifications */}
 
       <ToastContainer />
@@ -549,6 +500,5 @@ function App() {
     </AuthProvider>
   );
 }
-
 
 export default App;

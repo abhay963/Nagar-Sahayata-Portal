@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
         "Staff",
         "Higher Authority",
         "Junior Staff",
+        "Citizen",
       ],
       default: "Staff",
       trim: true,
@@ -42,7 +43,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: function () {
-        return this.role !== "Higher Authority";
+        return this.role !== "Higher Authority" && this.role !== "Citizen";
       },
       default: "",
     },
@@ -55,8 +56,11 @@ const userSchema = new mongoose.Schema(
 
     empId: {
       type: String,
-      required: [true, "Please add Employee ID"],
+      required: function () {
+        return this.role !== "Citizen";
+      },
       unique: true,
+      sparse: true,
       trim: true,
       uppercase: true,
     },
