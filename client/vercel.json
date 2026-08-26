@@ -3,10 +3,6 @@
     {
       "source": "/api/:path*",
       "destination": "https://nagar-sahayata-portal-production.up.railway.app/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
     }
   ]
 }

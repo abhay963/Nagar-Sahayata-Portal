@@ -1,25 +1,60 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
 dotenv.config();
+
 import { connectAuthDB } from "./config/db.js";
 
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/userRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
-
-
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+/* =========================================================
+   CORS CONFIGURATION
+   ========================================================= */
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://nagar-sahayata-portal.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      // Allow requests without an origin
+      // (Postman, server-to-server requests, etc.)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("❌ CORS blocked:", origin);
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+
     credentials: true,
+
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
+
+/* =========================================================
+   BODY PARSERS
+   ========================================================= */
 
 app.use(express.json());
 
@@ -29,9 +64,19 @@ app.use(
   })
 );
 
+/* =========================================================
+   API ROUTES
+   ========================================================= */
+
 app.use("/api/auth", authRoutes);
+
 app.use("/api/users", userRoutes);
+
 app.use("/api/reports", reportRoutes);
+
+/* =========================================================
+   HEALTH CHECK
+   ========================================================= */
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -40,15 +85,24 @@ app.get("/", (req, res) => {
   });
 });
 
+/* =========================================================
+   404 HANDLER
+   ========================================================= */
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: "Route not found",
+    path: req.originalUrl,
   });
 });
 
+/* =========================================================
+   GLOBAL ERROR HANDLER
+   ========================================================= */
+
 app.use((err, req, res, next) => {
-  console.error(err);
+  console.error("❌ Server Error:", err);
 
   res.status(err.status || 500).json({
     success: false,
@@ -56,15 +110,24 @@ app.use((err, req, res, next) => {
   });
 });
 
+/* =========================================================
+   START SERVER
+   ========================================================= */
+
 const startServer = async () => {
   try {
     await connectAuthDB();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌐 Port: ${PORT}`);
+      console.log("✅ Allowed Origins:");
+      allowedOrigins.forEach((origin) => {
+        console.log(`   - ${origin}`);
+      });
     });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Failed to start server:", error);
     process.exit(1);
   }
 };
