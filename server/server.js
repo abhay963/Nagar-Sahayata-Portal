@@ -20,9 +20,8 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://nagar-sahayata-portal.vercel.app",
-];
-
+  process.env.CLIENT_URL,
+].filter(Boolean);
 app.use(
   cors({
     origin: (origin, callback) => {
