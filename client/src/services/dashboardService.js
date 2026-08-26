@@ -1,7 +1,7 @@
 import API from "../api/axios";
 
 export const getDashboardStats = () =>
-  API.get("/reports/dashboard-stats");
+  API.get("/api/reports/dashboard-stats");
 
 export const fetchAnalytics = () =>
-  API.get("/reports/analytics");
+  API.get("/api/reports/analytics");
