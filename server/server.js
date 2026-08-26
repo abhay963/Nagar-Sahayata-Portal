@@ -26,8 +26,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests without an origin
-      // (Postman, server-to-server requests, etc.)
       if (!origin) {
         return callback(null, true);
       }
@@ -38,12 +36,19 @@ app.use(
 
       console.log("❌ CORS blocked:", origin);
 
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
 
     credentials: true,
 
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
 
     allowedHeaders: [
       "Content-Type",
@@ -51,7 +56,6 @@ app.use(
     ],
   })
 );
-
 /* =========================================================
    BODY PARSERS
    ========================================================= */
