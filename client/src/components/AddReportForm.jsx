@@ -103,6 +103,10 @@ const AddReportForm = ({ currentUser }) => {
     }
   };
 
+  // ======================================================
+  // ================= FETCH REPORTS ======================
+  // ======================================================
+
   useEffect(() => {
     if (currentUser?.department) {
       fetchReports();
@@ -331,9 +335,7 @@ const AddReportForm = ({ currentUser }) => {
 
         <button
           type="button"
-          onClick={() =>
-            fetchReports(true)
-          }
+          onClick={() => fetchReports(true)}
           disabled={refreshing}
           className="
             inline-flex
@@ -369,9 +371,7 @@ const AddReportForm = ({ currentUser }) => {
             ? "Refreshing..."
             : "Refresh"}
         </button>
-
       </div>
-
 
       {/* ==================================================
           SEARCH
@@ -419,7 +419,6 @@ const AddReportForm = ({ currentUser }) => {
 
       </div>
 
-
       {/* ==================================================
           REPORTS TABLE
       ================================================== */}
@@ -432,13 +431,15 @@ const AddReportForm = ({ currentUser }) => {
 
             <thead>
 
-              <tr className="
-                bg-gradient-to-r
-                from-green-600
-                via-emerald-600
-                to-teal-600
-                text-white
-              ">
+              <tr
+                className="
+                  bg-gradient-to-r
+                  from-green-600
+                  via-emerald-600
+                  to-teal-600
+                  text-white
+                "
+              >
 
                 <th className="px-4 py-3.5 text-left font-semibold">
                   Problem
@@ -460,7 +461,6 @@ const AddReportForm = ({ currentUser }) => {
 
             </thead>
 
-
             <tbody className="divide-y divide-gray-100 bg-white">
 
               {filteredReports.length === 0 ? (
@@ -472,13 +472,15 @@ const AddReportForm = ({ currentUser }) => {
                     className="text-center py-12"
                   >
 
-                    <div className="
-                      flex
-                      flex-col
-                      items-center
-                      gap-2
-                      text-gray-400
-                    ">
+                    <div
+                      className="
+                        flex
+                        flex-col
+                        items-center
+                        gap-2
+                        text-gray-400
+                      "
+                    >
 
                       <AlertCircle className="w-8 h-8 opacity-50" />
 
@@ -519,27 +521,32 @@ const AddReportForm = ({ currentUser }) => {
                       "
                     >
 
-                      <td className="
-                        px-4
-                        py-3.5
-                        font-medium
-                        text-gray-900
-                      ">
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                          font-medium
+                          text-gray-900
+                        "
+                      >
                         {report.problemType}
                       </td>
 
+                      <td
+                        className="
+                          px-4
+                          py-3.5
+                          text-gray-600
+                        "
+                      >
 
-                      <td className="
-                        px-4
-                        py-3.5
-                        text-gray-600
-                      ">
-
-                        <div className="
-                          flex
-                          items-center
-                          gap-1.5
-                        ">
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-1.5
+                          "
+                        >
 
                           <MapPin
                             className="
@@ -550,17 +557,18 @@ const AddReportForm = ({ currentUser }) => {
                             "
                           />
 
-                          <span className="
-                            truncate
-                            max-w-[180px]
-                          ">
+                          <span
+                            className="
+                              truncate
+                              max-w-[180px]
+                            "
+                          >
                             {report.locationName}
                           </span>
 
                         </div>
 
                       </td>
-
 
                       <td className="px-4 py-3.5">
 
@@ -572,7 +580,6 @@ const AddReportForm = ({ currentUser }) => {
                             rounded-full
                             text-xs
                             font-medium
-
                             ${
                               report.priority ===
                               "High"
@@ -589,23 +596,24 @@ const AddReportForm = ({ currentUser }) => {
 
                       </td>
 
-
                       <td className="px-4 py-3.5">
 
-                        <span className="
-                          inline-flex
-                          items-center
-                          gap-1
-                          px-2.5
-                          py-1
-                          rounded-full
-                          text-xs
-                          font-medium
-                          bg-amber-50
-                          text-amber-700
-                          border
-                          border-amber-100
-                        ">
+                        <span
+                          className="
+                            inline-flex
+                            items-center
+                            gap-1
+                            px-2.5
+                            py-1
+                            rounded-full
+                            text-xs
+                            font-medium
+                            bg-amber-50
+                            text-amber-700
+                            border
+                            border-amber-100
+                          "
+                        >
                           {report.status}
                         </span>
 
@@ -626,22 +634,23 @@ const AddReportForm = ({ currentUser }) => {
 
       </div>
 
-
       {/* ==================================================
           COMPACT REPORT DETAILS MODAL
       ================================================== */}
 
       {selectedReport && (
 
-        <div className="
-          fixed
-          inset-0
-          z-50
-          flex
-          items-center
-          justify-center
-          p-3
-        ">
+        <div
+          className="
+            fixed
+            inset-0
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
 
           {/* BACKDROP */}
 
@@ -655,98 +664,96 @@ const AddReportForm = ({ currentUser }) => {
             onClick={closeModal}
           />
 
-
           {/* =================================================
               SMALL MODAL
           ================================================= */}
 
-          <div className="
-            relative
-            z-10
-
-            w-full
-            max-w-md
-
-            max-h-[72vh]
-
-            bg-white
-
-            rounded-2xl
-
-            shadow-2xl
-
-            flex
-            flex-col
-
-            overflow-hidden
-          ">
-
+          <div
+            className="
+              relative
+              z-10
+              w-full
+              max-w-[430px]
+              max-h-[calc(100vh-100px)]
+              bg-white
+              rounded-2xl
+              shadow-2xl
+              flex
+              flex-col
+              overflow-hidden
+            "
+          >
 
             {/* =================================================
                 HEADER
             ================================================= */}
 
-            <div className="
-              shrink-0
-
-              bg-gradient-to-r
-              from-green-600
-              via-emerald-600
-              to-teal-600
-
-              px-4
-              py-3.5
-
-              flex
-              items-center
-              justify-between
-            ">
-
-              <div className="
+            <div
+              className="
+                shrink-0
+                bg-gradient-to-r
+                from-green-600
+                via-emerald-600
+                to-teal-600
+                px-4
+                py-3
                 flex
                 items-center
-                gap-2.5
-              ">
+                justify-between
+              "
+            >
 
-                <div className="
-                  p-2
-                  rounded-lg
-                  bg-white/15
-                ">
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-2.5
+                "
+              >
+
+                <div
+                  className="
+                    p-1.5
+                    rounded-lg
+                    bg-white/15
+                  "
+                >
 
                   <FileText
                     className="
-                      w-4.5
-                      h-4.5
+                      w-4
+                      h-4
                       text-white
                     "
                   />
 
                 </div>
 
-
                 <div>
 
-                  <h3 className="
-                    text-base
-                    font-bold
-                    text-white
-                  ">
+                  <h3
+                    className="
+                      text-sm
+                      font-bold
+                      text-white
+                    "
+                  >
                     Report Details
                   </h3>
 
-                  <p className="
-                    text-[11px]
-                    text-white/80
-                    mt-0.5
-                  ">
+                  <p
+                    className="
+                      text-[10px]
+                      text-white/80
+                      mt-0.5
+                    "
+                  >
                     View details & assign staff
                   </p>
 
                 </div>
 
               </div>
-
 
               <button
                 type="button"
@@ -760,45 +767,41 @@ const AddReportForm = ({ currentUser }) => {
                   transition
                 "
               >
-
-                <X className="w-4.5 h-4.5" />
-
+                <X className="w-4 h-4" />
               </button>
 
             </div>
 
-
             {/* =================================================
-                COMPACT SCROLLABLE BODY
+                SCROLLABLE DETAILS ONLY
             ================================================= */}
 
-            <div className="
-              flex-1
-              min-h-0
-              overflow-y-auto
+            <div
+              className="
+                flex-1
+                min-h-0
+                overflow-y-auto
+                px-4
+                py-3
+              "
+            >
 
-              px-4
-              py-4
-
-              space-y-4
-            ">
-
-
-              {/* =================================================
-                  IMAGE
-              ================================================= */}
+              {/* IMAGE */}
 
               {(selectedReport.image ||
                 selectedReport.images?.[0] ||
                 selectedReport.photo) && (
 
-                <div className="
-                  rounded-xl
-                  overflow-hidden
-                  border
-                  border-gray-100
-                  bg-gray-50
-                ">
+                <div
+                  className="
+                    rounded-lg
+                    overflow-hidden
+                    border
+                    border-gray-100
+                    bg-gray-50
+                    mb-3
+                  "
+                >
 
                   <img
                     src={
@@ -809,7 +812,7 @@ const AddReportForm = ({ currentUser }) => {
                     alt="Report"
                     className="
                       w-full
-                      h-28
+                      h-24
                       object-cover
                     "
                     onError={(e) => {
@@ -822,48 +825,51 @@ const AddReportForm = ({ currentUser }) => {
 
               )}
 
+              {/* PROBLEM TYPE */}
 
-              {/* =================================================
-                  PROBLEM TYPE
-              ================================================= */}
+              <div
+                className="
+                  flex
+                  items-start
+                  gap-2
+                  mb-3
+                "
+              >
 
-              <div className="
-                flex
-                items-start
-                gap-2.5
-              ">
-
-                <div className="
-                  p-1.5
-                  rounded-lg
-                  bg-emerald-50
-                  text-emerald-600
-                  shrink-0
-                ">
-
+                <div
+                  className="
+                    p-1.5
+                    rounded-lg
+                    bg-emerald-50
+                    text-emerald-600
+                    shrink-0
+                  "
+                >
                   <Tag className="w-3.5 h-3.5" />
-
                 </div>
-
 
                 <div>
 
-                  <p className="
-                    text-[10px]
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wide
-                  ">
+                  <p
+                    className="
+                      text-[9px]
+                      font-medium
+                      text-gray-500
+                      uppercase
+                      tracking-wide
+                    "
+                  >
                     Problem Type
                   </p>
 
-                  <p className="
-                    text-sm
-                    font-semibold
-                    text-gray-900
-                    mt-0.5
-                  ">
+                  <p
+                    className="
+                      text-sm
+                      font-semibold
+                      text-gray-900
+                      mt-0.5
+                    "
+                  >
                     {selectedReport.problemType}
                   </p>
 
@@ -871,48 +877,51 @@ const AddReportForm = ({ currentUser }) => {
 
               </div>
 
+              {/* LOCATION */}
 
-              {/* =================================================
-                  LOCATION
-              ================================================= */}
+              <div
+                className="
+                  flex
+                  items-start
+                  gap-2
+                  mb-3
+                "
+              >
 
-              <div className="
-                flex
-                items-start
-                gap-2.5
-              ">
-
-                <div className="
-                  p-1.5
-                  rounded-lg
-                  bg-emerald-50
-                  text-emerald-600
-                  shrink-0
-                ">
-
+                <div
+                  className="
+                    p-1.5
+                    rounded-lg
+                    bg-emerald-50
+                    text-emerald-600
+                    shrink-0
+                  "
+                >
                   <MapPin className="w-3.5 h-3.5" />
-
                 </div>
-
 
                 <div>
 
-                  <p className="
-                    text-[10px]
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wide
-                  ">
+                  <p
+                    className="
+                      text-[9px]
+                      font-medium
+                      text-gray-500
+                      uppercase
+                      tracking-wide
+                    "
+                  >
                     Location
                   </p>
 
-                  <p className="
-                    text-sm
-                    font-semibold
-                    text-gray-900
-                    mt-0.5
-                  ">
+                  <p
+                    className="
+                      text-sm
+                      font-semibold
+                      text-gray-900
+                      mt-0.5
+                    "
+                  >
                     {selectedReport.locationName}
                   </p>
 
@@ -920,51 +929,52 @@ const AddReportForm = ({ currentUser }) => {
 
               </div>
 
+              {/* PRIORITY + STATUS */}
 
-              {/* =================================================
-                  PRIORITY + STATUS
-              ================================================= */}
-
-              <div className="
-                grid
-                grid-cols-2
-                gap-3
-              ">
-
+              <div
+                className="
+                  grid
+                  grid-cols-2
+                  gap-3
+                  mb-3
+                "
+              >
 
                 {/* PRIORITY */}
 
-                <div className="
-                  flex
-                  items-start
-                  gap-2.5
-                ">
+                <div
+                  className="
+                    flex
+                    items-start
+                    gap-2
+                  "
+                >
 
-                  <div className="
-                    p-1.5
-                    rounded-lg
-                    bg-emerald-50
-                    text-emerald-600
-                    shrink-0
-                  ">
-
+                  <div
+                    className="
+                      p-1.5
+                      rounded-lg
+                      bg-emerald-50
+                      text-emerald-600
+                      shrink-0
+                    "
+                  >
                     <AlertCircle className="w-3.5 h-3.5" />
-
                   </div>
-
 
                   <div>
 
-                    <p className="
-                      text-[10px]
-                      font-medium
-                      text-gray-500
-                      uppercase
-                      tracking-wide
-                    ">
+                    <p
+                      className="
+                        text-[9px]
+                        font-medium
+                        text-gray-500
+                        uppercase
+                        tracking-wide
+                      "
+                    >
                       Priority
                     </p>
-
 
                     <span
                       className={`
@@ -975,7 +985,6 @@ const AddReportForm = ({ currentUser }) => {
                         rounded-full
                         text-[10px]
                         font-medium
-
                         ${
                           selectedReport.priority ===
                           "High"
@@ -994,54 +1003,57 @@ const AddReportForm = ({ currentUser }) => {
 
                 </div>
 
-
                 {/* STATUS */}
 
-                <div className="
-                  flex
-                  items-start
-                  gap-2.5
-                ">
+                <div
+                  className="
+                    flex
+                    items-start
+                    gap-2
+                  "
+                >
 
-                  <div className="
-                    p-1.5
-                    rounded-lg
-                    bg-emerald-50
-                    text-emerald-600
-                    shrink-0
-                  ">
-
+                  <div
+                    className="
+                      p-1.5
+                      rounded-lg
+                      bg-emerald-50
+                      text-emerald-600
+                      shrink-0
+                    "
+                  >
                     <Clock className="w-3.5 h-3.5" />
-
                   </div>
-
 
                   <div>
 
-                    <p className="
-                      text-[10px]
-                      font-medium
-                      text-gray-500
-                      uppercase
-                      tracking-wide
-                    ">
+                    <p
+                      className="
+                        text-[9px]
+                        font-medium
+                        text-gray-500
+                        uppercase
+                        tracking-wide
+                      "
+                    >
                       Status
                     </p>
 
-
-                    <span className="
-                      inline-flex
-                      mt-1
-                      px-2
-                      py-0.5
-                      rounded-full
-                      text-[10px]
-                      font-medium
-                      bg-amber-50
-                      text-amber-700
-                      border
-                      border-amber-100
-                    ">
+                    <span
+                      className="
+                        inline-flex
+                        mt-1
+                        px-2
+                        py-0.5
+                        rounded-full
+                        text-[10px]
+                        font-medium
+                        bg-amber-50
+                        text-amber-700
+                        border
+                        border-amber-100
+                      "
+                    >
                       {selectedReport.status}
                     </span>
 
@@ -1051,49 +1063,52 @@ const AddReportForm = ({ currentUser }) => {
 
               </div>
 
+              {/* DESCRIPTION */}
 
-              {/* =================================================
-                  DESCRIPTION
-              ================================================= */}
+              <div
+                className="
+                  flex
+                  items-start
+                  gap-2
+                  mb-3
+                "
+              >
 
-              <div className="
-                flex
-                items-start
-                gap-2.5
-              ">
-
-                <div className="
-                  p-1.5
-                  rounded-lg
-                  bg-emerald-50
-                  text-emerald-600
-                  shrink-0
-                ">
-
+                <div
+                  className="
+                    p-1.5
+                    rounded-lg
+                    bg-emerald-50
+                    text-emerald-600
+                    shrink-0
+                  "
+                >
                   <AlignLeft className="w-3.5 h-3.5" />
-
                 </div>
-
 
                 <div className="flex-1 min-w-0">
 
-                  <p className="
-                    text-[10px]
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wide
-                  ">
+                  <p
+                    className="
+                      text-[9px]
+                      font-medium
+                      text-gray-500
+                      uppercase
+                      tracking-wide
+                    "
+                  >
                     Description
                   </p>
 
-                  <p className="
-                    text-xs
-                    text-gray-700
-                    mt-1
-                    leading-relaxed
-                    whitespace-pre-wrap
-                  ">
+                  <p
+                    className="
+                      text-xs
+                      text-gray-700
+                      mt-1
+                      leading-relaxed
+                      whitespace-pre-wrap
+                    "
+                  >
                     {selectedReport.description ||
                       "No description provided."}
                   </p>
@@ -1102,23 +1117,25 @@ const AddReportForm = ({ currentUser }) => {
 
               </div>
 
-
-              {/* =================================================
-                  REPORTED ON
-              ================================================= */}
+              {/* REPORTED ON */}
 
               {selectedReport.createdAt && (
 
-                <div className="
-                  pt-2
-                  border-t
-                  border-gray-100
-                ">
+                <div
+                  className="
+                    pt-2
+                    mb-3
+                    border-t
+                    border-gray-100
+                  "
+                >
 
-                  <p className="
-                    text-[10px]
-                    text-gray-400
-                  ">
+                  <p
+                    className="
+                      text-[9px]
+                      text-gray-400
+                    "
+                  >
                     Reported on:{" "}
                     {new Date(
                       selectedReport.createdAt
@@ -1129,30 +1146,31 @@ const AddReportForm = ({ currentUser }) => {
 
               )}
 
-
-              {/* =================================================
-                  REPORTED BY
-              ================================================= */}
+              {/* REPORTED BY */}
 
               {selectedReport.reportedBy && (
 
-                <div>
+                <div className="mb-3">
 
-                  <p className="
-                    text-[10px]
-                    font-medium
-                    text-gray-500
-                    uppercase
-                    tracking-wide
-                    mb-1
-                  ">
+                  <p
+                    className="
+                      text-[9px]
+                      font-medium
+                      text-gray-500
+                      uppercase
+                      tracking-wide
+                      mb-1
+                    "
+                  >
                     Reported By
                   </p>
 
-                  <p className="
-                    text-xs
-                    text-gray-700
-                  ">
+                  <p
+                    className="
+                      text-xs
+                      text-gray-700
+                    "
+                  >
                     {typeof selectedReport.reportedBy ===
                     "object"
                       ? selectedReport.reportedBy.name ||
@@ -1164,50 +1182,57 @@ const AddReportForm = ({ currentUser }) => {
 
               )}
 
-
               {/* =================================================
                   ASSIGNMENT SECTION
               ================================================= */}
 
-              <div className="
-                border-t
-                border-gray-100
-                pt-3
-              ">
+              <div
+                className="
+                  border-t
+                  border-gray-100
+                  pt-3
+                  pb-1
+                "
+              >
 
-                <div className="
-                  flex
-                  items-center
-                  gap-2
-                  mb-3
-                ">
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    mb-2
+                  "
+                >
 
-                  <div className="
-                    p-1.5
-                    rounded-lg
-                    bg-emerald-100
-                    text-emerald-700
-                  ">
-
-                    <UserPlus className="w-4 h-4" />
-
+                  <div
+                    className="
+                      p-1.5
+                      rounded-lg
+                      bg-emerald-100
+                      text-emerald-700
+                    "
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
                   </div>
-
 
                   <div>
 
-                    <h4 className="
-                      text-sm
-                      font-semibold
-                      text-gray-900
-                    ">
+                    <h4
+                      className="
+                        text-sm
+                        font-semibold
+                        text-gray-900
+                      "
+                    >
                       Assign to Junior Staff
                     </h4>
 
-                    <p className="
-                      text-[10px]
-                      text-gray-500
-                    ">
+                    <p
+                      className="
+                        text-[9px]
+                        text-gray-500
+                      "
+                    >
                       Select staff member
                     </p>
 
@@ -1215,17 +1240,17 @@ const AddReportForm = ({ currentUser }) => {
 
                 </div>
 
-
-                <label className="
-                  block
-                  mb-1.5
-                  text-xs
-                  font-medium
-                  text-gray-700
-                ">
+                <label
+                  className="
+                    block
+                    mb-1
+                    text-[11px]
+                    font-medium
+                    text-gray-700
+                  "
+                >
                   Assign To
                 </label>
-
 
                 <select
                   name="assignedTo"
@@ -1274,19 +1299,20 @@ const AddReportForm = ({ currentUser }) => {
 
             </div>
 
-
             {/* =================================================
-                FIXED SMALL FOOTER
+                ALWAYS VISIBLE FOOTER
             ================================================= */}
 
-            <div className="
-              shrink-0
-              px-4
-              py-3
-              bg-white
-              border-t
-              border-gray-100
-            ">
+            <div
+              className="
+                shrink-0
+                px-4
+                py-2.5
+                bg-white
+                border-t
+                border-gray-100
+              "
+            >
 
               <button
                 type="button"
@@ -1297,36 +1323,25 @@ const AddReportForm = ({ currentUser }) => {
                 }
                 className="
                   w-full
-
                   inline-flex
                   items-center
                   justify-center
                   gap-2
-
                   px-4
                   py-2.5
-
                   rounded-lg
-
                   bg-gradient-to-r
                   from-green-600
                   to-emerald-600
-
                   text-white
-
                   font-semibold
                   text-xs
-
                   shadow-md
                   shadow-emerald-600/20
-
                   hover:from-green-700
                   hover:to-emerald-700
-
                   active:scale-[0.98]
-
                   transition-all
-
                   disabled:opacity-50
                   disabled:cursor-not-allowed
                 "
@@ -1344,7 +1359,6 @@ const AddReportForm = ({ currentUser }) => {
                     />
 
                     Assigning...
-
                   </>
 
                 ) : (
@@ -1358,7 +1372,6 @@ const AddReportForm = ({ currentUser }) => {
                     />
 
                     Assign Task
-
                   </>
 
                 )}
