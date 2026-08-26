@@ -1018,7 +1018,7 @@ const CitizenDashboard = () => {
             <div>
 
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Attach Image (Optional)
+                Attach Image 
               </label>
 
               <div className="flex items-center gap-4">
